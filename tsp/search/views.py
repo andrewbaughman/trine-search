@@ -18,8 +18,14 @@ def search(request):
 
 def searchAlgorithm(query):
 	results = {
-        'result1': query + ' will return this result and others',
-        'result2': 'like me', 
+        'result1': {
+			'url': 'www.notgoogle.com',
+			'description': 'This website is not google.',
+		},
+        'result2': {
+			'url': 'www.alsonotgooel.com',
+			'description': 'This website is also not google.',
+		}, 
     }
 
 	return results

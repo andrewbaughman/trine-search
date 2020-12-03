@@ -13,7 +13,14 @@ function search(query){
         },
         url: '/search/',
         success: function(response) {
-            console.log(response);
+			//This is what the response actually looks like.
+			console.log(response);
+
+			//Here's how to access it.
+			$.each(response['results'], function(index, result){
+				console.log(result['url']);
+				console.log(result['description']);
+			});
         }
     });
 }
