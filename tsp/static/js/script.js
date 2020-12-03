@@ -1,14 +1,17 @@
 $(document).ready(function() {
     $('h1').click(function() {
         $(this).hide();
-        console.log(testAjax());
+        console.log(search('whatever I want'));
     });
 });
 
-function testAjax(){
+function search(query){
     $.ajax({
         type: 'GET',
-        url: '/testAjax/',
+        data: {
+            'query': query,
+        },
+        url: '/search/',
         success: function(response) {
             console.log(response);
         }
