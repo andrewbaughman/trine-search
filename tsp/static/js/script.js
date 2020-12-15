@@ -1,7 +1,6 @@
 $(document).ready(function() {
-    $('h1').click(function() {
-        $(this).hide();
-        console.log(search('whatever I want'));
+    $('#search_button').click(function() {
+		search($('#resultsInput').val());
     });
 });
 
@@ -15,11 +14,20 @@ function search(query){
         success: function(response) {
 			//This is what the response actually looks like.
 			console.log(response);
-
 			//Here's how to access it.
+			$(document).find('.results').html("");
 			$.each(response['results'], function(index, result){
 				console.log(result['url']);
+				console.log(result['title']);
 				console.log(result['description']);
+				
+				$(document).find('.results').html($(document).find('.results').html()
+				+"<div class='result'>"
+				+	"<tr>"
+				+		"<url><td>"+ result['url'] +"</td></url>"
+				+		"<td><a href= "+ result['url'] +"><title-result></br>"+ result['title'] +"</td></title-result></a>"
+				+		"<td></br><info><td>"+ result['description'] +"</td></info>"
+				+"</div>");
 			});
         }
     });

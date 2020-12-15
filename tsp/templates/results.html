@@ -5,27 +5,61 @@
 {% load static %}
 
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Seek Results</title>
-  </head>
-		
-  <body class="second">
-      <button id ="toggle" class="btn-toggle">light</button>
-      <div class="top-bar">
-          <form method="GET" action="results.html">
-              <a href="results/">
-                  <img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
-              </a>
-              <input type="text" id="resultsInput" name="query" onkeyup="myFunction()" placeholder="Search Trine resources...">
-              <div id="left">
-                  <input type="submit" class="btn" name="search" value="search">
-                  <input type="submit" class="btn" name="searchLucky" value="feeling lucky">
-              </div>
-          </form>
-      </div>
-      <div class="results">
-         <div class='result'><tr><url><td>https://myportal.trine.edu/ics</td></url><td><a href= 'https://myportal.trine.edu/ics'><title-result></br>My Portal</td></title-result></a><td></br><info><td>Home Admission TrineOnline Readmission Trine University Home Quick Links ADP Employee Portal Ad Astra Campus Scheduling IT Services Portal Library Services MSDS Search Maintenance Requests – Schooldude Moodle Login Printing – Papercut Rave Text Alert System Student/Faculty/Staff Email TBN Writing Center Trine University Welcome If you have any technical issues with myPortal, please contact the Help Desk at 260.665.4275 or 877.236.7682 toll free. Course Catalog</td></info></div><div class='result'><tr><url><td>https://trine.edu/online/index.aspx</td></url><td><a href= 'https://trine.edu/online/index.aspx'><title-result></br>TrineOnline</td></title-result></a><td></br><info><td>Trine University - TrineOnline One University Avenue Angola, IN 46703</td></info></div><div class='result'><tr><url><td>https://trineonline.trine.edu/</td></url><td><a href= 'https://trineonline.trine.edu/'><title-result></br>Moodle</td></title-result></a><td></br><info><td>Trine University - TrineOnline One University Avenue Angola, IN 46703</td></info></div><div class='result'><tr><url><td>https://www.trine.edu</td></url><td><a href= 'https://www.trine.edu'><title-result></br>Trine University | Angola, IN - Engineering, Business</td></title-result></a><td></br><info><td>Trine University, formerly known as Tri-State University, is a private post-secondary institution located in Angola, Indiana. The school offers degrees in engineering, business, arts & sciences, educa</td></info></div><div class='result'><tr><url><td>https://www.trine.edu/academics/majors-degrees/index.aspx</td></url><td><a href= 'https://www.trine.edu/academics/majors-degrees/index.aspx'><title-result></br>Majors</td></title-result></a><td></br><info><td>*The ARC-PA has granted Accreditation-Provisional status to the Trine</td></info></div><div class='result'><tr><url><td>https://www.trine.edu/trine-strong/index.aspx</td></url><td><a href= 'https://www.trine.edu/trine-strong/index.aspx'><title-result></br>Trine Strong</td></title-result></a><td></br><info><td>Keep Trine Strong. We will continue to move forward with optimism and</td></info></div>      </div>
+	<head>
+		<meta charset="utf-8">
+		<title>Seek Results</title>
+	</head>
+	<body class="second">
+		<button id ="toggle" class="btn-toggle">light</button>
+		<div class="top-bar">
+        	<form method="GET" action="/search/"></form>
+            	<a href="/">
+                	<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
+              	</a>
+              	<input type="text" id="resultsInput" name="query" onkeyup="myFunction()" placeholder="Search Trine resources...">
+              	<div id="left">
+            		<input type="submit" id="search_button" class="btn" name="search" value="search">
+              	</div>
+          	</form>
+      	</div>
+      	<div class="results">
+        	<div class='result'>
+				<tr>
+					<url><td>https://myportal.trine.edu/ics</td></url>
+					<td><a href= 'https://myportal.trine.edu/ics'><title-result></br>My Portal</td></title-result></a>
+					<td></br><info><td>Home Admission TrineOnline Readmission Trine University Home Quick Links ADP Employee Portal Ad Astra Campus Scheduling IT Services Portal Library Services MSDS Search Maintenance Requests – Schooldude Moodle Login Printing – Papercut Rave Text Alert System Student/Faculty/Staff Email TBN Writing Center Trine University Welcome If you have any technical issues with myPortal, please contact the Help Desk at 260.665.4275 or 877.236.7682 toll free. Course Catalog</td></info>
+			</div>
+			<div class='result'>
+				<tr>
+					<url><td>https://trine.edu/online/index.aspx</td></url>
+					<td><a href= 'https://trine.edu/online/index.aspx'><title-result></br>TrineOnline</td></title-result></a>
+					<td></br><info><td>Trine University - TrineOnline One University Avenue Angola, IN 46703</td></info>
+			</div>
+			<div class='result'>
+				<tr>
+					<url><td>https://trineonline.trine.edu/</td></url>
+					<td><a href= 'https://trineonline.trine.edu/'><title-result></br>Moodle</td></title-result></a>
+					<td></br><info><td>Trine University - TrineOnline One University Avenue Angola, IN 46703</td></info>
+			</div>
+			<div class='result'>
+				<tr>
+					<url><td>https://www.trine.edu</td></url>
+					<td><a href= 'https://www.trine.edu'><title-result></br>Trine University | Angola, IN - Engineering, Business</td></title-result></a>
+					<td></br><info><td>Trine University, formerly known as Tri-State University, is a private post-secondary institution located in Angola, Indiana. The school offers degrees in engineering, business, arts & sciences, educa</td></info>
+			</div>
+			<div class='result'>
+				<tr>
+					<url><td>https://www.trine.edu/academics/majors-degrees/index.aspx</td></url>
+					<td><a href= 'https://www.trine.edu/academics/majors-degrees/index.aspx'><title-result></br>Majors</td></title-result></a>
+					<td></br><info><td>*The ARC-PA has granted Accreditation-Provisional status to the Trine</td></info>
+			</div>
+			<div class='result'>
+				<tr>
+					<url><td>https://www.trine.edu/trine-strong/index.aspx</td></url>
+					<td><a href= 'https://www.trine.edu/trine-strong/index.aspx'><title-result></br>Trine Strong</td></title-result></a>
+					<td></br><info><td>Keep Trine Strong. We will continue to move forward with optimism and</td></info>
+			</div>
+    	</div>
 
       <script>
           let root = document.documentElement;

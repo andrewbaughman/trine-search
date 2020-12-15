@@ -19,13 +19,20 @@ def search(request):
 def searchAlgorithm(query):
 	results = {
         'result1': {
-			'url': 'www.notgoogle.com',
+			'url': 'http://www.notgoogle.com',
+			'title': 'NotGoogle',
 			'description': 'This website is not google.',
 		},
         'result2': {
-			'url': 'www.alsonotgooel.com',
+			'url': 'http://www.alsonotgooel.com',
+			'title': 'AlsoNotGoogle',
 			'description': 'This website is also not google.',
 		}, 
+		'results3': {
+			'url': 'http://www.'+ query +'.com',
+			'title': query,
+			'description': query,
+		},
     }
 
 	return results
