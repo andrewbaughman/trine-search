@@ -17,22 +17,13 @@ def search(request):
 
 
 def searchAlgorithm(query):
-	results = {
-        'result1': {
+	results = []
+	for i in range(1,10):
+		result = {
 			'url': 'http://www.notgoogle.com',
 			'title': 'NotGoogle',
-			'description': 'This website is not google.',
-		},
-        'result2': {
-			'url': 'http://www.alsonotgooel.com',
-			'title': 'AlsoNotGoogle',
-			'description': 'This website is also not google.',
-		}, 
-		'results3': {
-			'url': 'http://www.'+ query +'.com',
-			'title': query,
-			'description': query,
-		},
-    }
+			'description': 'This website is not google. Your query was: ' + query,
+		}
+		results.append(result)
 
 	return results
