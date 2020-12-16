@@ -5,16 +5,9 @@ from django.http import JsonResponse
 def index(request):
     return render(request, 'home.html')
 
-def results(request):
-    return render(request, 'results.html')
-
-def search(request):
-    query = request.GET.get('query')
-    response = {
-        'results': searchAlgorithm(query),
-    }
-    return JsonResponse(response)
-
+def results(request, query):
+	results = searchAlgorithm(query)
+	return render(request, 'results.html', {'results': results})
 
 def searchAlgorithm(query):
 	results = []

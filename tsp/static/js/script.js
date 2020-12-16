@@ -1,9 +1,10 @@
 $(document).ready(function() {
     $('#search_button').click(function() {
-		search($('#resultsInput').val());
+		window.location = "/results/"+ $('.query').val() +"/";
     });
 });
 
+//No longer used, but left here as an example.
 function search(query){
     $.ajax({
         type: 'GET',
