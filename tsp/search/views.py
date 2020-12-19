@@ -20,13 +20,9 @@ def results(request, query):
 
 def searchAlgorithm(query):
 	results = []
-	for i in range(1,10):
-		result = {
-			'url': 'http://www.notgoogle.com',
-			'title': 'NotGoogle',
-			'description': 'This website is not google. Your query was: ' + query,
-		}
-		results.append(result)
+	webpages = page.objects.all()
+	for webpage in webpages:
+		results.append(model_to_dict(webpage))
 
 	return results
 
