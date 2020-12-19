@@ -32,17 +32,46 @@ def searchAlgorithm(query):
 
 class AddPage(View):
 	def post(self, request):
-		ret = {}
+		if request.POST.get('method') == 'is_duplicate':
+			ret = {}
 
-		url = request.POST.get('url')
-		title = request.POST.get('title')
-		description = request.POST.get('description')
-		
-		webpage = page.objects.create(url=url, title=title, description=description)
+			url = request.POST.get('url')
 
-		ret['page'] = model_to_dict(webpage)
+			ret['is_duplicate'] = False
 
-		return JsonResponse(ret)
+			webpages = page.objects.filter(url=url)
+			for webpage in webpages:
+				if webpage.url == url: 
+					ret['is_duplicate'] = True
+					return JsonResponse(ret)
+
+			return JsonResponse(ret)
+		elif request.POST.get('method') == 'add_page':	
+
+			ret = {}
+
+			url = request.POST.get('url')
+			title = request.POST.get('title')
+			description = request.POST.get('description')
+
+			webpage = page.objects.create(url=url, title=title, description=description)
+
+			ret['page'] = model_to_dict(webpage)
+
+			return JsonResponse(ret)
+		elif request.POST.get('method') == 'get_link':	
+			ret = {}
+			id = request.POST.get('id')
+			if str(id) == str(0):
+				print("First link")
+				webpage = page.objects.first()
+			else:
+				print("Known link")
+				webpage = page.objects.get(id=id)
+
+			ret['page'] = model_to_dict(webpage)
+
+			return JsonResponse(ret)
 
 
 
