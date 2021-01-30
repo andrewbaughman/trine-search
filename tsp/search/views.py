@@ -16,11 +16,55 @@ def results(request, query):
 	return render(request, 'results.html', {'results': results})
 
 def searchAlgorithm(query):
+	query = query.split(' ')
 	results = []
-	webpages = page.objects.all()
-	for webpage in webpages:
-		results.append(model_to_dict(webpage))
-
+	for object in query:
+		print(object)
+		temp_result_urls = []
+		temp_result1 = page.objects.filter(title__exact=object)
+		temp_result2 = page.objects.filter(title__iexact=object)
+		temp_result3 = page.objects.filter(title__contains=object)
+		temp_result4 = page.objects.filter(description__contains=object)
+		for res in temp_result1:
+			try:
+				print(res.title)
+				tempdata = model_to_dict(res)
+				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
+					temp_result_urls.append(tempdata['url'])
+					results.append(tempdata)
+			except Exception as e:
+				print('model to dict error: {}'.format(e))
+		for res in temp_result2:
+			try:
+				print(res.title)
+				tempdata = model_to_dict(res)
+				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
+					temp_result_urls.append(tempdata['url'])
+					results.append(tempdata)
+			except Exception as e:
+				print('model to dict error: {}'.format(e))		
+		for res in temp_result3:
+			try:
+				print(res.title)
+				tempdata = model_to_dict(res)
+				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
+					temp_result_urls.append(tempdata['url'])
+					results.append(tempdata)
+			except Exception as e:
+				print('model to dict error: {}'.format(e))		
+		for res in temp_result4:
+			try:
+				print(res.title)
+				tempdata = model_to_dict(res)
+				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
+					temp_result_urls.append(tempdata['url'])
+					results.append(tempdata)
+			except Exception as e:
+				print('model to dict error: {}'.format(e))
+	#webpages = page.objects.all()
+	#for webpage in webpages:
+	#	results.append(model_to_dict(webpage))
+	print(len(temp_result_urls))
 	return results
 
 class AddPage(View):
