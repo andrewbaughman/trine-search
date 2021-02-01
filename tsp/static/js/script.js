@@ -1,6 +1,10 @@
 $(document).ready(function() {
     $('#search_button').click(function() {
-		window.location = "/results/"+ $('.query').val() +"/";
+		if ($('.query').val() == '') {
+			window.location = "/";
+		} else {
+			window.location = "/results/"+ $('.query').val() +"/";
+		}
     });
 });
 
