@@ -8,6 +8,23 @@ $(document).ready(function() {
     });
 });
 
+$(document).keypress(function(event) {
+	var keycode = (event.keyCode ? event.keyCode : event.which);
+	if (keycode == '13') {
+		search($('.query').val());
+	}
+});
+
+
+function search(query) {
+	if (query == '') {
+		window.location = "/";
+	} else {
+		window.location = "/results/"+ query +"/";
+	}
+}
+
+
 //No longer used, but left here as an example.
 function search(query){
     $.ajax({
