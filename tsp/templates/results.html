@@ -23,14 +23,20 @@
           	</form>
       	</div>
       	<div class="results">
-			{% for result in results %}
-				<div class='result'>
-					<tr>
-						<url><td>{{ result.url }}</td></url>
-						<td><a href= "{{ result.url }}"><title-result></br>{{ result.title }}</td></title-result></a>
-						<td></br><info><td>{{ result.description }}</td></info>
-				</div>
-			{% endfor %}
+            {% if results %}
+                {% for result in results %}
+                    <div class='result'>
+                        <tr>
+                            <url><td>{{ result.url }}</td></url>
+                            <td><a href= "{{ result.url }}"><title-result></br>{{ result.title }}</td></title-result></a>
+                            <td></br><info><td>{{ result.description }}</td></info>
+                    </div>
+                {% endfor %}
+            {% else %}
+                    <div class='result'>
+                        No results found for "{{query}}". Please try again with different keywords.
+                    </div>
+            {% endif %}
     	</div>
 
       <script>

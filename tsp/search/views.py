@@ -13,7 +13,7 @@ def index(request):
 
 def results(request, query):
 	results = searchAlgorithm(query)
-	return render(request, 'results.html', {'results': results})
+	return render(request, 'results.html', {'query':query, 'results': results,})
 
 def searchAlgorithm(query):
 	query = query.split(' ')
