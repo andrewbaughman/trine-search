@@ -10,7 +10,6 @@
 		<title>Seek Results</title>
 	</head>
 	<body class="second">
-		<button id ="toggle" class="btn-toggle">light</button>
 		<div class="top-bar">
         	<form method="GET" action="/search/"></form>
             	<a href="/">
@@ -20,7 +19,8 @@
               	<div id="left">
             		<input type="submit" id="search_button" class="btn" name="search" value="search">
               	</div>
-          	</form>
+			  </form>
+			  <button id ="toggle" class="btn-toggle">light</button>
       	</div>
       	<div class="results">
 			{% for result in results %}
