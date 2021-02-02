@@ -16,6 +16,6 @@ function search(query) {
 	if (query == '') {
 		window.location = "/";
 	} else {
-		window.location = "/results/"+ encodeURIComponent(query) +"/";
+		window.location = "/results/?query="+ encodeURIComponent(query);
 	}
 }

@@ -7,7 +7,7 @@ from search import views
 urlpatterns = [
 	path('', views.index, name='index'),
 	path('search/admin/', admin.site.urls),
-	path('results/<query>/', views.results, name='results'),
+	path('results/', views.results, name='results'),
 	path('api/', views.PageList.as_view()),
 	path('api/<int:pk>/', views.PageDetail.as_view()),
 	path('api-auth/', include('rest_framework.urls')),
