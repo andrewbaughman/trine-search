@@ -11,7 +11,8 @@ from django.views import View
 def index(request):
 	return render(request, 'home.html')
 
-def results(request, query):
+def results(request):
+	query = request.GET.get('query')
 	results = searchAlgorithm(query)
 	return render(request, 'results.html', {'query':query, 'results': results,})
 
