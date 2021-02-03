@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 
 def is_duplicate_link(url):
-	host = 'http://127.0.0.1:8001/add_page/'
+	host = 'http://127.0.0.1:8000/add_page/'
 	url_dict = {}
 	url_dict['url'] = url
 	url_dict['method'] = 'is_duplicate'
@@ -20,15 +20,18 @@ def get_page(url):
 		if href == None:
 			continue
 		else:
-			if href[0:8] == 'http://' or href[0:8] == 'https://':
-				print("Is duplicate: " + str(is_duplicate_link(href)))
+			if href[0:7] == 'http://' or href[0:8] == 'https://':
 				# Check to see if the link already exists
-				if is_duplicate_link(href):
-					continue
-				else:
-					host = 'http://127.0.0.1:8001/add_page/'
-					parsed_page = {'url': href, 'title': "", 'description': "", 'method': 'add_page'}
-					r = requests.post(url=host, data=parsed_page)
+				if ("trine" in href):
+					host = 'http://127.0.0.1:8000/add_page/'
+					parsed_page = get_page_info(href)
+					save_page_to_database(parsed_page)
+			elif href[0] == '/':
+				# Check to see if the link already exists
+				if ("trine" in url):
+					host = 'http://127.0.0.1:8000/add_page/'
+					parsed_page = get_page_info(url + href[0:])
+					save_page_to_database(parsed_page)
 					
 
 def get_page_info(url):
@@ -37,36 +40,33 @@ def get_page_info(url):
 	page = requests.get(url)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	
-	title = soup.find('title').get_text()
-	description = soup.find('p').get_text()
+	if soup.find('title'):
+		title = soup.find('title').get_text()
+		parsed_page['title'] = title
 
-	print("Title: " + title)
-	print("Description: " + description)
-	#print(soup)
+	if soup.find('p'):
+		description = soup.find('p').get_text()
+		parsed_page['description'] = description
 
 	parsed_page['url'] = url
-	parsed_page['title'] = title
-	parsed_page['description'] = description
-
+	
 	return parsed_page
 
 
 def save_page_to_database(parsed_page):
-	host = 'http://127.0.0.1:8001/add_page/'
-	parsed_page['method'] = 'add_page'
-	r = requests.post(url=host, data=parsed_page)
-	if r.json()['page']['url'] == parsed_page['url']:
+	host = 'http://127.0.0.1:8000/add_page/'
+	if is_duplicate_link(parsed_page['url']) == False:
+		parsed_page['method'] = 'add_page'
+		r = requests.post(url=host, data=parsed_page)
 		print("Post successful")
 	
 i = 0
-while i < 20:
-	host = 'http://127.0.0.1:8001/add_page/'
+while i < 3:
+	host = 'http://127.0.0.1:8000/add_page/'
 	r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
 	link = r.json()['page']['url']
 	get_page(link)
 	parsed_page = get_page_info(link)
-	save_page_to_database(parsed_page)
-	parsed_page = get_page_info(link)
-	save_page_to_database(parsed_page)
 	i = r.json()['page']['id'] + 1
 	print(i)
+
