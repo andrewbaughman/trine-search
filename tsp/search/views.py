@@ -18,13 +18,13 @@ def results(request, query):
 def searchAlgorithm(query):
 	query = query.split(' ')
 	results = []
-	for object in query:
-		print(object)
+	for word in query:
+		print(word)
 		temp_result_urls = []
-		temp_result1 = page.objects.filter(title__exact=object)
-		temp_result2 = page.objects.filter(title__iexact=object)
-		temp_result3 = page.objects.filter(title__contains=object)
-		temp_result4 = page.objects.filter(description__contains=object)
+		temp_result1 = page.objects.filter(title__exact=word)
+		temp_result2 = page.objects.filter(title__iexact=word)
+		temp_result3 = page.objects.filter(title__contains=word)
+		temp_result4 = page.objects.filter(description__contains=word)
 		for res in temp_result1:
 			try:
 				print(res.title)
