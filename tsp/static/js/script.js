@@ -1,8 +1,11 @@
 $(document).ready(function() {
     $('#search_button').click(function() {
 		window.location = "/results/"+ $('.query').val() +"/";
-    });
+    });    
 });
+
+
+
 
 //No longer used, but left here as an example.
 function search(query){
