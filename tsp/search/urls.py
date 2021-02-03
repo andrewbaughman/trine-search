@@ -10,6 +10,8 @@ urlpatterns = [
 	path('results/<str:query>/', views.results, name='results'),
 	path('api/', views.PageList.as_view()),
 	path('api/<int:pk>/', views.PageDetail.as_view()),
+	path('users/', views.UserList.as_view()),
+	path('users/<int:pk>/', views.UserDetail.as_view()),
 	path('api-auth/', include('rest_framework.urls')),
 	path('add_page/', views.AddPage.as_view()),
 ]
