@@ -45,7 +45,8 @@ url {
 
 .results {
     width: 60em;
-    margin-left: 3em;
+	margin-left: 3em;
+	margin-top: 7em;
 }
 
 title-result {
@@ -98,7 +99,12 @@ info {
 
 .top-bar {
     background-color: var(--main-bg-color);
-    border-bottom: solid 1px var(--info-text);
+	border-bottom: solid 1px var(--info-text);
+	position: fixed;
+	overflow: hidden;
+	top: 0;
+	width: 100%;
+	z-index: 3;
 }
 
 #center {
