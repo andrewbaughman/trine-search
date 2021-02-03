@@ -25,37 +25,37 @@ def searchAlgorithm(query):
 		temp_result2 = page.objects.filter(title__iexact=word)
 		temp_result3 = page.objects.filter(title__contains=word)
 		temp_result4 = page.objects.filter(description__contains=word)
-		for res in temp_result1:
+		for result in temp_result1:
 			try:
-				print(res.title)
-				tempdata = model_to_dict(res)
+				print(result.title)
+				tempdata = model_to_dict(result)
 				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
 					temp_result_urls.append(tempdata['url'])
 					results.append(tempdata)
 			except Exception as e:
 				print('model to dict error: {}'.format(e))
-		for res in temp_result2:
+		for result in temp_result2:
 			try:
-				print(res.title)
-				tempdata = model_to_dict(res)
+				print(result.title)
+				tempdata = model_to_dict(result)
 				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
 					temp_result_urls.append(tempdata['url'])
 					results.append(tempdata)
 			except Exception as e:
 				print('model to dict error: {}'.format(e))		
-		for res in temp_result3:
+		for result in temp_result3:
 			try:
-				print(res.title)
-				tempdata = model_to_dict(res)
+				print(result.title)
+				tempdata = model_to_dict(result)
 				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
 					temp_result_urls.append(tempdata['url'])
 					results.append(tempdata)
 			except Exception as e:
 				print('model to dict error: {}'.format(e))		
-		for res in temp_result4:
+		for result in temp_result4:
 			try:
-				print(res.title)
-				tempdata = model_to_dict(res)
+				print(result.title)
+				tempdata = model_to_dict(result)
 				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
 					temp_result_urls.append(tempdata['url'])
 					results.append(tempdata)
