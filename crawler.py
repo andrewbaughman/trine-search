@@ -2,6 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+inclusion = {"trine", "Trine"}
+
+def useful_url(url):
+	for i in inclusion:
+		if i in url:
+			return True
+	return False
+
 def is_duplicate_link(url):
 	host = 'http://127.0.0.1:8000/add_page/'
 	url_dict = {}
@@ -22,16 +30,15 @@ def get_page(url):
 		else:
 			if href[0:7] == 'http://' or href[0:8] == 'https://':
 				# ensure that page is useful
-				if ("trine" in href):
+				if (useful_url(href)):
 					host = 'http://127.0.0.1:8000/add_page/'
 					parsed_page = get_page_info(href)
 					save_page_to_database(parsed_page)
 			# search for subpage of url that meets the criteria
-			elif href[0] == '/' and "trine" in url:
-				if ("trine" in url):
-					host = 'http://127.0.0.1:8000/add_page/'
-					parsed_page = get_page_info(url + href[0:])
-					save_page_to_database(parsed_page)
+			elif (href[0] == '/') and (useful_url(url)):
+				host = 'http://127.0.0.1:8000/add_page/'
+				parsed_page = get_page_info(url + href[1:])
+				save_page_to_database(parsed_page)
 					
 
 def get_page_info(url):
@@ -62,12 +69,13 @@ def save_page_to_database(parsed_page):
 		print("Post successful")
 	
 i = 0
+parsed_page_seed = get_page_info('https://trine.edu/')
+save_page_to_database(parsed_page_seed)
 while i < 3:
 	host = 'http://127.0.0.1:8000/add_page/'
 	r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
 	link = r.json()['page']['url']
 	get_page(link)
-	parsed_page = get_page_info(link)
 	i = r.json()['page']['id'] + 1
 	print(i)
 
