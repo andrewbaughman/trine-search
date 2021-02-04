@@ -21,13 +21,13 @@ def get_page(url):
 			continue
 		else:
 			if href[0:7] == 'http://' or href[0:8] == 'https://':
-				# Check to see if the link already exists
+				# ensure that page is useful
 				if ("trine" in href):
 					host = 'http://127.0.0.1:8000/add_page/'
 					parsed_page = get_page_info(href)
 					save_page_to_database(parsed_page)
-			elif href[0] == '/':
-				# Check to see if the link already exists
+			# search for subpage of url that meets the criteria
+			elif href[0] == '/' and "trine" in url:
 				if ("trine" in url):
 					host = 'http://127.0.0.1:8000/add_page/'
 					parsed_page = get_page_info(url + href[0:])
@@ -55,6 +55,7 @@ def get_page_info(url):
 
 def save_page_to_database(parsed_page):
 	host = 'http://127.0.0.1:8000/add_page/'
+	# check for duplicate before sending
 	if is_duplicate_link(parsed_page['url']) == False:
 		parsed_page['method'] = 'add_page'
 		r = requests.post(url=host, data=parsed_page)
