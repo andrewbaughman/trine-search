@@ -9,8 +9,8 @@ from rest_framework import generics
 from .models import page
 from .serializers import PageSerializer, UserSerializer
 from django.forms.models import model_to_dict
-import networkx
-import numpy
+import networkx as nx
+import socket
 
 from django.views import View
 
@@ -75,32 +75,48 @@ def searchAlgorithm(query):
 	return results
 
 def rankingAlgorithm(query):
-	##adds directed edges in the graph
-	def add_edges(graph):
-		for each in graph.nodes():
-			for eachone in graph.nodes():
-				if (each!=eachone):
-					graph.add_edge(each, eachone)
-				else:
-					continue
-		return graph
-	##Sorting of Nodes
-	def node_sort(graph, pts):
-		total = numpy.array(pts)
-		total = numpy.argsort(-total)
-		return total
-	##directed graph with n nodes
-	graph = networkx.DiGraph()
-	n = 10 ##need to figure out where to get number of nodes based on a search##
-	graph.add_nodes_from(range(n))
-	##page_dict as dictionary of tuples
-	page_dict = networkx.pagerank(graph)
-	for q in range(len(page_dict)):
-		if page_dict[q] == query:
-			page_sort = sorted(page_dict.items(), key=lambda x: x[1], reverse=True)
-			return page_sort
-	for i in page_sort:
-		print(i[0], end="")
+	G = nx.Graph()
+	entities = [] ## need to acquire from the db, ever changing 
+
+	## using sockets (example) ##
+	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    	pass
+	##                         ##
+
+	def update_graph(entities):
+		for entity in entities:
+			if (entity not in G):
+				G.add_node(entity)
+		adjust_edges(entities)	
+
+	def adjust_edges(entities):
+		for entity in entities:
+			for other_entity in entities:
+				if other_entity != entity:
+					if (entity in G.neighbors(other_entity)):
+						G[entity][other_entity]['weight'] += 1
+					else:
+						G.add_edge(entity, other_entity)
+						G[entity][other_entity]['weight'] = 1
+
+	def load_graph():
+		G = nx.read_gml("graph")
+
+	def save_graph():
+		nx.write_gml(G, "graph")
+
+	def retrieve_topic(query):
+		topic = {}
+		for word in query:
+			if G.has_node(word):
+				topic[word] = 100
+				neighbors = G.neighbors(word)
+				for neighbor in neighbors:
+					if neighbor in topic:
+						topic[neighbor] += G[word][neighbor]['weight']
+					else:
+						topic[neighbor] = G[word][neighbor]['weight']
+		return topic
 
 
 class AddPage(View):
