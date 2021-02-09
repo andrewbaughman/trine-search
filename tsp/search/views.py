@@ -81,8 +81,8 @@ class AddPage(View):
 			url = request.POST.get('url')
 			title = request.POST.get('title')
 			description = request.POST.get('description')
-
-			webpage = page.objects.create(url=url, title=title, description=description)
+			link_object = links.objects.get(destination=url)
+			webpage = page.objects.create(url=link_object, title=title, description=description)
 
 			ret['page'] = model_to_dict(webpage)
 

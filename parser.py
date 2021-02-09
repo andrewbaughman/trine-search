@@ -27,9 +27,10 @@ def save_page_to_database(parsed_page):
 	r = requests.post(url=host, data=parsed_page)
 	print("Post successful")
 	
-i = 0
+x = input("How many links do you want to parse?: ")
 host = 'http://127.0.0.1:8000/add_page/'
-while i < 50:
+i = 0
+while i < int(x):
     r = requests.post(url='http://127.0.0.1:8000/add_link/', data={'id': i, 'method': 'get_link'})
     link = r.json()['links']['destination']
     print("now entering: " + link)

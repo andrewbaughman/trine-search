@@ -4,7 +4,7 @@ from django.db import models
 
 class page(models.Model):
 	id = models.AutoField(primary_key=True)
-	url = models.URLField(max_length=200)
+	url = models.ForeignKey('links', on_delete=models.CASCADE, to_field="destination", db_column="url")
 	title = models.CharField(max_length=50)
 	description = models.TextField(max_length=400)
 
@@ -24,6 +24,6 @@ class links(models.Model):
 
 
 class page_results(models.Model):
-	url = models.ForeignKey('links', on_delete=models.CASCADE, to_field="destination", db_column="destination")
+	url = models.ForeignKey('links', on_delete=models.CASCADE, to_field="destination", db_column="url")
 	title = models.CharField(max_length=50)
 	description = models.CharField(max_length=250)
