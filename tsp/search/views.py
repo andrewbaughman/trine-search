@@ -6,8 +6,8 @@ from .models import page
 from django.contrib.auth.models import User
 
 from rest_framework import generics
-from .models import page
-from .serializers import PageSerializer, UserSerializer
+from .models import *
+from .serializers import *
 from django.forms.models import model_to_dict
 
 from django.views import View
@@ -135,3 +135,38 @@ class PageDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PageSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
+class LinksList(generics.ListCreateAPIView):
+	queryset = links.objects.all()
+	serializer_class = LinksSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class LinksDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = links.objects.all()
+	serializer_class = LinksSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class KeywordsList(generics.ListCreateAPIView):
+	queryset = keywords.objects.all()
+	serializer_class = KeywordsSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class KeywordsDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = keywords.objects.all()
+	serializer_class = KeywordsSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class PageResultsList(generics.ListCreateAPIView):
+	queryset = page_results.objects.all()
+	serializer_class = PageResultsSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class PageResultsDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = page_results.objects.all()
+	serializer_class = PageResultsSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
