@@ -74,21 +74,7 @@ def searchAlgorithm(query):
 
 class AddPage(View):
 	def post(self, request):
-		if request.POST.get('method') == 'is_duplicate':
-			ret = {}
-
-			url = request.POST.get('url')
-
-			ret['is_duplicate'] = False
-
-			webpages = page_results.objects.filter(url=url)
-			for webpage in webpages:
-				if webpage.url == url: 
-					ret['is_duplicate'] = True
-					return JsonResponse(ret)
-
-			return JsonResponse(ret)
-		elif request.POST.get('method') == 'add_page':	
+		if request.POST.get('method') == 'add_page':	
 
 			ret = {}
 
@@ -96,11 +82,12 @@ class AddPage(View):
 			title = request.POST.get('title')
 			description = request.POST.get('description')
 
-			webpage = page_results.objects.create(url=url, title=title, description=description)
+			webpage = page.objects.create(url=url, title=title, description=description)
 
-			ret['page_results'] = model_to_dict(webpage)
+			ret['page'] = model_to_dict(webpage)
 
 			return JsonResponse(ret)
+
 		elif request.POST.get('method') == 'get_link':	
 			ret = {}
 			id = request.POST.get('id')
@@ -111,7 +98,7 @@ class AddPage(View):
 				print("Known link")
 				webpage = links.objects.get(id=id)
 
-			ret['links'] = model_to_dict(webpage)
+			ret['page'] = model_to_dict(webpage)
 
 			return JsonResponse(ret)
 
@@ -121,8 +108,8 @@ class LinkController(View):
 				ret = {}
 				destination = request.POST.get('destination')
 				ret['is_duplicate_link'] = False
-				links = links.objects.filter(destination=destination)
-				for link in links:
+				destination_links = links.objects.filter(destination=destination)
+				for link in destination_links:
 					if link.destination == destination: 
 						ret['is_duplicate_link'] = True
 						return JsonResponse(ret)
@@ -136,7 +123,7 @@ class LinkController(View):
 				source = request.POST.get('source')
 				isTrine = request.POST.get('isTrine')
 
-				link_object = links.objects.create(destination=destination, source=source, isTrine=description, visited = False)
+				link_object = links.objects.create(destination=destination, source=source, isTrine=isTrine, visited = False)
 
 				ret['links'] = model_to_dict(link_object)
 
