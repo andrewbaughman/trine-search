@@ -9,6 +9,8 @@ from rest_framework import generics
 from .models import page
 from .serializers import PageSerializer, UserSerializer
 from django.forms.models import model_to_dict
+import networkx
+import numpy
 
 from django.views import View
 
@@ -71,6 +73,35 @@ def searchAlgorithm(query):
 	#	results.append(model_to_dict(webpage))
 	print(len(temp_result_urls))
 	return results
+
+def rankingAlgorithm(query):
+	##adds directed edges in the graph
+	def add_edges(graph):
+		for each in graph.nodes():
+			for eachone in graph.nodes():
+				if (each!=eachone):
+					graph.add_edge(each, eachone)
+				else:
+					continue
+		return graph
+	##Sorting of Nodes
+	def node_sort(graph, pts):
+		total = numpy.array(pts)
+		total = numpy.argsort(-total)
+		return total
+	##directed graph with n nodes
+	graph = networkx.DiGraph()
+	n = 10 ##need to figure out where to get number of nodes based on a search##
+	graph.add_nodes_from(range(n))
+	##page_dict as dictionary of tuples
+	page_dict = networkx.pagerank(graph)
+	for q in range(len(page_dict)):
+		if page_dict[q] == query:
+			page_sort = sorted(page_dict.items(), key=lambda x: x[1], reverse=True)
+			return page_sort
+	for i in page_sort:
+		print(i[0], end="")
+
 
 class AddPage(View):
 	def post(self, request):
