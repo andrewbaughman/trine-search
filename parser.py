@@ -2,6 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+def is_duplicate_page(url):
+	host = 'http://127.0.0.1:8000/add_page/'
+	parsed_page = {}
+	parsed_page['url'] = url
+	parsed_page['method'] = 'is_duplicate_page'
+	r = requests.post(url=host, data=parsed_page)
+	return r.json()['is_duplicate_page']
+
 def get_page_info(url):
 	parsed_page = {}
 	
@@ -30,12 +38,16 @@ def save_page_to_database(parsed_page):
 x = input("How many links do you want to parse?: ")
 host = 'http://127.0.0.1:8000/add_page/'
 i = 0
-while i < int(x):
-    r = requests.post(url='http://127.0.0.1:8000/add_link/', data={'id': i, 'method': 'get_link'})
-    link = r.json()['links']['destination']
-    print("now entering: " + link)
-    parsed_page = get_page_info(link)
-    if parsed_page:
-        save_page_to_database(parsed_page)
-    i = r.json()['links']['id'] + 1
-    print(i)
+while i <= int(x):
+	r = requests.post(url='http://127.0.0.1:8000/add_link/', data={'id': i, 'method': 'get_link'})
+	link = r.json()['links']['destination']
+	if is_duplicate_page(link):
+		print("" + link + " is a duplicate page. Skipping...")
+		x = int(x) + 1
+	else:
+		print("now entering: " + link)
+		parsed_page = get_page_info(link)
+		if parsed_page:
+			save_page_to_database(parsed_page)
+	i = r.json()['links']['id'] + 1
+	print(i)

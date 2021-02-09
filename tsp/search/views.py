@@ -88,19 +88,17 @@ class AddPage(View):
 
 			return JsonResponse(ret)
 
-		elif request.POST.get('method') == 'get_link':	
-			ret = {}
-			id = request.POST.get('id')
-			if str(id) == str(0):
-				print("First link")
-				webpage = links.objects.first()
-			else:
-				print("Known link")
-				webpage = links.objects.get(id=id)
-
-			ret['page'] = model_to_dict(webpage)
-
-			return JsonResponse(ret)
+		elif request.POST.get('method') == 'is_duplicate_page':
+				ret = {}
+				url = request.POST.get('url')
+				link_object = links.objects.get(destination=url)
+				ret['is_duplicate_page'] = False
+				page_urls = page.objects.filter(url=url)
+				for link in page_urls:
+					if link.url == link_object: 
+						ret['is_duplicate_page'] = True
+						return JsonResponse(ret)
+				return JsonResponse(ret)
 
 class LinkController(View):
 	def post(self, request):
