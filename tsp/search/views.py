@@ -80,8 +80,8 @@ def rankingAlgorithm(query):
 
 	## using sockets (example) ##
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    	pass
-	##                         ##
+		pass
+	##						 ##
 
 	def update_graph(entities):
 		for entity in entities:
@@ -161,6 +161,12 @@ class AddPage(View):
 			ret['page'] = model_to_dict(webpage)
 
 			return JsonResponse(ret)
+		elif request.POST.get('method') == 'get_keywords':
+			ret = {}
+			url = request.POST.get('url')
+			link = links.objects.filter(url=url)
+			keywords = keywords.objects.filter(url=url)
+
 
 class UserList(generics.ListAPIView):
 	queryset = User.objects.all()
