@@ -16,7 +16,8 @@ class keywords(models.Model):
 
 
 class links(models.Model):
-	destination = models.URLField(max_length=200, primary_key=True)
+	id = models.AutoField(primary_key=True)
+	destination = models.URLField(max_length=200)
 	source = models.URLField(max_length=200)
 	isTrine = models.BooleanField()
 	visited = models.BooleanField()
