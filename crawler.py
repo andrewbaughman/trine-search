@@ -4,19 +4,19 @@ import json
 
 inclusion = {"trine", "Trine"}
 
-def useful_url(url):
+def trine_url(url):
 	for i in inclusion:
 		if i in url:
 			return True
 	return False
 
-def is_duplicate_link(url):
-	host = 'http://127.0.0.1:8000/add_page/'
-	url_dict = {}
-	url_dict['url'] = url
-	url_dict['method'] = 'is_duplicate'
-	r = requests.post(url=host, data=url_dict)
-	return r.json()['is_duplicate']
+def is_duplicate_link(link):
+	host = 'http://127.0.0.1:8000/add_link/'
+	link_object = {}
+	link_object['destination'] = link
+	link_object['method'] = 'is_duplicate_link'
+	r = requests.post(url=host, data=link_object)
+	return r.json()['is_duplicate_link']
 
 def get_page(url):
 	print("Now entering " + url)
@@ -29,16 +29,16 @@ def get_page(url):
 			continue
 		else:
 			if href[0:7] == 'http://' or href[0:8] == 'https://':
-				# ensure that page is useful
-				if (useful_url(href)):
-					host = 'http://127.0.0.1:8000/add_page/'
-					parsed_page = get_page_info(href)
+				host = 'http://127.0.0.1:8000/add_page/'
+				parsed_page = get_page_info(href)
+				if (parsed_page):
 					save_page_to_database(parsed_page)
 			# search for subpage of url that meets the criteria
-			elif (href[0] == '/') and (useful_url(url)):
+			elif (href[0] == '/'):
 				host = 'http://127.0.0.1:8000/add_page/'
 				parsed_page = get_page_info(url + href[1:])
-				save_page_to_database(parsed_page)
+				if (parsed_page):
+					save_page_to_database(parsed_page)
 					
 
 def get_page_info(url):
@@ -50,6 +50,8 @@ def get_page_info(url):
 	if soup.find('title'):
 		title = soup.find('title').get_text()
 		parsed_page['title'] = title
+	else:
+		return False
 
 	if soup.find('p'):
 		description = soup.find('p').get_text()
@@ -67,15 +69,35 @@ def save_page_to_database(parsed_page):
 		parsed_page['method'] = 'add_page'
 		r = requests.post(url=host, data=parsed_page)
 		print("Post successful")
-	
+
+def save_link_to_database(link_object):
+	host = 'http://127.0.0.1:8000/add_link/'
+	# check for duplicate before sending
+	if is_duplicate_link(link_object['destination']) == False:
+		link_object['method'] = 'add_link'
+		r = requests.post(url=host, data=link_object)
+		print("Link post successful")
+		input("Happy?")
+
+# get inputs from user
+link = ""
+while not (link[0:7] == 'http://' or link[0:8] == 'https://'):
+	link = input("provide seed link:")
+	if not link[0] == 'h':
+		print("NOTE: provide in http:// or https:// form")
+
+x = input("provide an integer for the number of iterations:")
+int(x)
+
+link_object = {'destination': link, 'source': "", 'isTrine': trine_url(link), 'visited': False, 'method': 'add_link'}
+save_link_to_database(link_object)
+
 i = 0
-parsed_page_seed = get_page_info('https://trine.edu/')
-save_page_to_database(parsed_page_seed)
 while i < 3:
 	host = 'http://127.0.0.1:8000/add_page/'
 	r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
-	link = r.json()['page']['url']
+	link = r.json()['page_results']['url']
 	get_page(link)
-	i = r.json()['page']['id'] + 1
+	i = r.json()['page_results']['id'] + 1
 	print(i)
 
