@@ -14,15 +14,17 @@ import socket
 
 from django.views import View
 
+
+
 def index(request):
 	return render(request, 'home.html')
 
 def results(request):
 	query = request.GET.get('query')
-	results = searchAlgorithm(query)
+	results = searchAlgorithm2(query)
 	return render(request, 'results.html', {'query':query, 'results': results,})
 
-def searchAlgorithm(query):
+def searchAlgorithm1(query):
 	query = query.split(' ')
 	results = []
 	for word in query:
@@ -74,50 +76,19 @@ def searchAlgorithm(query):
 	print(len(temp_result_urls))
 	return results
 
-def rankingAlgorithm(query):
-	G = nx.Graph()
-	entities = [] ## need to acquire from the db, ever changing 
+def searchAlgorithm2(query):
+	query = query.split(' ')
+	HOST = '127.0.0.2'
+	PORT = 65432
 
-	## using sockets (example) ##
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		pass
-	##						 ##
+		s.connect((HOST, PORT))
+		message = "get_ranked_list, " + str(query)
+		print(message)
+		s.sendall(message.encode("utf-8"))
+		data = s.recv(1024).decode("utf-8")
 
-	def update_graph(entities):
-		for entity in entities:
-			if (entity not in G):
-				G.add_node(entity)
-		adjust_edges(entities)	
-
-	def adjust_edges(entities):
-		for entity in entities:
-			for other_entity in entities:
-				if other_entity != entity:
-					if (entity in G.neighbors(other_entity)):
-						G[entity][other_entity]['weight'] += 1
-					else:
-						G.add_edge(entity, other_entity)
-						G[entity][other_entity]['weight'] = 1
-
-	def load_graph():
-		G = nx.read_gml("graph")
-
-	def save_graph():
-		nx.write_gml(G, "graph")
-
-	def retrieve_topic(query):
-		topic = {}
-		for word in query:
-			if G.has_node(word):
-				topic[word] = 100
-				neighbors = G.neighbors(word)
-				for neighbor in neighbors:
-					if neighbor in topic:
-						topic[neighbor] += G[word][neighbor]['weight']
-					else:
-						topic[neighbor] = G[word][neighbor]['weight']
-		return topic
-
+		print(data)
 
 class AddPage(View):
 	def post(self, request):
@@ -164,8 +135,18 @@ class AddPage(View):
 		elif request.POST.get('method') == 'get_keywords':
 			ret = {}
 			url = request.POST.get('url')
-			link = links.objects.filter(url=url)
-			keywords = keywords.objects.filter(url=url)
+			try:
+				print(url)
+				link_object = links.objects.get(destination=url)
+				print(link_object)
+				print(keywords.objects.filter(url=link_object.id))
+		
+				ret['keyword_list'] = entities
+			
+			except:
+				ret['error'] = "No link in db"
+			
+			return JsonResponse(ret)
 
 
 class UserList(generics.ListAPIView):
