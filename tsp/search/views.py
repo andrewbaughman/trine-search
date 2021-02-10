@@ -92,62 +92,87 @@ def searchAlgorithm2(query):
 
 class AddPage(View):
 	def post(self, request):
-		if request.POST.get('method') == 'is_duplicate':
-			ret = {}
-
-			url = request.POST.get('url')
-
-			ret['is_duplicate'] = False
-
-			webpages = page.objects.filter(url=url)
-			for webpage in webpages:
-				if webpage.url == url: 
-					ret['is_duplicate'] = True
-					return JsonResponse(ret)
-
-			return JsonResponse(ret)
-		elif request.POST.get('method') == 'add_page':	
+		if request.POST.get('method') == 'add_page':	
 
 			ret = {}
 
 			url = request.POST.get('url')
 			title = request.POST.get('title')
 			description = request.POST.get('description')
-
-			webpage = page.objects.create(url=url, title=title, description=description)
-
-			ret['page'] = model_to_dict(webpage)
-
-			return JsonResponse(ret)
-		elif request.POST.get('method') == 'get_link':	
-			ret = {}
-			id = request.POST.get('id')
-			if str(id) == str(0):
-				print("First link")
-				webpage = page.objects.first()
-			else:
-				print("Known link")
-				webpage = page.objects.get(id=id)
+			link_object = links.objects.get(destination=url)
+			webpage = page.objects.create(url=link_object, title=title, description=description)
 
 			ret['page'] = model_to_dict(webpage)
 
 			return JsonResponse(ret)
-		elif request.POST.get('method') == 'get_keywords':
-			ret = {}
-			url = request.POST.get('url')
-			try:
-				print(url)
+
+		elif request.POST.get('method') == 'is_duplicate_page':
+				ret = {}
+				url = request.POST.get('url')
 				link_object = links.objects.get(destination=url)
-				print(link_object)
-				print(keywords.objects.filter(url=link_object.id))
-		
-				ret['keyword_list'] = entities
-			
-			except:
-				ret['error'] = "No link in db"
-			
-			return JsonResponse(ret)
+				ret['is_duplicate_page'] = False
+				page_urls = page.objects.filter(url=url)
+				for link in page_urls:
+					if link.url == link_object: 
+						ret['is_duplicate_page'] = True
+						return JsonResponse(ret)
+				return JsonResponse(ret)
 
+class LinkController(View):
+	def post(self, request):
+			if request.POST.get('method') == 'is_duplicate_link':
+				ret = {}
+				destination = request.POST.get('destination')
+				ret['is_duplicate_link'] = False
+				destination_links = links.objects.filter(destination=destination)
+				for link in destination_links:
+					if link.destination == destination: 
+						ret['is_duplicate_link'] = True
+						return JsonResponse(ret)
+				return JsonResponse(ret)
+
+			elif request.POST.get('method') == 'add_link':	
+
+				ret = {}
+
+				destination = request.POST.get('destination')
+				source = request.POST.get('source')
+				isTrine = request.POST.get('isTrine')
+
+				link_object = links.objects.create(destination=destination, source=source, isTrine=isTrine, visited = False)
+
+				ret['links'] = model_to_dict(link_object)
+
+				return JsonResponse(ret)
+			elif request.POST.get('method') == 'get_keywords':
+				ret = {}
+				url = request.POST.get('url')
+				try:
+					print(url)
+					link_object = links.objects.get(destination=url)
+					print(link_object)
+					print(keywords.objects.filter(url=link_object.id))
+
+					ret['keyword_list'] = entities
+
+				except:
+					ret['error'] = "No link in db"
+
+				return JsonResponse(ret)
+
+			elif request.POST.get('method') == 'get_link':	
+				ret = {}
+				id = request.POST.get('id')
+				if str(id) == str(0):
+					print("First link")
+					link_object = links.objects.first()
+				else:
+					print("Known link")
+					link_object = links.objects.get(id=id)
+
+				ret['links'] = model_to_dict(link_object)
+
+				return JsonResponse(ret)
 
 class UserList(generics.ListAPIView):
 	queryset = User.objects.all()
