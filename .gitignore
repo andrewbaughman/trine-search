@@ -1,3 +1,14 @@
 *.pyc
 *.py[co]
 __pycache__
+tsp/search/__pycache__/__init__.cpython-38.pyc
+tsp/search/__pycache__/admin.cpython-38.pyc
+tsp/search/__pycache__/apps.cpython-38.pyc
+tsp/search/__pycache__/urls.cpython-38.pyc
+tsp/search/__pycache__/views.cpython-38.pyc
+tsp/search/migrations/__pycache__/__init__.cpython-38.pyc
+tsp/tsp/__pycache__/__init__.cpython-38.pyc
+tsp/tsp/__pycache__/settings.cpython-38.pyc
+tsp/tsp/__pycache__/wsgi.cpython-38.pyc
+tsp/tsp/__pycache__/urls.cpython-38.pyc
+tsp/search/__pycache__/models.cpython-38.pyc
