@@ -4,16 +4,6 @@ import json
 
 inclusion = {"trine", "Trine"}
 
-# from https://www.geeksforgeeks.org/python-ways-to-find-nth-occurrence-of-substring-in-a-string/
-def loc_third_slash(link):
-	occurrence = 3
-	inilist = [i for i in range(0, len(link)) 
-            if link[i:].startswith('/')] 
-	if len(inilist)>= 3:
-		return inilist[occurrence-1]
-	else: 
-		return False
-
 def trine_url(url):
 	for i in inclusion:
 		if i in url:
@@ -37,7 +27,7 @@ def get_page_of_links(url):
 		href = link.get('href')
 		if href == None:
 			continue
-		elif href:
+		else:
 			if href[0:7] == 'http://' or href[0:8] == 'https://':
 				host = 'http://127.0.0.1:8000/add_link/'
 				link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False, 'method': 'add_link'}
@@ -45,9 +35,10 @@ def get_page_of_links(url):
 			# search for subpage of url that meets the criteria
 			elif (href[0] == '/'):
 				host = 'http://127.0.0.1:8000/add_link/'
-				if(loc_third_slash(url)):
-					url =  url[0:loc_third_slash(url)]
-				appended_link = url + href
+				if url [-1] == '/':
+					appended_link = url + href[1:]
+				else:
+					appended_link = url + href
 				link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False, 'method': 'add_link'}
 				save_link_to_database(link_object)
 					
