@@ -1,78 +1,25 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
 {% load static %}
 
 <html lang="en" dir="ltr">
+
 <head>
 	<meta charset="utf-8">
 	<title>Thunder Seeker Home</title>
 </head>
-	<body class="second">
-		<button id ="toggle" class="btn-toggle">light</button>
-		</br>
-		<div>
-			<img src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
-				<input type="text" id="homeInput" class="query" name="query" onkeyup="suggest()" placeholder="Search Trine resources...">
-				<div id="center">
-				    <input type="submit" id="search_button" class="btn" name="search" value="search">
-				</div>
+
+<body class="second">
+	<button id="toggle" class="btn-toggle">light</button>
+	</br>
+	<div>
+		<img id='search-logo' src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
+		<input type="text" id="homeInput" class="query" name="query" onkeyup="suggest()" placeholder="Search Trine resources...">
+		<div class="search-button">
+			<input type="submit" id="search_button" class="large-button" name="search" value="search">
 		</div>
-	<script>
-        let root = document.documentElement;
-
-        function suggest() {
-		
-		}
-
-        const btn = document.querySelector(".btn-toggle");
-        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-
-        const currentTheme = localStorage.getItem("theme");
-        if (currentTheme == "dark") {
-            document.body.classList.toggle("dark-theme");
-            dark();
-        } else if (currentTheme == "light") {
-        	document.body.classList.toggle("light-theme");
-        	light();
-        }
-
-        btn.addEventListener("click", function () {
-            document.body.classList.toggle("dark-theme");
-            if (document.body.classList.contains("dark-theme")) {
-                dark();
-            }
-            else {
-                light();
-            }
-            var theme = document.body.classList.contains("dark-theme")
-                ? "dark"
-                : "light";
-            localStorage.setItem("theme", theme);
-        });
-
-        function light() {
-            document.getElementById("toggle").innerHTML = "light";
-            root.style.setProperty('--toggle-button-color', 'white');
-            root.style.setProperty('--toggle-button-text-color', 'black');
-            root.style.setProperty('--search-bar', 'white')
-            root.style.setProperty('--main-text', 'black')
-	        root.style.setProperty('--second-bg-color', 'white');
-        }
-
-        function dark() {
-            document.getElementById("toggle").innerHTML = "dark";
-            root.style.setProperty('--toggle-button-color', 'black');
-            root.style.setProperty('--toggle-button-text-color', 'white');
-            root.style.setProperty('--search-bar', '#202225')
-            root.style.setProperty('--main-text', 'white')
-	        root.style.setProperty('--second-bg-color', 'black');
-        }
-
-		</script>
-
-	</body>
+	</div>
+</body>
 </html>
 
 {% endblock %}
