@@ -1,8 +1,18 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import time
+import signal
 
 inclusion = {"trine", "Trine"}
+
+#https://code-maven.com/python-timeout
+class TimeOutException(Exception):
+   pass
+
+def alarm_handler(signum, frame):
+    print("timeout has occured")
+    raise TimeOutException()
 
 # from https://www.geeksforgeeks.org/python-ways-to-find-nth-occurrence-of-substring-in-a-string/
 def loc_third_slash(link):
@@ -59,24 +69,34 @@ def save_link_to_database(link_object):
 		r = requests.post(url=host, data=link_object)
 		print("Link post successful")
 
-# get inputs from user
-link = ""
-while not (link[0:7] == 'http://' or link[0:8] == 'https://'):
-	link = input("provide seed link:")
-	if not link[0] == 'h':
-		print("NOTE: provide in http:// or https:// form")
+if __name__ == '__main__':
+	# get inputs from user
+	link = ""
+	while not (link[0:7] == 'http://' or link[0:8] == 'https://'):
+		link = input("provide seed link:")
+		if not link[0] == 'h':
+			print("NOTE: provide in http:// or https:// form")
 
-x = input("provide an integer for the number of iterations:")
+	x = input("provide an integer for the number of iterations:")
+	if (not (is_duplicate_link(link))):
+		link_object = {'destination': link, 'source': "", 'isTrine': trine_url(link), 'visited': False, 'method': 'add_link'}
+		save_link_to_database(link_object)
 
-link_object = {'destination': link, 'source': "", 'isTrine': trine_url(link), 'visited': False, 'method': 'add_link'}
-save_link_to_database(link_object)
+	i = 0
+	while i < int(x):
+		signal.signal(signal.SIGALRM, alarm_handler)
+		signal.alarm(10)
 
-i = 0
-while i < int(x):
-	host = 'http://127.0.0.1:8000/add_link/'
-	r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
-	link = r.json()['links']['destination']
-	get_page_of_links(link)
-	i = r.json()['links']['id'] + 1
-	print(i)
+		host = 'http://127.0.0.1:8000/add_link/'
+		r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
+		link = r.json()['links']['destination']
+		try:
+			get_page_of_links(link)
+		except TimeOutException as ex:
+			print(ex)
+		except:
+			print("undefined error")
+		signal.alarm(0)
+		i = r.json()['links']['id'] + 1
+		print(i)
 
