@@ -1,6 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import time
+import signal
+
+#https://code-maven.com/python-timeout
+class TimeOutException(Exception):
+   pass
+
+def alarm_handler(signum, frame):
+    print("timeout has occured")
+    raise TimeOutException()
 
 def is_duplicate_page(url):
 	host = 'http://127.0.0.1:8000/add_page/'
@@ -12,10 +22,18 @@ def is_duplicate_page(url):
 
 def get_page_info(url):
 	parsed_page = {}
-	
-	page = requests.get(url)
-	soup = BeautifulSoup(page.content, 'html.parser')
-	
+	signal.signal(signal.SIGALRM, alarm_handler)
+	signal.alarm(10)
+	try:
+		page = requests.get(url)
+		soup = BeautifulSoup(page.content, 'html.parser')
+	except TimeOutException as ex:
+		print(ex)
+	except:
+		print("error in soup")
+	signal.alarm(0)
+
+
 	if soup.find('title'):
 		title = soup.find('title').get_text()
 		parsed_page['title'] = title
@@ -35,18 +53,20 @@ def save_page_to_database(parsed_page):
 	r = requests.post(url=host, data=parsed_page)
 	print("Post successful")
 	
-x = input("How many links do you want to parse?: ")
 host = 'http://127.0.0.1:8000/add_page/'
 i = 0
-while i <= int(x):
+while 1:
 	r = requests.post(url='http://127.0.0.1:8000/add_link/', data={'id': i, 'method': 'get_link'})
 	link = r.json()['links']['destination']
 	if is_duplicate_page(link):
 		print("" + link + " is a duplicate page. Skipping...")
-		x = int(x) + 1
 	else:
 		print("now entering: " + link)
-		parsed_page = get_page_info(link)
+		parsed_page = None
+		try:
+			parsed_page = get_page_info(link)
+		except:
+			print("undefined error in get_page_info")
 		if parsed_page:
 			save_page_to_database(parsed_page)
 	i = r.json()['links']['id'] + 1
