@@ -39,10 +39,18 @@ def is_duplicate_link(link):
 	return r.json()['is_duplicate_link']
 
 def get_page_of_links(url):
+	signal.signal(signal.SIGALRM, alarm_handler)
+	signal.alarm(10)
 	print("Now entering " + url)
-	page = requests.get(url)
-	soup = BeautifulSoup(page.content, 'html.parser')
-	links = soup.findAll('a')
+	try:
+		page = requests.get(url)
+		soup = BeautifulSoup(page.content, 'html.parser')
+		links = soup.findAll('a')
+	except TimeOutException as ex:
+		print(ex)
+	except:
+		print("error in soup")
+	signal.alarm(0)
 	for link in links:
 		href = link.get('href')
 		if href == None:
@@ -83,19 +91,13 @@ if __name__ == '__main__':
 
 	i = 0
 	while 1:
-		signal.signal(signal.SIGALRM, alarm_handler)
-		signal.alarm(10)
-
 		host = 'http://127.0.0.1:8000/add_link/'
 		r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
 		link = r.json()['links']['destination']
 		try:
 			get_page_of_links(link)
-		except TimeOutException as ex:
-			print(ex)
 		except:
-			print("undefined error")
-		signal.alarm(0)
+			print("undefined error in get_page_of_links")
 		i = r.json()['links']['id'] + 1
 		print(i)
 
