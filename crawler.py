@@ -77,13 +77,12 @@ if __name__ == '__main__':
 		if not link[0] == 'h':
 			print("NOTE: provide in http:// or https:// form")
 
-	x = input("provide an integer for the number of iterations:")
 	if (not (is_duplicate_link(link))):
 		link_object = {'destination': link, 'source': "", 'isTrine': trine_url(link), 'visited': False, 'method': 'add_link'}
 		save_link_to_database(link_object)
 
 	i = 0
-	while i < int(x):
+	while 1:
 		signal.signal(signal.SIGALRM, alarm_handler)
 		signal.alarm(10)
 

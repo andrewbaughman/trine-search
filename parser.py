@@ -45,17 +45,15 @@ def save_page_to_database(parsed_page):
 	r = requests.post(url=host, data=parsed_page)
 	print("Post successful")
 	
-x = input("How many links do you want to parse?: ")
 host = 'http://127.0.0.1:8000/add_page/'
 i = 0
-while i <= int(x):
+while 1:
 	signal.signal(signal.SIGALRM, alarm_handler)
 	signal.alarm(10)
 	r = requests.post(url='http://127.0.0.1:8000/add_link/', data={'id': i, 'method': 'get_link'})
 	link = r.json()['links']['destination']
 	if is_duplicate_page(link):
 		print("" + link + " is a duplicate page. Skipping...")
-		x = int(x) + 1
 	else:
 		print("now entering: " + link)
 		try:
