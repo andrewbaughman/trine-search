@@ -15,9 +15,9 @@ $(document).ready(function () {
 	$('#trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
 		if($("#trine-toggle").find('input').is(':checked')) {
-			$('#homeInput').attr('placeholder','Search Trine Resources...');
+			$('#homeInput').attr('placeholder','Search Trine resources...');
 		} else {
-			$('#homeInput').attr('placeholder','Search All Resources...');
+			$('#homeInput').attr('placeholder','Search All resources...');
 		}
 	});
 	/*			search on click				*/
