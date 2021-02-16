@@ -12,12 +12,19 @@ $(document).ready(function () {
 			localStorage.setItem("theme", "light");
 		}
 	});
+	/*			Handle text with slider				*/
+	if ($("#trine-toggle").find('input').is(':checked')) {
+		$('#homeInput').attr('placeholder', 'Search Trine resources...');
+	} else {
+		$('#homeInput').attr('placeholder', 'Search All resources...');
+	}
+
 	$('#trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
-		if($("#trine-toggle").find('input').is(':checked')) {
-			$('#homeInput').attr('placeholder','Search Trine resources...');
+		if ($("#trine-toggle").find('input').is(':checked')) {
+			$('#homeInput').attr('placeholder', 'Search Trine resources...');
 		} else {
-			$('#homeInput').attr('placeholder','Search All resources...');
+			$('#homeInput').attr('placeholder', 'Search All resources...');
 		}
 	});
 	/*			search on click				*/
