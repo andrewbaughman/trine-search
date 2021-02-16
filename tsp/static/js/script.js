@@ -64,7 +64,7 @@ function setlight() {
 
 function setdark() {
 	var root = document.documentElement;
-	root.style.setProperty('--main-bg-color', '#404040');
+	root.style.setProperty('--main-bg-color', '#36393f');
 	root.style.setProperty('--toggle-button-color', '#1a1a1a');
 	root.style.setProperty('--toggle-button-text-color', 'white');
 	root.style.setProperty('--second-bg-color', '#36393f');

@@ -5,43 +5,56 @@
 {% load static %}
 
 <html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<title>Seek Results</title>
-	</head>
-	<body class="second">
-		<div class="top-bar">
-        	<form method="GET" action="/search/"></form>
-            	<a href="/">
-                	<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
-              	</a>
-              	<input type="text" id="resultsInput" class="query" name="query" placeholder="Search Trine resources...">
-              	<div id="left">
-            		<input type="submit" id="search_button" class="btn" name="search" value="search">
-              	</div>
-			  </form>
-			  <button id ="toggle" class="btn-toggle">light</button>
-      	</div>
-      	<div class="results">
-            {% if results %}
-                {% for result in results %}
-                    <div class='result'>
-                        <tr>
-                            <url><td>{{ result.url }}</td></url>
-                            <td><a href= "{{ result.url }}"><title-result></br>{{ result.title }}</td></title-result></a>
-                            <td></br><info><td>{{ result.description }}</td></info>
-                    </div>
-                {% endfor %}
-            {% else %}
-                    <div class='result'>
-                        No results found for "{{query}}". Please try again with different keywords.
-                    </div>
-            {% endif %}
-    	</div>
 
-      
+<head>
+	<meta charset="utf-8">
+	<title>Seek Results</title>
+</head>
+
+<body class="second">
+	<div class="top-bar">
+		<form method="GET" action="/search/"></form>
+		<a href="/">
+			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
+		</a>
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search Trine resources...">
+		<div id="left">
+			<input type="submit" id="search_button" class="btn" name="search" value="search">
+		</div>
+		</form>
+		<button id="toggle" class="btn-toggle">light</button>
+	</div>
+	<div class="results-container">
+		<div class=''>
+			<info>Results in {{time}} seconds</info>
+		</div>
+		{% if results %}
+		{% for result in results %}
+		<div class='result'>
+			<tr>
+				<url>
+					<td>{{ result.url }}</td>
+				</url>
+				<td><a href="{{ result.url }}">
+						<title-result></br>{{ result.title }}</td>
+				</title-result></a>
+				<td></br>
+					<info>
+				<td>{{ result.description }}</td>
+				</info>
+		</div>
+		{% endfor %}
+		{% else %}
+		<div class='result'>
+			<info>No results found for "{{query}}". Please try again with different keywords.</info>
+		</div>
+		{% endif %}
+	</div>
+
+
 
 </body>
+
 </html>
 
 

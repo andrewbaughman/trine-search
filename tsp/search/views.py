@@ -4,21 +4,23 @@ from django.http import JsonResponse
 from rest_framework import generics, permissions
 from .models import page
 from django.contrib.auth.models import User
-
 from rest_framework import generics
 from .models import *
 from .serializers import *
 from django.forms.models import model_to_dict
-
 from django.views import View
+
+import time
 
 def index(request):
 	return render(request, 'home.html')
 
 def results(request):
+	start = time.time()
 	query = request.GET.get('query')
 	results = searchAlgorithm(query)
-	return render(request, 'results.html', {'query':query, 'results': results,})
+	end = time.time()
+	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
 
 def searchAlgorithm(query):
 	query = query.split(' ')
