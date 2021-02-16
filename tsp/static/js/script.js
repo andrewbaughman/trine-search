@@ -3,7 +3,6 @@ $(document).ready(function () {
 	defaultTheme();
 	/*			toggle theme on click				*/
 	$('.btn-toggle').on('click', function () {
-		console.log('click');
 		var currentTheme = localStorage.getItem("theme");
 		if (currentTheme == 'light') {
 			setdark();
@@ -11,6 +10,14 @@ $(document).ready(function () {
 		} else {
 			setlight();
 			localStorage.setItem("theme", "light");
+		}
+	});
+	$('#trine-toggle').on('change', function () {
+		//var current = $('#homeInpput').attr('placeholder');
+		if($("#trine-toggle").find('input').is(':checked')) {
+			$('#homeInput').attr('placeholder','Search Trine Resources...');
+		} else {
+			$('#homeInput').attr('placeholder','Search All Resources...');
 		}
 	});
 	/*			search on click				*/

@@ -112,8 +112,6 @@ info {
 
 .search-button {
 	margin: auto;
-	width: 100%;
-	padding: 10px;
 	display: block;
 	text-align: -webkit-center;
 	text-align: center;
@@ -128,8 +126,8 @@ info {
 	font-family: arial, sans-serif;
 	font-size: 16px;
 	text-align: center;
-	width: 20%;
-	height: 5%;
+	width: 250px;
+	height: 40px;
 }
 
 .large-button:hover,
