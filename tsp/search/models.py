@@ -10,7 +10,8 @@ class page(models.Model):
 
 
 class keywords(models.Model):
-	url = models.ForeignKey('links', on_delete=models.CASCADE, to_field="destination", db_column="destination")
+	id = models.AutoField(primary_key=True)
+	url = models.ForeignKey('links', on_delete=models.CASCADE)
 	keyword = models.CharField(max_length=50)
 	times_on_page = models.IntegerField()
 

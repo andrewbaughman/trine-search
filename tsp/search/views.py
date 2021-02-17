@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import JsonResponse
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, pagination
 from .models import page
 from django.contrib.auth.models import User
 
@@ -10,9 +10,17 @@ from .models import *
 from .serializers import *
 from django.forms.models import model_to_dict
 import networkx as nx
-import socket
+import json
 
 from django.views import View
+
+from .graphmanager import *
+
+
+update_graph_g()
+adjust_edges()
+#update_graph_c()
+
 
 
 
@@ -20,8 +28,22 @@ def index(request):
 	return render(request, 'home.html')
 
 def results(request):
+	results = []
 	query = request.GET.get('query')
-	results = searchAlgorithm2(query)
+	#.split(' ')
+	#topic = retrieve_topic(query)
+	#ranked_list = get_ranked_list(topic)
+	#print(ranked_list)
+	#for source in ranked_list:
+	#	try:
+	#		link = links.objects.get(destination=source)
+	#		site = page.objects.get(url=link)
+	#		site = model_to_dict(site)
+	#		results.append(site)
+	#	except Exception as e:
+	#		print(str(e))
+	#print(results)
+	results = searchAlgorithm1(query)
 	return render(request, 'results.html', {'query':query, 'results': results,})
 
 def searchAlgorithm1(query):
@@ -76,19 +98,6 @@ def searchAlgorithm1(query):
 	print(len(temp_result_urls))
 	return results
 
-def searchAlgorithm2(query):
-	query = query.split(' ')
-	HOST = '127.0.0.2'
-	PORT = 65432
-
-	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		s.connect((HOST, PORT))
-		message = "get_ranked_list, " + str(query)
-		print(message)
-		s.sendall(message.encode("utf-8"))
-		data = s.recv(1024).decode("utf-8")
-
-		print(data)
 
 class AddPage(View):
 	def post(self, request):
@@ -144,14 +153,38 @@ class LinkController(View):
 				ret['links'] = model_to_dict(link_object)
 
 				return JsonResponse(ret)
+			
+			elif request.POST.get('method') == 'add_keywords':
+				ret = {}
+				url = request.POST.get('url')
+				### https://www.guru99.com/python-json.html
+				entities = json.loads(request.POST.get('keywords'))
+				try:
+					print(url)
+					link_object = links.objects.get(destination=url)
+					print(link_object)
+					### https://www.w3schools.com/python/gloss_python_loop_dictionary_items.asp
+					for keyword in entities:
+						key = keyword
+						value = entities[keyword]
+						kwobject = keywords.objects.create(url=link_object, keyword=key, times_on_page=value)
+						
+					ret['status'] = "OK"
+
+				except Exception as e:
+					ret['status'] = "error"
+					print(str(e))
+
+				return JsonResponse(ret)
+
 			elif request.POST.get('method') == 'get_keywords':
 				ret = {}
 				url = request.POST.get('url')
 				try:
 					print(url)
-					link_object = links.objects.get(destination=url)
+					link_object = links.objects.get(source=url)
 					print(link_object)
-					print(keywords.objects.filter(url=link_object.id))
+					print(keywords.objects.filter(url=link_object))
 
 					ret['keyword_list'] = entities
 
@@ -210,6 +243,7 @@ class LinksDetail(generics.RetrieveUpdateDestroyAPIView):
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
+	pagination.PageNumberPagination.page_size = 1000
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
