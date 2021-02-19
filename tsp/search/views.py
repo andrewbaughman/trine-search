@@ -17,8 +17,8 @@ from django.views import View
 from .graphmanager import *
 
 
-update_graph_g()
-adjust_edges()
+#update_graph_g()
+#adjust_edges()
 #update_graph_c()
 
 
@@ -29,21 +29,20 @@ def index(request):
 
 def results(request):
 	results = []
-	query = request.GET.get('query')
-	#.split(' ')
+	query = request.GET.get('query').split(' ')
 	#topic = retrieve_topic(query)
-	#ranked_list = get_ranked_list(topic)
-	#print(ranked_list)
-	#for source in ranked_list:
-	#	try:
-	#		link = links.objects.get(destination=source)
-	#		site = page.objects.get(url=link)
-	#		site = model_to_dict(site)
-	#		results.append(site)
-	#	except Exception as e:
-	#		print(str(e))
-	#print(results)
-	results = searchAlgorithm1(query)
+	ranked_list = get_ranked_list(query)
+	for key in ranked_list:
+		print(str(key) + ': ' + str(ranked_list[key]))
+	for source in ranked_list:
+		try:
+			link = links.objects.get(destination=source)
+			site = page.objects.get(url=link)
+			site = model_to_dict(site)
+			results.append(site)
+		except Exception as e:
+			print(str(e))
+	#results = searchAlgorithm1(query)
 	return render(request, 'results.html', {'query':query, 'results': results,})
 
 def searchAlgorithm1(query):
@@ -163,6 +162,7 @@ class LinkController(View):
 					print(url)
 					link_object = links.objects.get(destination=url)
 					print(link_object)
+					print(entities)
 					### https://www.w3schools.com/python/gloss_python_loop_dictionary_items.asp
 					for keyword in entities:
 						key = keyword
@@ -243,7 +243,7 @@ class LinksDetail(generics.RetrieveUpdateDestroyAPIView):
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
-	pagination.PageNumberPagination.page_size = 1000
+	pagination.PageNumberPagination.page_size = 8000
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 

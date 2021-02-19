@@ -58,7 +58,7 @@ while i <= int(x):
 	else:
 		print("now entering: " + link)
 		parsed_page = get_page_info(link)
-		keywords = get_keywords(link)
+		keywords = get_word_frequency(link)
 		save_keywords_to_database(link, keywords)
 
 		if parsed_page:

@@ -113,6 +113,18 @@ def retrieve_topic(query):
 
 def get_ranked_list(entity_list):
 	print(entity_list)
+	ranked_list = {}
+	for entity in entity_list:
+		try:
+			kwobjects = keywords.objects.filter(keyword=entity)
+			for kwobject in kwobjects:
+				link = links.objects.get(destination=kwobject.url.destination)
+				ranked_list[link.destination] = kwobject.times_on_page
+		except Exception as e:
+			print(str(e))
+	ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
+	return ranked_list
+	'''
 	pages = C.nodes()
 	for page in pages:
 		for entity in entity_list:
@@ -136,16 +148,7 @@ def get_ranked_list(entity_list):
 	save_graph(C, "graphC")
 	return results
 
-
-	
-	results = {}
-	pages = list(C.nodes(data=True))
-	for page in pages:
-		if page[1]['weight'] > 0:
-			results[page[0]] = page[1]['weight']
-	print(results)
-	return results
-	
+	'''	
 
 
 
