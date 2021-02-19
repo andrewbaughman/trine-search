@@ -4,30 +4,23 @@ from django.http import JsonResponse
 from rest_framework import generics, permissions, pagination
 from .models import page
 from django.contrib.auth.models import User
-
 from rest_framework import generics
 from .models import *
 from .serializers import *
 from django.forms.models import model_to_dict
-import networkx as nx
-import json
-
 from django.views import View
 
+import time
 from .graphmanager import *
-
-
 #update_graph_g()
 #adjust_edges()
 #update_graph_c()
-
-
-
 
 def index(request):
 	return render(request, 'home.html')
 
 def results(request):
+	start = time.time()
 	results = []
 	query = request.GET.get('query').split(' ')
 	#topic = retrieve_topic(query)
@@ -42,8 +35,10 @@ def results(request):
 			results.append(site)
 		except Exception as e:
 			print(str(e))
-	#results = searchAlgorithm1(query)
-	return render(request, 'results.html', {'query':query, 'results': results,})
+	
+	#results = searchAlgorithm(query)
+	end = time.time()
+	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
 
 def searchAlgorithm1(query):
 	query = query.split(' ')
