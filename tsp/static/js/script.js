@@ -51,6 +51,7 @@ $(document).keypress(function (event) {
 });
 
 function search(query) {
+	var toggleSetting = localStorage.getItem("toggle");	//for later
 	if (query == '') {
 		window.location = "/";
 	} else {
@@ -60,15 +61,16 @@ function search(query) {
 
 function defaultToggle() {
 	var currentToggle = localStorage.getItem("toggle");
-	if (currentToggle == "trine") { 
-		 $("#home-toggle").find('input').attr('checked','checked');
-		 $("#results-toggle").find('input').attr('checked','checked');
+	if (currentToggle == "trine") {
+		$("#home-toggle").find('input').attr('checked', 'checked');
+		$("#results-toggle").find('input').attr('checked', 'checked');
 	} else {
-		$("#home-toggle").find('input').removeAttr('checked','checked');
-		$("#results-toggle").find('input').removeAttr('checked','checked');
+		$("#home-toggle").find('input').removeAttr('checked', 'checked');
+		$("#results-toggle").find('input').removeAttr('checked', 'checked');
 		localStorage.setItem("toggle", "all");
 	}
 }
+
 function defaultTheme() {
 	var currentToggle = localStorage.getItem("theme");
 	if (currentToggle == "light") { //change this parameter to set default
