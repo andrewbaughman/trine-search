@@ -1,6 +1,8 @@
 $(document).ready(function () {
 	/*		load theme from cache, default dark		*/
 	defaultTheme();
+	/*		load toggle from storage				*/
+	defaultToggle();
 	/*			toggle theme on click				*/
 	$('.btn-toggle').on('click', function () {
 		var currentTheme = localStorage.getItem("theme");
@@ -12,19 +14,27 @@ $(document).ready(function () {
 			localStorage.setItem("theme", "light");
 		}
 	});
-	/*			Handle text with slider				*/
-	if ($("#trine-toggle").find('input').is(':checked')) {
-		$('#homeInput').attr('placeholder', 'Search Trine resources...');
-	} else {
-		$('#homeInput').attr('placeholder', 'Search All resources...');
-	}
-
-	$('#trine-toggle').on('change', function () {
+	/*			toggle scope on click				*/
+	$('#home-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
-		if ($("#trine-toggle").find('input').is(':checked')) {
+		if ($("#home-toggle").find('input').is(':checked')) {
 			$('#homeInput').attr('placeholder', 'Search Trine resources...');
+			localStorage.setItem("toggle", "trine");
+
 		} else {
 			$('#homeInput').attr('placeholder', 'Search All resources...');
+			localStorage.setItem("toggle", "all");
+		}
+	});
+	$('#results-toggle').on('change', function () {
+		//var current = $('#homeInpput').attr('placeholder');
+		if ($("#results-toggle").find('input').is(':checked')) {
+			$('#resultsInput').attr('placeholder', 'Search Trine resources...');
+			localStorage.setItem("toggle", "trine");
+
+		} else {
+			$('#resultsInput').attr('placeholder', 'Search All resources...');
+			localStorage.setItem("toggle", "all");
 		}
 	});
 	/*			search on click				*/
@@ -48,9 +58,20 @@ function search(query) {
 	}
 }
 
+function defaultToggle() {
+	var currentToggle = localStorage.getItem("toggle");
+	if (currentToggle == "trine") { 
+		 $("#home-toggle").find('input').attr('checked','checked');
+		 $("#results-toggle").find('input').attr('checked','checked');
+	} else {
+		$("#home-toggle").find('input').removeAttr('checked','checked');
+		$("#results-toggle").find('input').removeAttr('checked','checked');
+		localStorage.setItem("toggle", "all");
+	}
+}
 function defaultTheme() {
-	var currentTheme = localStorage.getItem("theme");
-	if (currentTheme == "light") { //change this parameter to set default
+	var currentToggle = localStorage.getItem("theme");
+	if (currentToggle == "light") { //change this parameter to set default
 		setlight(); //
 	} else {
 		setdark();
