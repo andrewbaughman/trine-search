@@ -44,25 +44,25 @@ def get_ranked_list(entity_list):
 	ranked_list = {}
 
 	# Make list of lists of urls. Each list of urls matches 1 keyword in query
-	rlists = []
+	lists_of_urls = []
 	for entity in entity_list:
-		rl = []
+		urls_to_keyword = []
 		try:
 			kwobjects = keywords.objects.filter(keyword=entity)
 			for kwobject in kwobjects:
 				link = links.objects.get(destination=kwobject.url.destination)
-				rl.append(link.destination)
+				urls_to_keyword.append(link.destination)
 		except Exception as e:
 			print(str(e))
-		rlists.append(rl)
+		lists_of_urls.append(urls_to_keyword)
 	
 	# Intersect list of lists of urls so that all that's left is urls that match all keywords
-	rlist = rlists[0]
-	for rl in rlists:
-		rlist = list(set(rlist) & set(rl))
+	intersected_urls = lists_of_urls[0]
+	for url_list in lists_of_urls:
+		intersected_urls = list(set(intersected_urls) & set(url_list))
 	
 	# Add ranks to the intersected list
-	for destination in rlist:
+	for destination in intersected_urls:
 		link = links.objects.get(destination=destination)
 		ranked_list[destination] = 0
 		for entity in entity_list:
