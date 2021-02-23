@@ -11,10 +11,7 @@ from django.forms.models import model_to_dict
 from django.views import View
 
 import time
-from .graphmanager import *
-#update_graph_g()
-#adjust_edges()
-#update_graph_c()
+
 
 def index(request):
 	return render(request, 'home.html')
