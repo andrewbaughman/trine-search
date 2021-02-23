@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from keywords import *
+
 import time
 import signal
 
@@ -47,6 +49,15 @@ def get_page_info(url):
 	return parsed_page
 
 
+def save_keywords_to_database(url, keywords):
+	host = 'http://127.0.0.1:8000/add_link/'
+	parsed_page = {}
+	parsed_page['url'] = url
+	parsed_page['keywords'] = json.dumps(keywords)
+	parsed_page['method'] = 'add_keywords'
+	r = requests.post(url=host, data=parsed_page)
+	print("Post successful")
+
 def save_page_to_database(parsed_page):
 	host = 'http://127.0.0.1:8000/add_page/'
 	parsed_page['method'] = 'add_page'
@@ -65,9 +76,13 @@ while 1:
 		parsed_page = None
 		try:
 			parsed_page = get_page_info(link)
+			keywords = get_word_frequency(link)
+			save_keywords_to_database(link, keywords)
 		except:
 			print("undefined error in get_page_info")
 		if parsed_page:
 			save_page_to_database(parsed_page)
 	i = r.json()['links']['id'] + 1
 	print(i)
+
+
