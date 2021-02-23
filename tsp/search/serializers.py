@@ -16,7 +16,7 @@ class LinksSerializer(serializers.ModelSerializer):
 class KeywordsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = keywords
-		fields = ('url', 'keyword', 'times_on_page',)
+		fields = ('id', 'url', 'keyword', 'times_on_page',)
 
 
 class PageResultsSerializer(serializers.ModelSerializer):
