@@ -40,6 +40,38 @@ def results(request):
 	end = time.time()
 	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
 
+def get_ranked_list(entity_list):
+	ranked_list = {}
+
+	# Make list of lists of urls. Each list of urls matches 1 keyword in query
+	rlists = []
+	for entity in entity_list:
+		rl = []
+		try:
+			kwobjects = keywords.objects.filter(keyword=entity)
+			for kwobject in kwobjects:
+				link = links.objects.get(destination=kwobject.url.destination)
+				rl.append(link.destination)
+		except Exception as e:
+			print(str(e))
+		rlists.append(rl)
+	
+	# Intersect list of lists of urls so that all that's left is urls that match all keywords
+	rlist = rlists[0]
+	for rl in rlists:
+		rlist = list(set(rlist) & set(rl))
+	
+	# Add ranks to the intersected list
+	for destination in rlist:
+		link = links.objects.get(destination=destination)
+		ranked_list[destination] = 0
+		for entity in entity_list:
+			ranked_list[destination] += keywords.objects.get(url=link, keyword=entity).times_on_page
+	
+	# Sort the ranked list by highest first 
+	ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
+	return ranked_list
+
 def searchAlgorithm1(query):
 	query = query.split(' ')
 	results = []
