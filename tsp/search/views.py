@@ -20,7 +20,6 @@ def results(request):
 	start = time.time()
 	results = []
 	query = request.GET.get('query').split(' ')
-	#topic = retrieve_topic(query)
 	ranked_list = get_ranked_list(query)
 	for key in ranked_list:
 		print(str(key) + ': ' + str(ranked_list[key]))
