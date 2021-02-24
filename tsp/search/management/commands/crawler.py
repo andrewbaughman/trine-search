@@ -66,6 +66,9 @@ class Command(BaseCommand):
 				print(ex)
 				links.objects.filter(destination=url).update(visited=True)
 				return
+			except Exception as e:
+				print(str(e))
+				return
 			signal.alarm(0)
 			links.objects.filter(destination=url).update(visited=True)
 			print("Visited " + url)

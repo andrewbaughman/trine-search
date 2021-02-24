@@ -5,12 +5,34 @@ import time
 import signal
 from search.models import links
 from search.models import page
+from search.models import keywords
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
+from search.keywords import *
 
 class Command(BaseCommand):
 	
 	def handle(self, *args, **options):
+
+		def save_keywords_to_database(url, __keywords):
+			parsed_page_keywords = json.dumps(__keywords)
+
+			### https://www.guru99.com/python-json.html
+			entities = json.loads(parsed_page_keywords)
+			try:
+				link_object = links.objects.get(destination=url)
+				### https://www.w3schools.com/python/gloss_python_loop_dictionary_items.asp
+				for keyword in entities:
+					key = keyword
+					value = entities[keyword]
+					kwobject = keywords.objects.create(url=link_object, keyword=key, times_on_page=value)
+						
+			except Exception as e:
+				print(str(e))
+				return False
+
+			print("Post successful")
+
 
 		def save_page_to_database(parsed_page):	
 			link_object = links.objects.get(destination=url)
@@ -42,17 +64,8 @@ class Command(BaseCommand):
 			print("timeout has occured")
 			raise TimeOutException()
 
-		def get_page_info(url):
+		def get_page_info(soup):
 			parsed_page = {}
-			signal.signal(signal.SIGALRM, alarm_handler)
-			signal.alarm(10)
-			try:
-				page = requests.get(url)
-				soup = BeautifulSoup(page.content, 'html.parser')
-			except TimeOutException as ex:
-				print(ex)
-				return False
-			signal.alarm(0)
 
 			if soup.find('title'):
 				title = soup.find('title').get_text()
@@ -90,8 +103,21 @@ class Command(BaseCommand):
 				print("" + url + " is a duplicate page. Skipping...")
 			else:
 				print("now entering: " + url)
-				parsed_page = get_page_info(url)
-				if parsed_page:
-					save_page_to_database(parsed_page)
+				signal.signal(signal.SIGALRM, alarm_handler)
+				signal.alarm(10)
+				try:
+					__page = requests.get(url)
+					soup = BeautifulSoup(__page.content, 'html.parser')
+					signal.alarm(0)
+					parsed_page = get_page_info(soup)
+					__keywords = get_word_frequency(soup)
+					if parsed_page:
+						save_page_to_database(parsed_page)
+					if __keywords:
+						save_keywords_to_database(url, __keywords)
+				except TimeOutException as ex:
+					print(ex)
+				except Exception as e:
+					print(str(e))
 			i = link.id + 1
 			print(i)
