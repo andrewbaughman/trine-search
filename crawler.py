@@ -1,72 +1,103 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import time
+import signal
 
-def is_duplicate_link(url):
-	host = 'http://127.0.0.1:8001/add_page/'
-	url_dict = {}
-	url_dict['url'] = url
-	url_dict['method'] = 'is_duplicate'
-	r = requests.post(url=host, data=url_dict)
-	return r.json()['is_duplicate']
+inclusion = {"trine", "Trine"}
 
-def get_page(url):
+#https://code-maven.com/python-timeout
+class TimeOutException(Exception):
+   pass
+
+def alarm_handler(signum, frame):
+    print("timeout has occured")
+    raise TimeOutException()
+
+# from https://www.geeksforgeeks.org/python-ways-to-find-nth-occurrence-of-substring-in-a-string/
+def loc_third_slash(link):
+	occurrence = 3
+	inilist = [i for i in range(0, len(link)) 
+            if link[i:].startswith('/')] 
+	if len(inilist)>= 3:
+		return inilist[occurrence-1]
+	else: 
+		return False
+
+def trine_url(url):
+	for i in inclusion:
+		if i in url:
+			return True
+	return False
+
+def is_duplicate_link(link):
+	host = 'http://127.0.0.1:8000/add_link/'
+	link_object = {}
+	link_object['destination'] = link
+	link_object['method'] = 'is_duplicate_link'
+	r = requests.post(url=host, data=link_object)
+	return r.json()['is_duplicate_link']
+
+def get_page_of_links(url):
+	signal.signal(signal.SIGALRM, alarm_handler)
+	signal.alarm(10)
 	print("Now entering " + url)
-	page = requests.get(url)
-	soup = BeautifulSoup(page.content, 'html.parser')
-	links = soup.findAll('a')
+	try:
+		page = requests.get(url)
+		soup = BeautifulSoup(page.content, 'html.parser')
+		links = soup.findAll('a')
+	except TimeOutException as ex:
+		print(ex)
+	except:
+		print("error in soup")
+	signal.alarm(0)
 	for link in links:
 		href = link.get('href')
 		if href == None:
 			continue
-		else:
-			if href[0:8] == 'http://' or href[0:8] == 'https://':
-				print("Is duplicate: " + str(is_duplicate_link(href)))
-				# Check to see if the link already exists
-				if is_duplicate_link(href):
-					continue
-				else:
-					host = 'http://127.0.0.1:8001/add_page/'
-					parsed_page = {'url': href, 'title': "", 'description': "", 'method': 'add_page'}
-					r = requests.post(url=host, data=parsed_page)
+		elif href:
+			if href[0:7] == 'http://' or href[0:8] == 'https://':
+				host = 'http://127.0.0.1:8000/add_link/'
+				link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False, 'method': 'add_link'}
+				save_link_to_database(link_object)
+			# search for subpage of url that meets the criteria
+			elif (href[0] == '/'):
+				host = 'http://127.0.0.1:8000/add_link/'
+				if(loc_third_slash(url)):
+					url =  url[0:loc_third_slash(url)]
+				appended_link = url + href
+				link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False, 'method': 'add_link'}
+				save_link_to_database(link_object)
 					
+def save_link_to_database(link_object):
+	host = 'http://127.0.0.1:8000/add_link/'
+	# check for duplicate before sending
+	if is_duplicate_link(link_object['destination']) == False:
+		link_object['method'] = 'add_link'
+		r = requests.post(url=host, data=link_object)
+		print("Link post successful")
 
-def get_page_info(url):
-	parsed_page = {}
-	
-	page = requests.get(url)
-	soup = BeautifulSoup(page.content, 'html.parser')
-	
-	title = soup.find('title').get_text()
-	description = soup.find('p').get_text()
+if __name__ == '__main__':
+	# get inputs from user
+	link = ""
+	while not (link[0:7] == 'http://' or link[0:8] == 'https://'):
+		link = input("provide seed link:")
+		if not link[0] == 'h':
+			print("NOTE: provide in http:// or https:// form")
 
-	print("Title: " + title)
-	print("Description: " + description)
-	#print(soup)
+	if (not (is_duplicate_link(link))):
+		link_object = {'destination': link, 'source': "", 'isTrine': trine_url(link), 'visited': False, 'method': 'add_link'}
+		save_link_to_database(link_object)
 
-	parsed_page['url'] = url
-	parsed_page['title'] = title
-	parsed_page['description'] = description
+	i = 0
+	while 1:
+		host = 'http://127.0.0.1:8000/add_link/'
+		r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
+		link = r.json()['links']['destination']
+		try:
+			get_page_of_links(link)
+		except:
+			print("undefined error in get_page_of_links")
+		i = r.json()['links']['id'] + 1
+		print(i)
 
-	return parsed_page
-
-
-def save_page_to_database(parsed_page):
-	host = 'http://127.0.0.1:8001/add_page/'
-	parsed_page['method'] = 'add_page'
-	r = requests.post(url=host, data=parsed_page)
-	if r.json()['page']['url'] == parsed_page['url']:
-		print("Post successful")
-	
-i = 0
-while i < 20:
-	host = 'http://127.0.0.1:8001/add_page/'
-	r = requests.post(url=host, data={'id': i, 'method': 'get_link'})
-	link = r.json()['page']['url']
-	get_page(link)
-	parsed_page = get_page_info(link)
-	save_page_to_database(parsed_page)
-	parsed_page = get_page_info(link)
-	save_page_to_database(parsed_page)
-	i = r.json()['page']['id'] + 1
-	print(i)
