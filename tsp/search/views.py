@@ -10,6 +10,7 @@ from .serializers import *
 from django.forms.models import model_to_dict
 from django.views import View
 
+import json
 import time
 import json
 
@@ -20,7 +21,7 @@ def index(request):
 def results(request):
 	start = time.time()
 	results = []
-	query = request.GET.get('query').split(' ')
+	query = request.GET.get('query').lower().split(' ')
 	ranked_list = get_ranked_list(query)
 	for key in ranked_list:
 		print(str(key) + ': ' + str(ranked_list[key]))
@@ -45,7 +46,7 @@ def get_ranked_list(entity_list):
 	for entity in entity_list:
 		urls_to_keyword = []
 		try:
-			kwobjects = keywords.objects.filter(keyword=entity)[:10]
+			kwobjects = keywords.objects.filter(keyword=entity)[:20]
 			for kwobject in kwobjects:
 				link = links.objects.get(destination=kwobject.url.destination)
 				urls_to_keyword.append(link.destination)
@@ -121,115 +122,6 @@ def searchAlgorithm1(query):
 	print(len(temp_result_urls))
 	return results
 
-
-class AddPage(View):
-	def post(self, request):
-		if request.POST.get('method') == 'add_page':	
-
-			ret = {}
-
-			url = request.POST.get('url')
-			title = request.POST.get('title')
-			description = request.POST.get('description')
-			link_object = links.objects.get(destination=url)
-			webpage = page.objects.create(url=link_object, title=title, description=description)
-
-			ret['page'] = model_to_dict(webpage)
-
-			return JsonResponse(ret)
-
-		elif request.POST.get('method') == 'is_duplicate_page':
-				ret = {}
-				url = request.POST.get('url')
-				link_object = links.objects.get(destination=url)
-				ret['is_duplicate_page'] = False
-				page_urls = page.objects.filter(url=url)
-				for link in page_urls:
-					if link.url == link_object: 
-						ret['is_duplicate_page'] = True
-						return JsonResponse(ret)
-				return JsonResponse(ret)
-
-class LinkController(View):
-	def post(self, request):
-			if request.POST.get('method') == 'is_duplicate_link':
-				ret = {}
-				destination = request.POST.get('destination')
-				ret['is_duplicate_link'] = False
-				destination_links = links.objects.filter(destination=destination)
-				for link in destination_links:
-					if link.destination == destination: 
-						ret['is_duplicate_link'] = True
-						return JsonResponse(ret)
-				return JsonResponse(ret)
-
-			elif request.POST.get('method') == 'add_link':	
-
-				ret = {}
-
-				destination = request.POST.get('destination')
-				source = request.POST.get('source')
-				isTrine = request.POST.get('isTrine')
-
-				link_object = links.objects.create(destination=destination, source=source, isTrine=isTrine, visited = False)
-
-				ret['links'] = model_to_dict(link_object)
-
-				return JsonResponse(ret)
-			
-			elif request.POST.get('method') == 'add_keywords':
-				ret = {}
-				url = request.POST.get('url')
-				### https://www.guru99.com/python-json.html
-				entities = json.loads(request.POST.get('keywords'))
-				try:
-					print(url)
-					link_object = links.objects.get(destination=url)
-					print(link_object)
-					print(entities)
-					### https://www.w3schools.com/python/gloss_python_loop_dictionary_items.asp
-					for keyword in entities:
-						key = keyword
-						value = entities[keyword]
-						kwobject = keywords.objects.create(url=link_object, keyword=key, times_on_page=value)
-						
-					ret['status'] = "OK"
-
-				except Exception as e:
-					ret['status'] = "error"
-					print(str(e))
-
-				return JsonResponse(ret)
-
-			elif request.POST.get('method') == 'get_keywords':
-				ret = {}
-				url = request.POST.get('url')
-				try:
-					print(url)
-					link_object = links.objects.get(source=url)
-					print(link_object)
-					print(keywords.objects.filter(url=link_object))
-
-					ret['keyword_list'] = entities
-
-				except:
-					ret['error'] = "No link in db"
-
-				return JsonResponse(ret)
-
-			elif request.POST.get('method') == 'get_link':	
-				ret = {}
-				id = request.POST.get('id')
-				if str(id) == str(0):
-					print("First link")
-					link_object = links.objects.first()
-				else:
-					print("Known link")
-					link_object = links.objects.get(id=id)
-
-				ret['links'] = model_to_dict(link_object)
-
-				return JsonResponse(ret)
 
 class UserList(generics.ListAPIView):
 	queryset = User.objects.all()
