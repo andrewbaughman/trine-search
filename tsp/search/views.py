@@ -11,6 +11,7 @@ from django.forms.models import model_to_dict
 from django.views import View
 
 import time
+import json
 
 
 def index(request):
@@ -44,7 +45,7 @@ def get_ranked_list(entity_list):
 	for entity in entity_list:
 		urls_to_keyword = []
 		try:
-			kwobjects = keywords.objects.filter(keyword=entity)
+			kwobjects = keywords.objects.filter(keyword=entity)[:10]
 			for kwobject in kwobjects:
 				link = links.objects.get(destination=kwobject.url.destination)
 				urls_to_keyword.append(link.destination)
@@ -261,6 +262,20 @@ class LinksDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = links.objects.all()
 	serializer_class = LinksSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class EdgesList(generics.ListCreateAPIView):
+	queryset = edges.objects.all()
+	serializer_class = EdgesSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class EdgesDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = edges.objects.all()
+	serializer_class = EdgesSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
 
 
 class KeywordsList(generics.ListCreateAPIView):
