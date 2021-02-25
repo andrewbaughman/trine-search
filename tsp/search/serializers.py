@@ -13,6 +13,12 @@ class LinksSerializer(serializers.ModelSerializer):
 		fields = ('id', 'destination', 'source', 'isTrine', 'visited',)
 
 
+class EdgesSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = edges
+		fields = ('id', 'pointA', 'pointB',)
+
+
 class KeywordsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = keywords

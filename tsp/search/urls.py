@@ -14,6 +14,8 @@ urlpatterns = [
 	path('api/links/<int:pk>/', views.LinksDetail.as_view()),
 	path('api/keywords/', views.KeywordsList.as_view()),
 	path('api/keywords/<int:pk>/', views.KeywordsDetail.as_view()),
+	path('api/edges/', views.EdgesList.as_view()),
+	path('api/edges/<int:pk>/', views.EdgesDetail.as_view()),
 	path('api/pageresults/', views.PageResultsList.as_view()),
 	path('api/pageresults/<int:pk>/', views.PageResultsDetail.as_view()),
 	path('users/', views.UserList.as_view()),
