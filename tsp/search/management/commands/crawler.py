@@ -6,7 +6,7 @@ import signal
 from search.models import links, edges
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
-from search.graphmanager import *
+from search.pagerank import *
 
 class Command(BaseCommand):
 	
