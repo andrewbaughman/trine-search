@@ -3,9 +3,10 @@ from bs4 import BeautifulSoup
 import json
 import time
 import signal
-from search.models import links
+from search.models import links, edges
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
+from search.graphmanager import *
 
 class Command(BaseCommand):
 	
@@ -20,8 +21,11 @@ class Command(BaseCommand):
 
 		def add_link(linkObject):
 			link_object = links.objects.create(destination=linkObject['destination'], source=linkObject['source'], isTrine=linkObject['isTrine'], visited = False)
-			model_to_dict(link_object)
-			return
+			return link_object
+
+		def add_edge(edgeObject):
+			edge_object = edges.objects.create(pointA=edgeObject['pointA'], pointB=edgeObject['pointB'])
+			return model_to_dict(edge_object)
 
 		def get_link(id):	
 			if str(id) == str(0):
@@ -79,20 +83,43 @@ class Command(BaseCommand):
 				elif href:
 					if href[0:7] == 'http://' or href[0:8] == 'https://':
 						link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
-						save_link_to_database(link_object)
+						link = save_link_to_database(link_object)
 					# search for subpage of url that meets the criteria
 					elif (href[0] == '/'):
 						if(loc_third_slash(url)):
 							url =  url[0:loc_third_slash(url)]
 						appended_link = url + href
 						link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
-						save_link_to_database(link_object)
+						link = save_link_to_database(link_object)
+			
+			try:
+				source = links.objects.get(destination=url)
+			except:
+				source = links.objects.get(destination=(url + '/'))
+			destinations = list(links.objects.filter(source=url))
+			
+			# Prep lists and generate pageranks
+			_links = [source] + destinations
+			_edges = edges.objects.filter(pointA=source)
+			pageranks = PR(_edges, _links)
+
+			# Save to database
+			for key in pageranks:
+				link = links.objects.get(id=key)
+				link.pagerank = pageranks[key]
+				link.save()
 							
 		def save_link_to_database(link_object):
 			# check for duplicate before sending
 			if is_duplicate_link(link_object['destination']) == False:
-				add_link(link_object)
+				link = add_link(link_object)
+				try:
+					edge_object = {'pointA': links.objects.get(destination=link.source), 'pointB': link}
+				except:
+					edge_object = {'pointA': links.objects.get(destination=link.source + '/'), 'pointB': link}
+				add_edge(edge_object)
 				print("Link post successful")
+				return link
 
 		# get inputs from user
 		if (links.objects.first() == None):
@@ -106,7 +133,7 @@ class Command(BaseCommand):
 					if not (link[0:7] == 'http://' or link[0:8] == 'https://'):
 						print("NOTE: provide in http:// or https:// form")
 				if (not (is_duplicate_link(link))):
-					link_object = {'destination': link, 'source': "", 'isTrine': trine_url(link), 'visited': False}
+					link_object = {'destination': link, 'source': link, 'isTrine': trine_url(link), 'visited': False}
 					save_link_to_database(link_object)
 					z = z + 1
 				else:
