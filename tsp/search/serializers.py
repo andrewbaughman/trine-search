@@ -10,7 +10,7 @@ class PageSerializer(serializers.ModelSerializer):
 class LinksSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = links
-		fields = ('id', 'destination', 'source', 'isTrine', 'visited',)
+		fields = ('id', 'pagerank', 'destination', 'source', 'isTrine', 'visited',)
 
 
 class EdgesSerializer(serializers.ModelSerializer):

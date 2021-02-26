@@ -18,6 +18,7 @@ class keywords(models.Model):
 
 class links(models.Model):
 	id = models.AutoField(primary_key=True)
+	pagerank = models.DecimalField(max_digits=5, decimal_places=4, null=True)
 	destination = models.URLField(max_length=200, unique=True)
 	source = models.URLField(max_length=200)
 	isTrine = models.BooleanField()
