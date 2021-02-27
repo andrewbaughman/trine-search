@@ -8,8 +8,10 @@ from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
 from search.pagerank import *
 
+
+
 class Command(BaseCommand):
-	
+
 	def handle(self, *args, **options):
 		inclusion = {"trine", "Trine"}
 		def is_duplicate_link(destination):
@@ -92,22 +94,62 @@ class Command(BaseCommand):
 						link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
 						link = save_link_to_database(link_object)
 			
+			# Make a list of all connections just made
 			try:
 				source = links.objects.get(destination=url)
 			except:
 				source = links.objects.get(destination=(url + '/'))
 			destinations = list(links.objects.filter(source=url))
+
 			
 			# Prep lists and generate pageranks
 			_links = [source] + destinations
 			_edges = edges.objects.filter(pointA=source)
-			pageranks = PR(_edges, _links)
+			
+			'''
+			total_links = len(links.objects.all())
+			
+			
+			A = make_A(_edges, _links, total_links)
+			
+			tmp_A = numpy.zeros((total_links, total_links), float)
+			for x in range(0, total_links):
+				for y in range(0, total_links):
+					try:
+						if (global_A[x][y] == 1):
+							tmp_A[x][y] = 1
+						else:
+							tmp_A[x][y] = 0
+					except IndexError:
+						tmp_A[x][y] = 0
+			global_A = tmp_A
+
+			print(global_A)
+			print(A)
+
+			# Union A and global_A
+			for x in range(0, len(A)):
+				for y in range(0, len(A)):
+					if (A[x][y] == 1 or global_A[x][y] == 1):
+						global_A[x][y] = 1
+					else:
+						global_A[x][y] = 0
+
+			T = make_T(global_A)
+			pageranks = PR_from_T(T, list(links.objects.all()))
+			'''
+			pageranks = PR_from_db(_edges, _links, len(_links))
+			print(pageranks)
+
+
 
 			# Save to database
 			for key in pageranks:
 				link = links.objects.get(id=key)
 				link.pagerank = pageranks[key]
 				link.save()
+			
+			#return global_A
 							
 		def save_link_to_database(link_object):
 			# check for duplicate before sending
@@ -116,11 +158,13 @@ class Command(BaseCommand):
 				try:
 					edge_object = {'pointA': links.objects.get(destination=link.source), 'pointB': link}
 				except:
+					print(link.source)
 					edge_object = {'pointA': links.objects.get(destination=link.source + '/'), 'pointB': link}
 				add_edge(edge_object)
 				print("Link post successful")
 				return link
 
+		#global_A = numpy.zeros((2,2), float)
 		# get inputs from user
 		if (links.objects.first() == None):
 			x = input("how many links do you want to seed? ")

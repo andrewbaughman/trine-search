@@ -5,10 +5,10 @@ import scipy
 import numpy
 
 
-def PR(_edges, _links):
+def PR_from_db(_edges, _links, nodes):
 	PageRanks = {}
 	
-	A = make_A(_edges, _links)
+	A = make_A(_edges, _links, nodes)
 	T = make_T(A)
 	eigenvector = find_vector(T)
 	
@@ -16,8 +16,16 @@ def PR(_edges, _links):
 		PageRanks[_links[x].id] = eigenvector[x]
 	return PageRanks
 
+def PR_from_T(T, _links):
+	PageRanks = {}
+	eigenvector = find_vector(T)
+	
+	for x in range(0, len(T)):
+		PageRanks[_links[x].id] = eigenvector[x]
+	return PageRanks
 
-def make_A(_edges, _links):
+
+def make_A(_edges, _links, nodes):
 	### Reference for zero'd array: https://thispointer.com/create-an-empty-2d-numpy-array-matrix-and-append-rows-or-columns-in-python/
 	A = numpy.zeros((len(_links),len(_links)), float)
 	# Populate the adjacency matrix

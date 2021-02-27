@@ -21,8 +21,8 @@ class links(models.Model):
 	pagerank = models.DecimalField(max_digits=5, decimal_places=4, null=True)
 	destination = models.URLField(max_length=200, unique=True)
 	source = models.URLField(max_length=200)
-	isTrine = models.BooleanField()
-	visited = models.BooleanField()
+	isTrine = models.BooleanField(default=False)
+	visited = models.BooleanField(default=False)
 
 
 class edges(models.Model):
