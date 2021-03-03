@@ -12,6 +12,7 @@ from django.views import View
 
 import json
 import time
+import json
 
 
 def index(request):
@@ -21,12 +22,12 @@ def results(request):
 	start = time.time()
 	results = []
 	query = request.GET.get('query').lower().split(' ')
-	ranked_list = get_ranked_list(query)
-	for key in ranked_list:
-		print(str(key) + ': ' + str(ranked_list[key]))
+	ranked_list = get_ranked_list(query, False)
+	#for key in ranked_list:
+	#	print(str(key) + ': ' + str(ranked_list[key]))
 	for source in ranked_list:
 		try:
-			link = links.objects.get(destination=source)
+			link = links.objects.get(destination=source.destination)
 			site = page.objects.get(url=link)
 			site = model_to_dict(site)
 			results.append(site)
@@ -37,18 +38,53 @@ def results(request):
 	end = time.time()
 	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
 
-def get_ranked_list(entity_list):
+def trine_results(request):
+	start = time.time()
+	results = []
+	query = request.GET.get('query').lower().split(' ')
+	ranked_list = get_ranked_list(query, True)
+	#for key in ranked_list:
+	#	print(str(key) + ': ' + str(ranked_list[key]))
+	for source in ranked_list:
+		try:
+			link = links.objects.get(destination=source.destination)
+			site = page.objects.get(url=link)
+			site = model_to_dict(site)
+			results.append(site)
+		except Exception as e:
+			print(str(e))
+	
+	#results = searchAlgorithm(query)
+	end = time.time()
+	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
+
+
+def get_ranked_list(entity_list, isTrine):
 	ranked_list = {}
 
 	# Make list of lists of urls. Each list of urls matches 1 keyword in query
 	lists_of_urls = []
+	if isTrine == True:
+		Trinekwds = keywords.objects.filter(keyword='trine')
+		Trine = []
+		for kwd in Trinekwds:
+			Trine.append(kwd.url)
+			
 	for entity in entity_list:
 		urls_to_keyword = []
 		try:
 			kwobjects = keywords.objects.filter(keyword=entity)[:20]
 			for kwobject in kwobjects:
-				link = links.objects.get(destination=kwobject.url.destination)
-				urls_to_keyword.append(link.destination)
+				if isTrine == True:
+					if kwobject.url in Trine:
+						link = links.objects.get(destination=kwobject.url.destination)
+						urls_to_keyword.append(link.destination)
+					else:
+						pass
+				else:
+					link = links.objects.get(destination=kwobject.url.destination)
+					urls_to_keyword.append(link.destination)
+
 		except Exception as e:
 			print(str(e))
 		lists_of_urls.append(urls_to_keyword)
@@ -66,7 +102,9 @@ def get_ranked_list(entity_list):
 			ranked_list[destination] += keywords.objects.get(url=link, keyword=entity).times_on_page
 	
 	# Sort the ranked list by highest first 
-	ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
+	print(intersected_urls)
+	ranked_list = list(links.objects.filter(destination__in=intersected_urls).order_by('pagerank'))
+	#ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
 	return ranked_list
 
 def searchAlgorithm1(query):
@@ -155,10 +193,24 @@ class LinksDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class EdgesList(generics.ListCreateAPIView):
+	queryset = edges.objects.all()
+	serializer_class = EdgesSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class EdgesDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = edges.objects.all()
+	serializer_class = EdgesSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+
+
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
-	pagination.PageNumberPagination.page_size = 8000
+	pagination.PageNumberPagination.page_size = 100
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 

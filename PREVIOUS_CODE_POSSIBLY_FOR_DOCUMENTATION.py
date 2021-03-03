@@ -1,21 +1,4 @@
-import networkx as nx
-import requests
-import socket
-import ast
-import json
-import django
-from search.models import *
-from django.db.models import Q
-import os
-import matplotlib.pyplot as plt
-
-HOST = '127.0.0.2'
-PORT = 65432
-
-G = nx.Graph()
-C = nx.Graph()
-
-
+'''
 def update_graph_g():
 
 	for entity in keywords.objects.all():
@@ -124,7 +107,7 @@ def get_ranked_list(entity_list):
 			print(str(e))
 	ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
 	return ranked_list
-	'''
+	
 	pages = C.nodes()
 	for page in pages:
 		for entity in entity_list:
@@ -148,11 +131,11 @@ def get_ranked_list(entity_list):
 	save_graph(C, "graphC")
 	return results
 
-	'''	
+		
 
 
 
-'''
+
 parser:
 
 	when done parsing,
@@ -163,9 +146,9 @@ parser:
 view:
 	when user enters query,
 	socket signal to graphmanager(message=get ranked list)
-'''
 
-'''
+
+
 while True:
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.bind((HOST, PORT))
