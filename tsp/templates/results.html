@@ -17,10 +17,17 @@
 		<a href="/">
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search Trine resources...">
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources...">
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search">
+			<div>
+				<label class="switch" id='trine-toggle'>
+					<input type="checkbox">
+					<span class="slider round"></span>
+				</label>
+			</div>
 		</div>
+		
 		</form>
 		<button id="toggle" class="btn-toggle">light</button>
 	</div>

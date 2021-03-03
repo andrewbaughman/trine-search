@@ -82,17 +82,14 @@ class Command(BaseCommand):
 				href = link.get('href')
 				if href == None:
 					continue
-				elif href:
-					if href[0:7] == 'http://' or href[0:8] == 'https://':
-						link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
-						link = save_link_to_database(link_object)
-					# search for subpage of url that meets the criteria
-					elif (href[0] == '/'):
-						if(loc_third_slash(url)):
-							url =  url[0:loc_third_slash(url)]
+				elif (href):
+					if(loc_third_slash(url)):
+						new_url =  url[0:loc_third_slash(url)]
+						appended_link = new_url + href
+					else:
 						appended_link = url + href
-						link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
-						link = save_link_to_database(link_object)
+					link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
+					save_link_to_database(link_object)
 			
 			# Make a list of all connections just made
 			try:
