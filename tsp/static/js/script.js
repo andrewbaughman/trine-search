@@ -12,39 +12,38 @@ $(document).ready(function () {
 			localStorage.setItem("theme", "light");
 		}
 	});
-	/*			Handle text with slider				*/
-	if ($("#trine-toggle").find('input').is(':checked')) {
-		$('#homeInput').attr('placeholder', 'Search Trine resources...');
-	} else {
-		$('#homeInput').attr('placeholder', 'Search All resources...');
-	}
+	$('.query').attr('isTrine', 'false');
 
 	$('#trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
 		if ($("#trine-toggle").find('input').is(':checked')) {
-			$('#homeInput').attr('placeholder', 'Search Trine resources...');
+			$('.query').attr('placeholder', 'Search Trine resources...');
+			$('.query').attr('isTrine', 'true');
 		} else {
-			$('#homeInput').attr('placeholder', 'Search All resources...');
+			$('.query').attr('placeholder', 'Search All resources...');
+			$('.query').attr('isTrine', 'false');
 		}
 	});
 	/*			search on click				*/
 	$('#search_button').click(function () {
-		search($('.query').val());
+		search($('.query').val(), $('.query').attr('isTrine'));
 	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
 	if (keycode == '13') {
-		search($('.query').val());
+		search($('.query').val(), $('.query').attr('isTrine'));
 	}
 });
 
-function search(query) {
+function search(query, isTrine) {
 	if (query == '') {
 		window.location = "/";
-	} else {
+	} else if (isTrine == 'false') {
 		window.location = "/results/?query=" + encodeURIComponent(query);
+	} else if (isTrine == 'true') {
+		window.location = "/trine-results/?query=" + encodeURIComponent(query);
 	}
 }
 

@@ -8,6 +8,7 @@ urlpatterns = [
 	path('', views.index, name='index'),
 	path('search/admin/', admin.site.urls),
 	path('results/', views.results, name='results'),
+	path('trine-results/', views.trine_results, name='trine_results'),
 	path('api/', views.PageList.as_view()),
 	path('api/<int:pk>/', views.PageDetail.as_view()),
 	path('api/links/', views.LinksList.as_view()),
@@ -21,8 +22,6 @@ urlpatterns = [
 	path('users/', views.UserList.as_view()),
 	path('users/<int:pk>/', views.UserDetail.as_view()),
 	path('api-auth/', include('rest_framework.urls')),
-	path('add_page/', views.AddPage.as_view()),
-	path('add_link/', views.LinkController.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
