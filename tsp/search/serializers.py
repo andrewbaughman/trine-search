@@ -10,13 +10,19 @@ class PageSerializer(serializers.ModelSerializer):
 class LinksSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = links
-		fields = ('id', 'destination', 'source', 'isTrine', 'visited',)
+		fields = ('id', 'pagerank', 'destination', 'source', 'isTrine', 'visited',)
+
+
+class EdgesSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = edges
+		fields = ('id', 'pointA', 'pointB',)
 
 
 class KeywordsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = keywords
-		fields = ('url', 'keyword', 'times_on_page',)
+		fields = ('id', 'url', 'keyword', 'times_on_page',)
 
 
 class PageResultsSerializer(serializers.ModelSerializer):

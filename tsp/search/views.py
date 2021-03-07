@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import JsonResponse
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, pagination
 from .models import page
 from django.contrib.auth.models import User
 from rest_framework import generics
@@ -10,19 +10,104 @@ from .serializers import *
 from django.forms.models import model_to_dict
 from django.views import View
 
+import json
 import time
+import json
+
 
 def index(request):
 	return render(request, 'home.html')
 
 def results(request):
 	start = time.time()
-	query = request.GET.get('query')
-	results = searchAlgorithm(query)
+	results = []
+	query = request.GET.get('query').lower().split(' ')
+	ranked_list = get_ranked_list(query, False)
+	#for key in ranked_list:
+	#	print(str(key) + ': ' + str(ranked_list[key]))
+	for source in ranked_list:
+		try:
+			link = links.objects.get(destination=source.destination)
+			site = page.objects.get(url=link)
+			site = model_to_dict(site)
+			results.append(site)
+		except Exception as e:
+			print(str(e))
+	
+	#results = searchAlgorithm(query)
 	end = time.time()
 	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
 
-def searchAlgorithm(query):
+def trine_results(request):
+	start = time.time()
+	results = []
+	query = request.GET.get('query').lower().split(' ')
+	ranked_list = get_ranked_list(query, True)
+	#for key in ranked_list:
+	#	print(str(key) + ': ' + str(ranked_list[key]))
+	for source in ranked_list:
+		try:
+			link = links.objects.get(destination=source.destination)
+			site = page.objects.get(url=link)
+			site = model_to_dict(site)
+			results.append(site)
+		except Exception as e:
+			print(str(e))
+	
+	#results = searchAlgorithm(query)
+	end = time.time()
+	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
+
+
+def get_ranked_list(entity_list, isTrine):
+	ranked_list = {}
+
+	# Make list of lists of urls. Each list of urls matches 1 keyword in query
+	lists_of_urls = []
+	if isTrine == True:
+		Trinekwds = keywords.objects.filter(keyword='trine')
+		Trine = []
+		for kwd in Trinekwds:
+			Trine.append(kwd.url)
+			
+	for entity in entity_list:
+		urls_to_keyword = []
+		try:
+			kwobjects = keywords.objects.filter(keyword=entity)[:20]
+			for kwobject in kwobjects:
+				if isTrine == True:
+					if kwobject.url in Trine:
+						link = links.objects.get(destination=kwobject.url.destination)
+						urls_to_keyword.append(link.destination)
+					else:
+						pass
+				else:
+					link = links.objects.get(destination=kwobject.url.destination)
+					urls_to_keyword.append(link.destination)
+
+		except Exception as e:
+			print(str(e))
+		lists_of_urls.append(urls_to_keyword)
+	
+	# Intersect list of lists of urls so that all that's left is urls that match all keywords
+	intersected_urls = lists_of_urls[0]
+	for url_list in lists_of_urls:
+		intersected_urls = list(set(intersected_urls) & set(url_list))
+	
+	# Add ranks to the intersected list
+	for destination in intersected_urls:
+		link = links.objects.get(destination=destination)
+		ranked_list[destination] = 0
+		for entity in entity_list:
+			ranked_list[destination] += keywords.objects.get(url=link, keyword=entity).times_on_page
+	
+	# Sort the ranked list by highest first 
+	print(intersected_urls)
+	ranked_list = list(links.objects.filter(destination__in=intersected_urls).order_by('pagerank'))
+	#ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
+	return ranked_list
+
+def searchAlgorithm1(query):
 	query = query.split(' ')
 	results = []
 	for word in query:
@@ -74,74 +159,6 @@ def searchAlgorithm(query):
 	print(len(temp_result_urls))
 	return results
 
-class AddPage(View):
-	def post(self, request):
-		if request.POST.get('method') == 'add_page':	
-
-			ret = {}
-
-			url = request.POST.get('url')
-			title = request.POST.get('title')
-			description = request.POST.get('description')
-			link_object = links.objects.get(destination=url)
-			webpage = page.objects.create(url=link_object, title=title, description=description)
-
-			ret['page'] = model_to_dict(webpage)
-
-			return JsonResponse(ret)
-
-		elif request.POST.get('method') == 'is_duplicate_page':
-				ret = {}
-				url = request.POST.get('url')
-				link_object = links.objects.get(destination=url)
-				ret['is_duplicate_page'] = False
-				page_urls = page.objects.filter(url=url)
-				for link in page_urls:
-					if link.url == link_object: 
-						ret['is_duplicate_page'] = True
-						return JsonResponse(ret)
-				return JsonResponse(ret)
-
-class LinkController(View):
-	def post(self, request):
-			if request.POST.get('method') == 'is_duplicate_link':
-				ret = {}
-				destination = request.POST.get('destination')
-				ret['is_duplicate_link'] = False
-				destination_links = links.objects.filter(destination=destination)
-				for link in destination_links:
-					if link.destination == destination: 
-						ret['is_duplicate_link'] = True
-						return JsonResponse(ret)
-				return JsonResponse(ret)
-
-			elif request.POST.get('method') == 'add_link':	
-
-				ret = {}
-
-				destination = request.POST.get('destination')
-				source = request.POST.get('source')
-				isTrine = request.POST.get('isTrine')
-
-				link_object = links.objects.create(destination=destination, source=source, isTrine=isTrine, visited = False)
-
-				ret['links'] = model_to_dict(link_object)
-
-				return JsonResponse(ret)
-
-			elif request.POST.get('method') == 'get_link':	
-				ret = {}
-				id = request.POST.get('id')
-				if str(id) == str(0):
-					print("First link")
-					link_object = links.objects.first()
-				else:
-					print("Known link")
-					link_object = links.objects.get(id=id)
-
-				ret['links'] = model_to_dict(link_object)
-
-				return JsonResponse(ret)
 
 class UserList(generics.ListAPIView):
 	queryset = User.objects.all()
@@ -176,9 +193,24 @@ class LinksDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class EdgesList(generics.ListCreateAPIView):
+	queryset = edges.objects.all()
+	serializer_class = EdgesSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class EdgesDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = edges.objects.all()
+	serializer_class = EdgesSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+
+
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
+	pagination.PageNumberPagination.page_size = 100
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 

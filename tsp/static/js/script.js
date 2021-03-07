@@ -14,39 +14,28 @@ $(document).ready(function () {
 			localStorage.setItem("theme", "light");
 		}
 	});
-	/*			toggle scope on click				*/
-	$('#home-toggle').on('change', function () {
-		//var current = $('#homeInpput').attr('placeholder');
-		if ($("#home-toggle").find('input').is(':checked')) {
-			$('#homeInput').attr('placeholder', 'Search Trine resources...');
-			localStorage.setItem("toggle", "trine");
+	$('.query').attr('isTrine', 'false');
 
-		} else {
-			$('#homeInput').attr('placeholder', 'Search All resources...');
-			localStorage.setItem("toggle", "all");
-		}
-	});
-	$('#results-toggle').on('change', function () {
+	$('#trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
-		if ($("#results-toggle").find('input').is(':checked')) {
-			$('#resultsInput').attr('placeholder', 'Search Trine resources...');
-			localStorage.setItem("toggle", "trine");
-
+		if ($("#trine-toggle").find('input').is(':checked')) {
+			$('.query').attr('placeholder', 'Search Trine resources...');
+			$('.query').attr('isTrine', 'true');
 		} else {
-			$('#resultsInput').attr('placeholder', 'Search All resources...');
-			localStorage.setItem("toggle", "all");
+			$('.query').attr('placeholder', 'Search All resources...');
+			$('.query').attr('isTrine', 'false');
 		}
 	});
 	/*			search on click				*/
 	$('#search_button').click(function () {
-		search($('.query').val());
+		search($('.query').val(), $('.query').attr('isTrine'));
 	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
 	if (keycode == '13') {
-		search($('.query').val());
+		search($('.query').val(), $('.query').attr('isTrine'));
 	}
 });
 
@@ -54,8 +43,10 @@ function search(query) {
 	var toggleSetting = localStorage.getItem("toggle");	//for later
 	if (query == '') {
 		window.location = "/";
-	} else {
+	} else if (isTrine == 'false') {
 		window.location = "/results/?query=" + encodeURIComponent(query);
+	} else if (isTrine == 'true') {
+		window.location = "/trine-results/?query=" + encodeURIComponent(query);
 	}
 }
 

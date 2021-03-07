@@ -17,22 +17,16 @@
 		<a href="/">
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="{{query}}">
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources...">
 		<div id="left">
-			<div>
-				<div style='display: grid; grid-template-columns: 2fr 1fr;'>
-					<input type="submit" id="search_button" class="btn" name="search" value="search">
-
-					<div style='margin-left: 10px;'>
-						<label class="switch" id='results-toggle'>
-							<input type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
+			<input type="submit" id="search_button" class="btn" name="search" value="search">
+			<div id="toggle-trine">
+				<label class="switch" id='trine-toggle'>
+					<input type="checkbox">
+					<span class="slider round"></span>
+				</label>
 			</div>
 		</div>
-		</form>
 		<button id="toggle" class="btn-toggle">light</button>
 	</div>
 	<div class="results-container">

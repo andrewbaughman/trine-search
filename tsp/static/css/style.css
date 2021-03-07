@@ -162,6 +162,10 @@ info {
 	padding-right: 0.9em;
 }
 
+#toggle-trine {
+	display:inline-block;
+}
+
 .information-box {
 	width: 320px;
 	margin: auto;
