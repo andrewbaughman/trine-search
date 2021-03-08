@@ -91,6 +91,7 @@ function setlight() {
 	root.style.setProperty('--title-text-hover', 'blue')
 	root.style.setProperty('--title-text-visit', 'purple')
 	root.style.setProperty('--padding-color', '#f1f5ff')
+	$('.btn-toggle').html('light');
 }
 
 function setdark() {
@@ -108,5 +109,5 @@ function setdark() {
 	root.style.setProperty('--title-text-hover', 'lightblue')
 	root.style.setProperty('--title-text-visit', '#ffb9fe')
 	root.style.setProperty('--padding-color', '#2a3547')
-
+	$('.btn-toggle').html('dark');
 }

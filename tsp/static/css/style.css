@@ -150,7 +150,7 @@ info {
 	margin: auto;
 	width: 14em;
 	padding: 10px;
-	display: inline-block;
+	display: inline-flex;
 }
 
 .left {
