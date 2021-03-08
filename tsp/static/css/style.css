@@ -363,3 +363,32 @@ input:checked + .slider:before {
 }
 
 /*		================================			*/
+
+
+.widget-canvas {
+	width: auto;
+	min-height: 128px;
+	max-height: none;
+	height: auto;
+	background-color: var(--second-bg-color);
+	border: 2px solid var(--highlight-color);
+	padding: 5px;
+}
+.input-container {
+	margin: 10px 0px 10px 0px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid black;
+}
+.color-input {
+	float: right;
+	background: var(--second-bg-color);
+	border: 1px solid var(--highlight-color);
+	border-radius: 5px;
+	padding: 3px;
+}
+.ui-widget-overlay {
+	background: #aaaaaa;
+	opacity: 0.8;
+	filter: Alpha(Opacity=30);
+}
+
