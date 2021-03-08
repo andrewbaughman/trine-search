@@ -56,7 +56,12 @@ def trine_results(request):
 	
 	#results = searchAlgorithm(query)
 	end = time.time()
-	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
+	query_string = ""
+	for word in query:
+		query_string += str(word)
+		query_string += " "
+	print(query_string)
+	return render(request, 'results.html', {'query':query_string, 'results': results, 'time':end-start,})
 
 
 def get_ranked_list(entity_list, isTrine):

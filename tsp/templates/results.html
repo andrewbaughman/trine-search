@@ -17,11 +17,11 @@
 		<a href="/">
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources...">
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value="{{query}}">
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search">
-			<div id="toggle-trine">
-				<label class="switch" id='trine-toggle'>
+			<div>
+				<label class="switch trine-toggle" id='results-toggle'>
 					<input type="checkbox">
 					<span class="slider round"></span>
 				</label>

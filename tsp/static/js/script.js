@@ -14,16 +14,17 @@ $(document).ready(function () {
 			localStorage.setItem("theme", "light");
 		}
 	});
-	$('.query').attr('isTrine', 'false');
-
-	$('#trine-toggle').on('change', function () {
+	//$('.query').attr('isTrine', 'false');
+	$('.trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
-		if ($("#trine-toggle").find('input').is(':checked')) {
+		if ($(".trine-toggle").find('input').is(':checked')) {
 			$('.query').attr('placeholder', 'Search Trine resources...');
 			$('.query').attr('isTrine', 'true');
+			localStorage.setItem("isTrine", "true");
 		} else {
 			$('.query').attr('placeholder', 'Search All resources...');
 			$('.query').attr('isTrine', 'false');
+			localStorage.setItem("isTrine", "false");
 		}
 	});
 	/*			search on click				*/
@@ -39,8 +40,8 @@ $(document).keypress(function (event) {
 	}
 });
 
-function search(query) {
-	var toggleSetting = localStorage.getItem("toggle");	//for later
+function search(query, isTrine) {
+	var toggleSetting = localStorage.getItem("toggle"); //for later
 	if (query == '') {
 		window.location = "/";
 	} else if (isTrine == 'false') {
@@ -51,14 +52,16 @@ function search(query) {
 }
 
 function defaultToggle() {
-	var currentToggle = localStorage.getItem("toggle");
-	if (currentToggle == "trine") {
-		$("#home-toggle").find('input').attr('checked', 'checked');
-		$("#results-toggle").find('input').attr('checked', 'checked');
+	var currentToggle = localStorage.getItem("isTrine");
+	if (currentToggle == "true") {
+		$(".trine-toggle").find('input').attr('checked', 'checked');
+		$('.query').attr('placeholder', 'Search Trine resources...');
+		$('.query').attr('isTrine', 'true');
 	} else {
-		$("#home-toggle").find('input').removeAttr('checked', 'checked');
-		$("#results-toggle").find('input').removeAttr('checked', 'checked');
-		localStorage.setItem("toggle", "all");
+		$(".trine-toggle").find('input').removeAttr('checked', 'checked');
+		$('.query').attr('placeholder', 'Search All resources...');
+		$('.query').attr('isTrine', 'false');
+		localStorage.setItem("isTrine", "false");
 	}
 }
 
