@@ -2,15 +2,8 @@
 {% block content %}
 {% load static %}
 
-<html lang="en" dir="ltr">
 
-<head>
-	<meta charset="utf-8">
-	<title>Thunder Seeker Home</title>
-</head>
-
-<body class="second">
-	<button id="toggle" class="btn-toggle">light</button>
+	<button class="btn-toggle">Theme</button>
 	</br>
 	<div>
 		<img id='search-logo' src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
@@ -20,15 +13,17 @@
 				<input type="submit" id="search_button" class="large-button" name="search" value="search">
 			</div>
 			<div>
-				<label class="switch" id='trine-toggle'>
+				<div>
+					<info>Trine Only</info>
+				</div>
+				<label class="switch trine-toggle" id='home-toggle'>
 					<input type="checkbox">
 					<span class="slider round"></span>
 				</label>
 			</div>
 		</div>
 	</div>
-</body>
-
-</html>
 
 {% endblock %}
+
+
