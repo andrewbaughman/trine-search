@@ -19,9 +19,9 @@ $(document).ready(function () {
 	get_theme_or_defaults()
 	/*			 widgets			*/
 	$("#color-picker-widget").dialog({
+		modal: true,
 		position: { my: "center", at: "center", of: 'body' }, 
 		autoOpen: false,
-		modal: true,
 		width: 500,
 	});
 	$(".btn-toggle").click(function () {
