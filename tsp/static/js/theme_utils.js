@@ -12,7 +12,7 @@ var default_url_text = '#ffffff';
 var default_title_text = '#ffffff';
 var default_title_text_hover = '#add8e6';
 var default_title_text_visit = '#ffb9fe';
-var default_padding_color = '#ffb9fe';
+var default_padding_color = '#404f60';
 
 $(document).ready(function () {
 	/*			 Theme				*/
