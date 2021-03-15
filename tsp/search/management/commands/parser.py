@@ -69,6 +69,8 @@ class Command(BaseCommand):
 
 			if soup.find('title'):
 				title = soup.find('title').get_text()
+				if (len(title) > 70):
+					title = title[:66] + " ..."
 				parsed_page['title'] = title
 			else:
 				return False

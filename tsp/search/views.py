@@ -223,15 +223,3 @@ class KeywordsDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
-class PageResultsList(generics.ListCreateAPIView):
-	queryset = page_results.objects.all()
-	serializer_class = PageResultsSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
-class PageResultsDetail(generics.RetrieveUpdateDestroyAPIView):
-	queryset = page_results.objects.all()
-	serializer_class = PageResultsSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

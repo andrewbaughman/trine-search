@@ -25,12 +25,6 @@ class KeywordsSerializer(serializers.ModelSerializer):
 		fields = ('id', 'url', 'keyword', 'times_on_page',)
 
 
-class PageResultsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = page_results
-		fields = ('url', 'title', 'description',)
-		description = serializers.CharField(required=False, allow_null=True)
-
 class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
