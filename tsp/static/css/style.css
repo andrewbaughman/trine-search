@@ -12,8 +12,11 @@
 	--title-text: #0;
 	--title-text-hover: #0;
 	--title-text-visit: #0;
-	--padding-color: #0;
+	--padding-color: #333333;
+	--results-background: #333333;
 	--accent-blue: #023d61;
+	--transparent: #00000000;
+	--highlight-text: #426292;
 }
 
 .second {
@@ -40,9 +43,15 @@ url {
 	min-height: 4em;
 	padding: 10px;
 	margin: 10px;
-	background-color: var(--padding-color);
 	border: solid 1px var(--info-text);
 	word-wrap: break-word;
+}
+
+
+.result:hover {
+	border: solid 1px var(--highlight-text);
+	background-color: var(--results-background);
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 

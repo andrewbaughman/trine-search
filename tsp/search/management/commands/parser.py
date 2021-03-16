@@ -69,6 +69,8 @@ class Command(BaseCommand):
 
 			if soup.find('title'):
 				title = soup.find('title').get_text()
+				if (len(title) > 70):
+					title = title[:66] + " ..."
 				parsed_page['title'] = title
 			else:
 				return False
@@ -83,7 +85,7 @@ class Command(BaseCommand):
 				best_description = ''					
 				descriptions = soup.findAll('p')
 				for description in descriptions:
-					description_text = soup.find('p').get_text()
+					description_text = description.get_text()
 					if len(description_text) > len(best_description):
 						best_description = description_text
 				parsed_page['description'] = descriptions[0].get_text()
@@ -110,7 +112,7 @@ class Command(BaseCommand):
 					soup = BeautifulSoup(__page.content, 'html.parser')
 					signal.alarm(0)
 					parsed_page = get_page_info(soup)
-					__keywords = get_word_frequency(soup)
+					__keywords = get_keywords(soup)
 					if parsed_page:
 						save_page_to_database(parsed_page)
 					if __keywords:
