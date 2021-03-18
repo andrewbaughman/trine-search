@@ -83,7 +83,7 @@ class Command(BaseCommand):
 				if href == None:
 					continue
 				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
-					link_object = {'destination': href, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
+					link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
 					save_link_to_database(link_object)
 				elif (href):
 					if(loc_third_slash(url)):
