@@ -85,7 +85,7 @@ class Command(BaseCommand):
 			if soup.find('title'):
 				title = soup.find('title').get_text()
 				if (len(title) > 70):
-					title = title[:66] + " ..."
+					title = title[:65] + " ..."
 				parsed_page['title'] = title
 			else:
 				return False
@@ -103,9 +103,10 @@ class Command(BaseCommand):
 					description_text = description.get_text()
 					if len(description_text) > len(best_description):
 						best_description = description_text
-				parsed_page['description'] = descriptions[0].get_text()
 			else:
 				best_description = 'No description Available.'
+			if (len(best_description) > 200):
+					title = title[:195] + " ..."
 			parsed_page['description'] = best_description
 
 			parsed_page['url'] = url
