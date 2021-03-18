@@ -15,7 +15,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 
 		def matching_page(parsed_page):
-			matching_page = page.objects.filter(title=parsed_page['title'], description=parsed_page['description'])
+			matching_page = page.objects.filter(title=parsed_page['title']).filter(description=parsed_page['description'])
 			if matching_page.count() == 1:
 				print("FOUND MATCHING PAGE")
 				found = links.objects.get(destination=matching_page[0].url.destination)
