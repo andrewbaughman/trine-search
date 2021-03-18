@@ -14,6 +14,24 @@ class Command(BaseCommand):
 	
 	def handle(self, *args, **options):
 
+		def matching_page(parsed_page):
+			matching_page = page.objects.filter(title=parsed_page['title'], description=parsed_page['description'])
+			if matching_page.count() == 1:
+				print("FOUND MATCHING PAGE")
+				found = links.objects.get(destination=matching_page[0].url.destination)
+				current = links.objects.get(destination=parsed_page['url'])
+				if current.pagerank > found.pagerank:
+					found.delete()
+					print("DELETING RECORD FOR " + found.destination)
+					return True
+				else:
+					print("this matching page will not be saved.")
+					return False
+			elif matching_page.count() > 1:
+				print("ERROR FOUND!")
+			return True
+
+				
 		def save_keywords_to_database(url, __keywords):
 			parsed_page_keywords = json.dumps(__keywords)
 
@@ -113,7 +131,7 @@ class Command(BaseCommand):
 					signal.alarm(0)
 					parsed_page = get_page_info(soup)
 					__keywords = get_keywords(soup)
-					if parsed_page:
+					if parsed_page and matching_page(parsed_page):
 						save_page_to_database(parsed_page)
 					if __keywords:
 						save_keywords_to_database(url, __keywords)
