@@ -82,6 +82,9 @@ class Command(BaseCommand):
 				href = link.get('href')
 				if href == None:
 					continue
+				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
+					link_object = {'destination': href, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
+					save_link_to_database(link_object)
 				elif (href):
 					if(loc_third_slash(url)):
 						new_url =  url[0:loc_third_slash(url)]
@@ -150,7 +153,7 @@ class Command(BaseCommand):
 							
 		def save_link_to_database(link_object):
 			# check for duplicate before sending
-			if is_duplicate_link(link_object['destination']) == False:
+			if (is_duplicate_link(link_object['destination']) == False) and (len(link_object['destination'])<399) :
 				link = add_link(link_object)
 				try:
 					edge_object = {'pointA': links.objects.get(destination=link.source), 'pointB': link}
