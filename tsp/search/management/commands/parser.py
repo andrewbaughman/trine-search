@@ -106,7 +106,7 @@ class Command(BaseCommand):
 			else:
 				best_description = 'No description Available.'
 			if (len(best_description) > 200):
-					title = title[:195] + " ..."
+					best_description = best_description[:195] + " ..."
 			parsed_page['description'] = best_description
 
 			parsed_page['url'] = url
