@@ -12,7 +12,7 @@ class page(models.Model):
 class keywords(models.Model):
 	id = models.AutoField(primary_key=True)
 	url = models.ForeignKey('links', on_delete=models.CASCADE)
-	keyword = models.CharField(max_length=50)
+	keyword = models.CharField(max_length=20)
 	times_on_page = models.IntegerField()
 
 

@@ -33,7 +33,7 @@ def get_word_frequency(soup):
     #for loop to load/discard words
     for i in unique_word_list:
         for z in exception_list:
-            if (i==z) or len(i) > 49:
+            if (i==z) or len(i) > 20:
                 if (deb==1):
                     print("Blocked word: " + z)
                 exception_flag = 1
