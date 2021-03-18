@@ -21,7 +21,7 @@ class Command(BaseCommand):
 				found = links.objects.get(destination=matching_page[0].url.destination)
 				current = links.objects.get(destination=parsed_page['url'])
 				if current.pagerank > found.pagerank:
-					found.delete()
+					matching_page.delete()
 					print("DELETING RECORD FOR " + found.destination)
 					return True
 				else:
@@ -49,14 +49,11 @@ class Command(BaseCommand):
 				print(str(e))
 				return False
 
-			print("Post successful")
-
-
 		def save_page_to_database(parsed_page):	
 			link_object = links.objects.get(destination=url)
 			webpage = page.objects.create(url=link_object, title=parsed_page['title'], description=parsed_page['description'])
 			model_to_dict(webpage)
-			print("Success")
+			print("Post successful !")
 			return
 
 		def is_duplicate_page(url):
