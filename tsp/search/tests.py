@@ -7,6 +7,9 @@ from decimal import Decimal
 
 # Create your tests here.
 
+# To run most of the tests, parser.py and crawler.py need to be added on the same level as tests.py,
+# but modified to not have the Command class or handle definition.
+
 class PageRankTestCase(TestCase):
 	def setUp(self):
 		n1 = links.objects.create(destination="http://www.1.com")
