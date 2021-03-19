@@ -14,6 +14,24 @@ class Command(BaseCommand):
 	
 	def handle(self, *args, **options):
 
+		def matching_page(parsed_page):
+			matching_page = page.objects.filter(title=parsed_page['title']).filter(description=parsed_page['description'])
+			if matching_page.count() == 1:
+				print("FOUND MATCHING PAGE")
+				found = links.objects.get(destination=matching_page[0].url.destination)
+				current = links.objects.get(destination=parsed_page['url'])
+				if current.pagerank > found.pagerank:
+					matching_page.delete()
+					print("DELETING RECORD FOR " + found.destination)
+					return True
+				else:
+					print("this matching page will not be saved.")
+					return False
+			elif matching_page.count() > 1:
+				print("ERROR FOUND!")
+			return True
+
+				
 		def save_keywords_to_database(url, __keywords):
 			parsed_page_keywords = json.dumps(__keywords)
 
@@ -31,14 +49,11 @@ class Command(BaseCommand):
 				print(str(e))
 				return False
 
-			print("Post successful")
-
-
 		def save_page_to_database(parsed_page):	
 			link_object = links.objects.get(destination=url)
 			webpage = page.objects.create(url=link_object, title=parsed_page['title'], description=parsed_page['description'])
 			model_to_dict(webpage)
-			print("Success")
+			print("Post successful !")
 			return
 
 		def is_duplicate_page(url):
@@ -70,7 +85,7 @@ class Command(BaseCommand):
 			if soup.find('title'):
 				title = soup.find('title').get_text()
 				if (len(title) > 70):
-					title = title[:66] + " ..."
+					title = title[:65] + " ..."
 				parsed_page['title'] = title
 			else:
 				return False
@@ -88,9 +103,10 @@ class Command(BaseCommand):
 					description_text = description.get_text()
 					if len(description_text) > len(best_description):
 						best_description = description_text
-				parsed_page['description'] = descriptions[0].get_text()
 			else:
 				best_description = 'No description Available.'
+			if (len(best_description) > 200):
+					best_description = best_description[:195] + " ..."
 			parsed_page['description'] = best_description
 
 			parsed_page['url'] = url
@@ -113,7 +129,7 @@ class Command(BaseCommand):
 					signal.alarm(0)
 					parsed_page = get_page_info(soup)
 					__keywords = get_keywords(soup)
-					if parsed_page:
+					if parsed_page and matching_page(parsed_page):
 						save_page_to_database(parsed_page)
 					if __keywords:
 						save_keywords_to_database(url, __keywords)

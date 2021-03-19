@@ -82,8 +82,13 @@ WSGI_APPLICATION = 'tsp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'trinedb',
+        'HOST': 'trine-search-db.postgres.database.azure.com',
+        'USER': 'trine@trine-search-db',
+        'PASSWORD': 'Thunder7',
+        'PORT': '5432',
+        'SSLMODE': 'True'
     }
 }
 
