@@ -9,11 +9,13 @@ from .models import *
 from .serializers import *
 from django.forms.models import model_to_dict
 from django.views import View
+from django.db.models import Q
 
 import json
 import time
 import json
 
+exception_list = ("", " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and", "another", "any", "anyhow", "anyone", "anything", "anyway", "anywhere", "are", "around", "as", "at", "back", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom", "but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven", "else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thick", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the")
 
 def index(request):
 	return render(request, 'home.html')
@@ -21,7 +23,10 @@ def index(request):
 def results(request):
 	start = time.time()
 	results = []
-	query = request.GET.get('query').lower().split(' ')
+	query = request.GET.get('query').lower().split()
+	query = parse_query(query)
+	print(query)
+
 	ranked_list = get_ranked_list(query, False)
 	#for key in ranked_list:
 	#	print(str(key) + ': ' + str(ranked_list[key]))
@@ -32,7 +37,7 @@ def results(request):
 			site = model_to_dict(site)
 			results.append(site)
 		except Exception as e:
-			print(str(e))
+			pass
 	
 	#results = searchAlgorithm(query)
 	end = time.time()
@@ -41,7 +46,8 @@ def results(request):
 def trine_results(request):
 	start = time.time()
 	results = []
-	query = request.GET.get('query').lower().split(' ')
+	query = request.GET.get('query').lower().split()
+	query = parse_query(query)
 	ranked_list = get_ranked_list(query, True)
 	#for key in ranked_list:
 	#	print(str(key) + ': ' + str(ranked_list[key]))
@@ -60,35 +66,32 @@ def trine_results(request):
 	for word in query:
 		query_string += str(word)
 		query_string += " "
-	print(query_string)
 	return render(request, 'results.html', {'query':query_string, 'results': results, 'time':end-start,})
 
+def parse_query(query):
+	for item in query:
+		if item in exception_list:
+			query.remove(item)
+	return query
 
 def get_ranked_list(entity_list, isTrine):
 	ranked_list = {}
 
 	# Make list of lists of urls. Each list of urls matches 1 keyword in query
 	lists_of_urls = []
-	if isTrine == True:
-		Trinekwds = keywords.objects.filter(keyword='trine')
-		Trine = []
-		for kwd in Trinekwds:
-			Trine.append(kwd.url)
 			
 	for entity in entity_list:
+		if entity[-1] == 's':
+		 	entity = entity[:(len(entity) -1)]
 		urls_to_keyword = []
+		kwobjects =[]
 		try:
-			kwobjects = keywords.objects.filter(keyword=entity)[:20]
-			for kwobject in kwobjects:
-				if isTrine == True:
-					if kwobject.url in Trine:
-						link = links.objects.get(destination=kwobject.url.destination)
-						urls_to_keyword.append(link.destination)
-					else:
-						pass
-				else:
-					link = links.objects.get(destination=kwobject.url.destination)
-					urls_to_keyword.append(link.destination)
+			if isTrine:
+				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=True).values('url')
+			else:
+				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values('url')
+			urls_to_keyword = links.objects.filter(id__in=kwobjects)
+			urls_to_keyword = set(url.id for url in urls_to_keyword)
 
 		except Exception as e:
 			print(str(e))
@@ -99,70 +102,10 @@ def get_ranked_list(entity_list, isTrine):
 	for url_list in lists_of_urls:
 		intersected_urls = list(set(intersected_urls) & set(url_list))
 	
-	# Add ranks to the intersected list
-	for destination in intersected_urls:
-		link = links.objects.get(destination=destination)
-		ranked_list[destination] = 0
-		for entity in entity_list:
-			ranked_list[destination] += keywords.objects.get(url=link, keyword=entity).times_on_page
-	
 	# Sort the ranked list by highest first 
-	print(intersected_urls)
-	ranked_list = list(links.objects.filter(destination__in=intersected_urls).order_by('pagerank'))
+	ranked_list = list(links.objects.filter(id__in=intersected_urls).order_by('pagerank'))
 	#ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
 	return ranked_list
-
-def searchAlgorithm1(query):
-	query = query.split(' ')
-	results = []
-	for word in query:
-		print(word)
-		temp_result_urls = []
-		temp_result1 = page.objects.filter(title__exact=word)
-		temp_result2 = page.objects.filter(title__iexact=word)
-		temp_result3 = page.objects.filter(title__contains=word)
-		temp_result4 = page.objects.filter(description__contains=word)
-		for result in temp_result1:
-			try:
-				print(result.title)
-				tempdata = model_to_dict(result)
-				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
-					temp_result_urls.append(tempdata['url'])
-					results.append(tempdata)
-			except Exception as e:
-				print('model to dict error: {}'.format(e))
-		for result in temp_result2:
-			try:
-				print(result.title)
-				tempdata = model_to_dict(result)
-				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
-					temp_result_urls.append(tempdata['url'])
-					results.append(tempdata)
-			except Exception as e:
-				print('model to dict error: {}'.format(e))		
-		for result in temp_result3:
-			try:
-				print(result.title)
-				tempdata = model_to_dict(result)
-				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
-					temp_result_urls.append(tempdata['url'])
-					results.append(tempdata)
-			except Exception as e:
-				print('model to dict error: {}'.format(e))		
-		for result in temp_result4:
-			try:
-				print(result.title)
-				tempdata = model_to_dict(result)
-				if(tempdata['url'] not in temp_result_urls) and (tempdata['description'] is not ''):
-					temp_result_urls.append(tempdata['url'])
-					results.append(tempdata)
-			except Exception as e:
-				print('model to dict error: {}'.format(e))
-	#webpages = page.objects.all()
-	#for webpage in webpages:
-	#	results.append(model_to_dict(webpage))
-	print(len(temp_result_urls))
-	return results
 
 
 class UserList(generics.ListAPIView):
