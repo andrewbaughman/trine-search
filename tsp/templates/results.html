@@ -17,10 +17,13 @@
 		<a href="/">
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources...">
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value='{{query}}'>
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
-			<div>
+			<div class='results-function-container'>
+				<div style='padding-top: 5px;'>
+					<info>Trine Only</info>
+				</div>
 				<label class="switch trine-toggle" id='results-toggle'>
 					<input type="checkbox">
 					<span class="slider round"></span>
@@ -35,19 +38,22 @@
 		</div>
 		{% if results %}
 		{% for result in results %}
-		<div class='result'>
-			<tr>
-				<url>
-					<td>{{ result.url }}</td>
-				</url>
-				<td><a href="{{ result.url }}">
-						<title-result></br>{{ result.title }}</td>
-				</title-result></a>
-				<td></br>
-					<info>
-				<td>{{ result.description }}</td>
-				</info>
-		</div>
+		<a href="{{ result.url }}">
+			<div class='result'>
+				<tr>
+					<url>
+						<td>{{ result.url }}</td>
+					</url>
+					<td>
+						<title-result></br>{{ result.title }}
+					</td>
+					</title-result>
+					<td></br>
+						<info>
+					<td>{{ result.description }}</td>
+					</info>
+			</div>
+		</a>
 		{% endfor %}
 		{% else %}
 		<div class='result'>
