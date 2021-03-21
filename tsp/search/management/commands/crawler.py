@@ -66,6 +66,7 @@ class Command(BaseCommand):
 			print("Now entering " + url)
 			try:
 				page = requests.get(url)
+				signal.alarm(0)
 				soup = BeautifulSoup(page.content, 'html.parser')
 				links_a = soup.findAll('a')
 			except TimeOutException as ex:
@@ -75,12 +76,17 @@ class Command(BaseCommand):
 			except Exception as e:
 				print(str(e))
 				return
-			signal.alarm(0)
 			links.objects.filter(destination=url).update(visited=True)
 			print("Visited " + url)
 			for link in links_a:
 				href = link.get('href')
 				if href == None:
+					continue
+				if len(href) < 3:
+					continue
+				elif (href[0] == '#'):
+					continue
+				elif (href[1] == '#'):
 					continue
 				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
 					link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
