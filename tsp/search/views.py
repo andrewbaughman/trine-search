@@ -103,11 +103,21 @@ def get_ranked_list(entity_list, isTrine):
 				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=True).values()
 			else:
 				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values()
-			the_rank = links.objects.filter(id__in=kwobjects.values('url_id')).values()
-			for item in the_rank:
-				rank_to_keyword[item['id']] = item['pagerank']
+			
+			#the_rank = links.objects.filter(id__in=kwobjects.values('url_id')).values()
+
+			# for item in the_rank:
+			# 	rank_to_keyword[item['id']] = item['pagerank']
+
 			for urls in kwobjects:
-				urls_to_keyword[urls['url_id']] = urls['times_on_page']
+				vitals = 0
+				if urls['is_substr']:
+					vitals = 1
+				if urls['url_id'] in urls_to_keyword:
+					if urls_to_keyword[urls['url_id']][1] == 0:
+						urls_to_keyword[urls['url_id']][1] += vitals
+				else:
+					urls_to_keyword[urls['url_id']] = [urls['times_on_page'], vitals]
 			
 			# if not isTrine:
 			# 	for key in rank_to_keyword:
@@ -120,21 +130,24 @@ def get_ranked_list(entity_list, isTrine):
 			for key, value in returned_values.items():
 				if key in urls_to_keyword:
 					# ratio to ensure that one term doesn't take over the search
-					cal = value / urls_to_keyword[key]
+					cal = value[0] / urls_to_keyword[key][0]
 					if cal > 1:
 						cal = 1 / cal
-					returned_values[key] = value + urls_to_keyword[key] * cal
+					returned_values[key][0] = (value[0] + urls_to_keyword[key][0] * cal)
+					returned_values[key][1] = (value[1] + urls_to_keyword[key][1])
 			#add new values to the return dictionary
 			for key, value in urls_to_keyword.items():
 				#effectively intersects with first
 				if key not in returned_values and times_fored == 1:
-					returned_values[key] = (value / factor)
+					returned_values[key] = [(value[0] / factor), urls_to_keyword[key][1]]
 			times_fored += 1
 		except Exception as e:
 			print(str(e))
 	#sort the return values based on highest value
-	returned_values = dict(sorted(returned_values.items(), key=lambda item: item[1], reverse=True))
+	returned_values = dict(sorted(returned_values.items(), key=lambda item: (item[1][1], item[1][0]), reverse=True))
+	print(returned_values)
 	returned_values = list(returned_values.keys())
+
 	return returned_values
 
 
@@ -188,7 +201,7 @@ class EdgesDetail(generics.RetrieveUpdateDestroyAPIView):
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
-	pagination.PageNumberPagination.page_size = 100
+	pagination.PageNumberPagination.page_size = 10000
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 

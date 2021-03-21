@@ -22,7 +22,7 @@ class EdgesSerializer(serializers.ModelSerializer):
 class KeywordsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = keywords
-		fields = ('id', 'url', 'keyword', 'times_on_page',)
+		fields = ('id', 'url', 'keyword', 'times_on_page', 'is_substr',)
 
 
 class UserSerializer(serializers.ModelSerializer):
