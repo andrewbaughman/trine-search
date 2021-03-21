@@ -23,42 +23,52 @@ def index(request):
 def results(request):
 	start = time.time()
 	results = []
-	query = request.GET.get('query').lower().split()
+	init_query = request.GET.get('query')
+	query = init_query.lower().split()
 	query = parse_query(query)
 	print(query)
 
 	ranked_list = get_ranked_list(query, False)
 	#for key in ranked_list:
 	#	print(str(key) + ': ' + str(ranked_list[key]))
+	success = 0
 	for source in ranked_list:
 		try:
 			link = links.objects.get(destination=source.destination)
 			site = page.objects.get(url=link)
 			site = model_to_dict(site)
 			results.append(site)
+			success += 1
+			if success > 19:
+				break
 		except Exception as e:
 			pass
 	
 	#results = searchAlgorithm(query)
 	end = time.time()
-	return render(request, 'results.html', {'query':query, 'results': results, 'time':end-start,})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,})
 
 def trine_results(request):
 	start = time.time()
 	results = []
-	query = request.GET.get('query').lower().split()
+	init_query = request.GET.get('query')
+	query = init_query.lower().split()
 	query = parse_query(query)
 	ranked_list = get_ranked_list(query, True)
 	#for key in ranked_list:
 	#	print(str(key) + ': ' + str(ranked_list[key]))
+	success = 0
 	for source in ranked_list:
 		try:
 			link = links.objects.get(destination=source.destination)
 			site = page.objects.get(url=link)
 			site = model_to_dict(site)
 			results.append(site)
+			success += 1
+			if success > 19:
+				break
 		except Exception as e:
-			print(str(e))
+			pass
 	
 	#results = searchAlgorithm(query)
 	end = time.time()
@@ -66,7 +76,7 @@ def trine_results(request):
 	for word in query:
 		query_string += str(word)
 		query_string += " "
-	return render(request, 'results.html', {'query':query_string, 'results': results, 'time':end-start,})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,})
 
 def parse_query(query):
 	for item in query:

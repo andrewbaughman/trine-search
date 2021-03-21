@@ -94,6 +94,7 @@ def get_ranked_list(entity_list, isTrine):
 	times_fored = 1
 	for entity in entity_list:
 		urls_to_keyword = {}
+		rank_to_keyword = {}
 		if entity[-1] == 's':
 		 	entity = entity[:(len(entity) -1)]
 		kwobjects =[]
@@ -102,11 +103,19 @@ def get_ranked_list(entity_list, isTrine):
 				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=True).values()
 			else:
 				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values()
-			#print(kwobjects)
-			#urls_to_keyword = links.objects.filter(id__in=kwobjects.values('url_id'))
-			#print(urls_to_keyword)
+			the_rank = links.objects.filter(id__in=kwobjects.values('url_id')).values()
+			for item in the_rank:
+				rank_to_keyword[item['id']] = item['pagerank']
 			for urls in kwobjects:
 				urls_to_keyword[urls['url_id']] = urls['times_on_page']
+			
+			# if not isTrine:
+			# 	for key in rank_to_keyword:
+			# 		if key in urls_to_keyword:
+			# 			remove_var = urls_to_keyword[key]
+			# 			urls_to_keyword[key] = urls_to_keyword[key] * (float(rank_to_keyword[key]))
+			# 			print(str(urls_to_keyword[key])+ " was " + str(remove_var))
+
 			#add to the values to return dictionary
 			for key, value in returned_values.items():
 				if key in urls_to_keyword:
@@ -117,12 +126,12 @@ def get_ranked_list(entity_list, isTrine):
 					returned_values[key] = value + urls_to_keyword[key] * cal
 			#add new values to the return dictionary
 			for key, value in urls_to_keyword.items():
-				#effectively intersects
+				#effectively intersects with first
 				if key not in returned_values and times_fored == 1:
 					returned_values[key] = (value / factor)
 			times_fored += 1
 		except Exception as e:
-			pass
+			print(str(e))
 	#sort the return values based on highest value
 	returned_values = dict(sorted(returned_values.items(), key=lambda item: item[1], reverse=True))
 	returned_values = list(returned_values.keys())
