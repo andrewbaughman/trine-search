@@ -30,6 +30,11 @@
 		<button class="btn-toggle">Theme</button>
 	</div>
 	<div class="results-container">
+		{% ifnotequal correction|stringformat:"s" query %}
+		<div class=''>
+			<a href="?query={{correction}}">Did you mean: {{correction}}?</a>
+		</div>
+		{% endifnotequal %}
 		<div class=''>
 			<info>Results in {{time}} seconds</info>
 		</div>
