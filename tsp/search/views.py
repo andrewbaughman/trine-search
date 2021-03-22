@@ -46,6 +46,8 @@ def results(request):
 			pass
 	
 	correction = typo_correction(query, 0.75)
+	if correction in exception_list:
+		correction = init_query
 	#results = searchAlgorithm(query)
 	end = time.time()
 	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
@@ -72,13 +74,17 @@ def trine_results(request):
 		except Exception as e:
 			pass
 	
+	correction = typo_correction(query, 0.75)
+	if correction in exception_list:
+		correction = init_query
+
 	#results = searchAlgorithm(query)
 	end = time.time()
 	query_string = ""
 	for word in query:
 		query_string += str(word)
 		query_string += " "
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
 
 def parse_query(query):
 	for item in query:
@@ -94,8 +100,6 @@ def typo_correction(query, closeness):
 		length = len(query[i])
 		variability = int((length)/3)
 		best_value = 0
-		print(variability)
-		print(query[i])
 		values_of = keywords.objects.filter(keyword__startswith=query[i][:1], word_len__gte=length-variability, word_len__lte=length+variability).distinct().values_list('keyword', flat=True)
 		for kw in values_of:
 			value = SequenceMatcher(None, query[i], kw).ratio()
@@ -110,7 +114,6 @@ def typo_correction(query, closeness):
 		possibles_sorted = sorted(possibles.values())
 		
 		try:
-			print(possibles_sorted[0])
 			suggestion.append(possibles_sorted[0])
 		except IndexError:
 			pass
