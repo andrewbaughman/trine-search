@@ -119,7 +119,7 @@ class Command(BaseCommand):
 
 			
 		i = -1
-		x = int(input("How mnay parsers are there/ do you want? "))
+		x = int(input("How many parsers are there/ do you want? "))
 		y = int(input("What number parser is this?"))
 		while 1:
 			link = get_link(i + y)
