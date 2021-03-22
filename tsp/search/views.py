@@ -75,7 +75,7 @@ def trine_results(request):
 			pass
 	
 	correction = typo_correction(query, 0.75)
-	if correction in exception_list:
+	if correction == '':
 		correction = init_query
 
 	#results = searchAlgorithm(query)
