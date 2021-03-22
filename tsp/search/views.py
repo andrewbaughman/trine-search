@@ -45,7 +45,7 @@ def results(request):
 		except Exception as e:
 			pass
 	
-	correction = typo_correction(query, 0.8)
+	correction = typo_correction(query, 0.75)
 	#results = searchAlgorithm(query)
 	end = time.time()
 	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
@@ -91,12 +91,29 @@ def typo_correction(query, closeness):
 	
 	for i in range(len(query)):
 		possibles = {}
-		for kw in keywords.objects.filter(keyword__startswith=query[i][0]).distinct():
-			if SequenceMatcher(None, query[i], kw.keyword).ratio() > closeness:
-				possibles[SequenceMatcher(None, query[i], kw.keyword).ratio()] = kw.keyword
+		length = len(query[i])
+		variability = int((length)/3)
+		best_value = 0
+		print(variability)
+		print(query[i])
+		values_of = keywords.objects.filter(keyword__startswith=query[i][:1], word_len__gte=length-variability, word_len__lte=length+variability).distinct().values_list('keyword', flat=True)
+		for kw in values_of:
+			value = SequenceMatcher(None, query[i], kw).ratio()
+			if value > closeness:
+				if value == 1:
+					possibles[value] = kw
+					break
+				if value > best_value:
+					possibles[value] = kw
+					best_value = value
 
 		possibles_sorted = sorted(possibles.values())
-		suggestion.append(possibles_sorted[0])
+		
+		try:
+			print(possibles_sorted[0])
+			suggestion.append(possibles_sorted[0])
+		except IndexError:
+			pass
 
 	## Reference: https://www.geeksforgeeks.org/python-program-to-convert-a-list-to-string/
 	correction = ' '.join([str(elem) for elem in suggestion]) 

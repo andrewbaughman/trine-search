@@ -118,9 +118,11 @@ class Command(BaseCommand):
 			return parsed_page
 
 			
-		i = 0
+		i = -1
+		x = int(input("How mnay parsers are there/ do you want? "))
+		y = int(input("What number parser is this?"))
 		while 1:
-			link = get_link(i)
+			link = get_link(i + y)
 			url = link.destination
 			if is_duplicate_page(url):
 				print("" + url + " is a duplicate page. Skipping...")
@@ -142,5 +144,5 @@ class Command(BaseCommand):
 					print(ex)
 				except Exception as e:
 					print(str(e))
-			i = link.id + 1
+			i = link.id + x
 			print(i)
