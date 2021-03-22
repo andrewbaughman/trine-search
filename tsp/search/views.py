@@ -10,6 +10,7 @@ from .serializers import *
 from django.forms.models import model_to_dict
 from django.views import View
 from django.db.models import Q
+from difflib import SequenceMatcher
 
 import json
 import time
@@ -44,9 +45,10 @@ def results(request):
 		except Exception as e:
 			pass
 	
+	correction = typo_correction(query, 0.8)
 	#results = searchAlgorithm(query)
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
 
 def trine_results(request):
 	start = time.time()
@@ -83,6 +85,23 @@ def parse_query(query):
 		if item in exception_list:
 			query.remove(item)
 	return query
+
+def typo_correction(query, closeness):
+	suggestion = []
+	
+	for i in range(len(query)):
+		possibles = {}
+		for kw in keywords.objects.filter(keyword__startswith=query[i][0]).distinct():
+			if SequenceMatcher(None, query[i], kw.keyword).ratio() > closeness:
+				possibles[SequenceMatcher(None, query[i], kw.keyword).ratio()] = kw.keyword
+
+		possibles_sorted = sorted(possibles.values())
+		suggestion.append(possibles_sorted[0])
+
+	## Reference: https://www.geeksforgeeks.org/python-program-to-convert-a-list-to-string/
+	correction = ' '.join([str(elem) for elem in suggestion]) 
+
+	return correction
 
 def get_ranked_list(entity_list, isTrine):
 	ranked_list = {}
