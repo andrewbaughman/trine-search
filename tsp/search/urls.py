@@ -17,8 +17,6 @@ urlpatterns = [
 	path('api/keywords/<int:pk>/', views.KeywordsDetail.as_view()),
 	path('api/edges/', views.EdgesList.as_view()),
 	path('api/edges/<int:pk>/', views.EdgesDetail.as_view()),
-	path('api/pageresults/', views.PageResultsList.as_view()),
-	path('api/pageresults/<int:pk>/', views.PageResultsDetail.as_view()),
 	path('users/', views.UserList.as_view()),
 	path('users/<int:pk>/', views.UserDetail.as_view()),
 	path('api-auth/', include('rest_framework.urls')),

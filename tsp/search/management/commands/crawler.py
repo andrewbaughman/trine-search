@@ -66,6 +66,7 @@ class Command(BaseCommand):
 			print("Now entering " + url)
 			try:
 				page = requests.get(url)
+				signal.alarm(0)
 				soup = BeautifulSoup(page.content, 'html.parser')
 				links_a = soup.findAll('a')
 			except TimeOutException as ex:
@@ -75,13 +76,21 @@ class Command(BaseCommand):
 			except Exception as e:
 				print(str(e))
 				return
-			signal.alarm(0)
 			links.objects.filter(destination=url).update(visited=True)
 			print("Visited " + url)
 			for link in links_a:
 				href = link.get('href')
 				if href == None:
 					continue
+				if len(href) < 3:
+					continue
+				elif (href[0] == '#'):
+					continue
+				elif (href[1] == '#'):
+					continue
+				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
+					link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
+					save_link_to_database(link_object)
 				elif (href):
 					if(loc_third_slash(url)):
 						new_url =  url[0:loc_third_slash(url)]
@@ -150,7 +159,7 @@ class Command(BaseCommand):
 							
 		def save_link_to_database(link_object):
 			# check for duplicate before sending
-			if is_duplicate_link(link_object['destination']) == False:
+			if (is_duplicate_link(link_object['destination']) == False) and (len(link_object['destination'])<399) :
 				link = add_link(link_object)
 				try:
 					edge_object = {'pointA': links.objects.get(destination=link.source), 'pointB': link}

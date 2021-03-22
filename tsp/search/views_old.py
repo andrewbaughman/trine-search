@@ -34,7 +34,7 @@ def results(request):
 	success = 0
 	for source in ranked_list:
 		try:
-			link = links.objects.get(id = source)
+			link = links.objects.get(destination=source.destination)
 			site = page.objects.get(url=link)
 			site = model_to_dict(site)
 			results.append(site)
@@ -60,7 +60,7 @@ def trine_results(request):
 	success = 0
 	for source in ranked_list:
 		try:
-			link = links.objects.get(id = source)
+			link = links.objects.get(destination=source.destination)
 			site = page.objects.get(url=link)
 			site = model_to_dict(site)
 			results.append(site)
@@ -89,66 +89,33 @@ def get_ranked_list(entity_list, isTrine):
 
 	# Make list of lists of urls. Each list of urls matches 1 keyword in query
 	lists_of_urls = []
-	returned_values = {}
-	factor = len(entity_list)
-	times_fored = 1
+			
 	for entity in entity_list:
-		urls_to_keyword = {}
-		rank_to_keyword = {}
 		if entity[-1] == 's':
 		 	entity = entity[:(len(entity) -1)]
+		urls_to_keyword = []
 		kwobjects =[]
 		try:
 			if isTrine:
-				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=True).values()
+				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=True).values('url')
 			else:
-				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values()
-			
-			#the_rank = links.objects.filter(id__in=kwobjects.values('url_id')).values()
+				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values('url')
+			urls_to_keyword = links.objects.filter(id__in=kwobjects)
+			urls_to_keyword = set(url.id for url in urls_to_keyword)
 
-			# for item in the_rank:
-			# 	rank_to_keyword[item['id']] = item['pagerank']
-
-			for urls in kwobjects:
-				vitals = 0
-				if urls['is_substr']:
-					vitals = 1
-				if urls['url_id'] in urls_to_keyword:
-					if urls_to_keyword[urls['url_id']][1] == 0:
-						urls_to_keyword[urls['url_id']][1] += vitals
-				else:
-					urls_to_keyword[urls['url_id']] = [urls['times_on_page'], vitals]
-			
-			# if not isTrine:
-			# 	for key in rank_to_keyword:
-			# 		if key in urls_to_keyword:
-			# 			remove_var = urls_to_keyword[key]
-			# 			urls_to_keyword[key] = urls_to_keyword[key] * (float(rank_to_keyword[key]))
-			# 			print(str(urls_to_keyword[key])+ " was " + str(remove_var))
-
-			#add to the values to return dictionary
-			for key, value in returned_values.items():
-				if key in urls_to_keyword:
-					# ratio to ensure that one term doesn't take over the search
-					cal = value[0] / urls_to_keyword[key][0]
-					if cal > 1:
-						cal = 1 / cal
-					returned_values[key][0] = (value[0] + urls_to_keyword[key][0] * cal)
-					returned_values[key][1] = (value[1] + urls_to_keyword[key][1])
-			#add new values to the return dictionary
-			for key, value in urls_to_keyword.items():
-				#effectively intersects with first
-				if key not in returned_values and times_fored == 1:
-					returned_values[key] = [(value[0] / factor), urls_to_keyword[key][1]]
-			times_fored += 1
 		except Exception as e:
 			print(str(e))
-	#sort the return values based on highest value
-	returned_values = dict(sorted(returned_values.items(), key=lambda item: (item[1][1], item[1][0]), reverse=True))
-	print(returned_values)
-	returned_values = list(returned_values.keys())
-
-	return returned_values
+		lists_of_urls.append(urls_to_keyword)
+	
+	# Intersect list of lists of urls so that all that's left is urls that match all keywords
+	intersected_urls = lists_of_urls[0]
+	for url_list in lists_of_urls:
+		intersected_urls = list(set(intersected_urls) & set(url_list))
+	
+	# Sort the ranked list by highest first 
+	ranked_list = list(links.objects.filter(id__in=intersected_urls).order_by('pagerank'))
+	#ranked_list = dict(sorted(ranked_list.items(), key=lambda item: item[1], reverse=True))
+	return ranked_list
 
 
 class UserList(generics.ListAPIView):
@@ -201,7 +168,7 @@ class EdgesDetail(generics.RetrieveUpdateDestroyAPIView):
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
-	pagination.PageNumberPagination.page_size = 10000
+	pagination.PageNumberPagination.page_size = 100
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 

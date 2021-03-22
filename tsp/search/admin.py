@@ -4,6 +4,6 @@ from django.contrib import admin
 
 from .models import *
 admin.site.register(links)
-admin.site.register(page_results)
 admin.site.register(keywords)
 admin.site.register(page)
+admin.site.register(edges)
