@@ -39,11 +39,16 @@ class Command(BaseCommand):
 			entities = json.loads(parsed_page_keywords)
 			try:
 				link_object = links.objects.get(destination=url)
+				page_object = page.objects.get(url=link_object)
 				### https://www.w3schools.com/python/gloss_python_loop_dictionary_items.asp
 				for keyword in entities:
 					key = keyword
 					value = entities[keyword]
-					kwobject = keywords.objects.create(url=link_object, keyword=key, times_on_page=value)
+					important = False
+					if (key in page_object.title.lower()) or (key in link_object.destination.lower()):
+						important = True
+						print("FOUND VITAL WORD")
+					kwobject = keywords.objects.create(url=link_object, keyword=key, times_on_page=value, is_substr=important)
 						
 			except Exception as e:
 				print(str(e))
@@ -113,9 +118,11 @@ class Command(BaseCommand):
 			return parsed_page
 
 			
-		i = 0
+		i = -1
+		x = int(input("How many parsers are there/ do you want? "))
+		y = int(input("What number parser is this?"))
 		while 1:
-			link = get_link(i)
+			link = get_link(i + y)
 			url = link.destination
 			if is_duplicate_page(url):
 				print("" + url + " is a duplicate page. Skipping...")
@@ -131,11 +138,11 @@ class Command(BaseCommand):
 					__keywords = get_keywords(soup)
 					if parsed_page and matching_page(parsed_page):
 						save_page_to_database(parsed_page)
-					if __keywords:
-						save_keywords_to_database(url, __keywords)
+						if __keywords:
+							save_keywords_to_database(url, __keywords)
 				except TimeOutException as ex:
 					print(ex)
 				except Exception as e:
 					print(str(e))
-			i = link.id + 1
+			i = link.id + x
 			print(i)

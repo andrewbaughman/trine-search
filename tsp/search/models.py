@@ -14,6 +14,12 @@ class keywords(models.Model):
 	url = models.ForeignKey('links', on_delete=models.CASCADE)
 	keyword = models.CharField(max_length=20)
 	times_on_page = models.IntegerField()
+	is_substr = models.BooleanField(default=False)
+	word_len = models.PositiveIntegerField(default=0)
+	
+	def save(self, *args, **kwargs):
+		self.word_len = len(self.keyword)
+		return super(keywords, self).save(*args, **kwargs)
 
 
 class links(models.Model):

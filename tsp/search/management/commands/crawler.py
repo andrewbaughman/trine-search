@@ -14,6 +14,7 @@ class Command(BaseCommand):
 
 	def handle(self, *args, **options):
 		inclusion = {"trine", "Trine"}
+		extension_list_tl = {"pdf", "jpg", "png"}
 		def is_duplicate_link(destination):
 			destination_links = links.objects.filter(destination=destination)
 			for link in destination_links:
@@ -66,6 +67,7 @@ class Command(BaseCommand):
 			print("Now entering " + url)
 			try:
 				page = requests.get(url)
+				signal.alarm(0)
 				soup = BeautifulSoup(page.content, 'html.parser')
 				links_a = soup.findAll('a')
 			except TimeOutException as ex:
@@ -75,12 +77,20 @@ class Command(BaseCommand):
 			except Exception as e:
 				print(str(e))
 				return
-			signal.alarm(0)
 			links.objects.filter(destination=url).update(visited=True)
 			print("Visited " + url)
 			for link in links_a:
 				href = link.get('href')
 				if href == None:
+					continue
+				if len(href) < 3:
+					continue
+				elif (href[0] == '#'):
+					continue
+				elif (href[1] == '#'):
+					continue
+				elif (href[-3:-1] in extension_list_tl):
+					print('FOUND FILE')
 					continue
 				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
 					link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
@@ -167,8 +177,8 @@ class Command(BaseCommand):
 		#global_A = numpy.zeros((2,2), float)
 		# get inputs from user
 		if (links.objects.first() == None):
-			x = input("how many links do you want to seed? ")
-			y = int(x) + 1
+			x = int(input("how many links do you want to seed? "))
+			y = x + 1
 			z = 1
 			while z < y:
 				link = ""

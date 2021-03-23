@@ -17,7 +17,7 @@
 		<a href="/">
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value='{{query}}'>
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
 			<div class='results-function-container'>
@@ -33,8 +33,13 @@
 		<button class="btn-toggle">Theme</button>
 	</div>
 	<div class="results-container">
+		{% ifnotequal correction|stringformat:"s" query %}
+		<info class=''>
+			‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Did you mean: <a href="?query={{correction}}">{{correction}}?</a>
+		</info>
+		{% endifnotequal %}
 		<div class=''>
-			<info>Results in {{time}} seconds</info>
+			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Results in {{time}} seconds</info>
 		</div>
 		{% if results %}
 		{% for result in results %}
@@ -57,7 +62,7 @@
 		{% endfor %}
 		{% else %}
 		<div class='result'>
-			<info>No results found for "{{query}}". Please try again with different keywords.</info>
+			<info>No results found for <b>"{{query}}"</b>. Please try again with different keywords.</info>
 		</div>
 		{% endif %}
 	</div>
