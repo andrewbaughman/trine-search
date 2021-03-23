@@ -22,7 +22,6 @@ $(document).ready(function () {
 		modal: true,
 		position: { my: "center", at: "center", of: 'body' }, 
 		autoOpen: false,
-		width: 500,
 	});
 	$(".btn-toggle").click(function () {
 		$("#color-picker-widget").dialog("open");

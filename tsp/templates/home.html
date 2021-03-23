@@ -7,12 +7,12 @@
 	</br>
 	<div>
 		<img id='search-logo' src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
-		<input type="text" id="homeInput" class="query" name="query" onkeyup="suggest()" placeholder="Search All resources..." checked>
-		<div style='display: grid;grid-template-columns: 2fr 1fr;width: 50%;margin: auto;'>
+		<input type="text" id="homeInput" class="query" name="query" value='{{query}}'onkeyup="suggest()" placeholder="Search All resources..." checked>
+		<div class='search-button-container'>
 			<div class="search-button">
-				<input type="submit" id="search_button" class="large-button" name="search" value="search">
+				<input type="submit" id="search_button" class="large-button" name="search" value="Search">
 			</div>
-			<div>
+			<div style='text-align: center;'>
 				<div>
 					<info>Trine Only</info>
 				</div>
