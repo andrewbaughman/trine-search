@@ -31,27 +31,26 @@
 	</div>
 	<div class="results-container">
 		{% ifnotequal correction|stringformat:"s" query %}
-		<div class=''>
-			<a href="?query={{correction}}">Did you mean: {{correction}}?</a>
-		</div>
+		<info class=''>
+			‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Did you mean: <a href="?query={{correction}}">{{correction}}?</a>
+		</info>
 		{% endifnotequal %}
 		<div class=''>
-			<info>Results in {{time}} seconds</info>
+			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Results in {{time}} seconds</info>
 		</div>
 		{% if results %}
 		{% for result in results %}
 		<div class='result'>
-			<tr>
-				<url>
-					<td>{{ result.url }}</td>
-				</url>
-				<td><a href="{{ result.url }}">
-						<title-result></br>{{ result.title }}</td>
-				</title-result></a>
-				<td></br>
-					<info>
-				<td>{{ result.description }}</td>
-				</info>
+			<url>
+				<td>{{ result.url }}</td>
+			</url>
+			<td><a href="{{ result.url }}">
+					<title-result></br>{{ result.title }}</td>
+			</title-result></a>
+			<td></br>
+				<info>
+			<td>{{ result.description }}</td>
+			</info>
 		</div>
 		{% endfor %}
 		{% else %}
