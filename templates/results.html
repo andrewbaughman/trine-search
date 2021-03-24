@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<title>Seek Results</title>
+</head>
+
+<body class="second">
+	<div class="top-bar">
+		<form method="GET" action="/search/"></form>
+		<a href="/">
+			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
+		</a>
+		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
+		<div id="left">
+			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
+			<div class='results-function-container'>
+				<div style='padding-top: 5px;'>
+					<info>Trine Only</info>
+				</div>
+				<label class="switch trine-toggle" id='results-toggle'>
+					<input type="checkbox">
+					<span class="slider round"></span>
+				</label>
+			</div>
+		</div>
+		<button class="btn-toggle">Theme</button>
+	</div>
+	<div class="results-container">
+		{% ifnotequal correction|stringformat:"s" query %}
+		<info class=''>
+			‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Did you mean: <a href="?query={{correction}}">{{correction}}?</a>
+		</info>
+		{% endifnotequal %}
+		<div class=''>
+			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Results in {{time}} seconds</info>
+		</div>
+		{% if results %}
+		{% for result in results %}
+		<a href="{{ result.url }}">
+			<div class='result'>
+				<tr>
+					<url>
+						<td>{{ result.url }}</td>
+					</url>
+					<td>
+						<title-result></br>{{ result.title }}
+					</td>
+					</title-result>
+					<td></br>
+						<info>
+					<td>{{ result.description }}</td>
+					</info>
+			</div>
+		</a>
+		{% endfor %}
+		{% else %}
+		<div class='result'>
+			<info>No results found for <b>"{{query}}"</b>. Please try again with different keywords.</info>
+		</div>
+		{% endif %}
+	</div>
+
+
+
+</body>
+
+</html>
+
+
+{% endblock %}
