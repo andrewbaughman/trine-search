@@ -32,4 +32,4 @@ jobs:
       with:
         app-name: 'trine-search'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_22c5349eedc74569b8910f2386a22f27 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_0ab4a7cf7e9c42e7bff8eefba61ca2e0 }}
