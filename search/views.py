@@ -117,10 +117,11 @@ def typo_correction(query_tc, closeness):
 						possibles[value] = kw
 						best_value = value
 
-			possibles_sorted = sorted(possibles.values(), reverse=True)
+			print(possibles)
+			possibles_sorted = sorted(possibles.items(), key=lambda item: item[0], reverse=True)
 			
 			try:
-				suggestion.append(possibles_sorted[0])
+				suggestion.append(possibles_sorted[0][1])
 			except IndexError:
 				pass
 
