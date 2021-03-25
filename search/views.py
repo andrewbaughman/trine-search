@@ -241,7 +241,7 @@ class EdgesDetail(generics.RetrieveUpdateDestroyAPIView):
 class KeywordsList(generics.ListCreateAPIView):
 	queryset = keywords.objects.all()
 	serializer_class = KeywordsSerializer
-	pagination.PageNumberPagination.page_size = 10000
+	pagination.PageNumberPagination.page_size = 10
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 class KeywordsDetail(generics.RetrieveUpdateDestroyAPIView):

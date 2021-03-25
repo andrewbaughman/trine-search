@@ -25,6 +25,7 @@ class Command(BaseCommand):
 					print("DELETING RECORD FOR " + found.destination)
 					return True
 				else:
+					current.delete()
 					print("this matching page will not be saved.")
 					return False
 			elif matching_page.count() > 1:
