@@ -45,7 +45,7 @@ def results(request):
 		except Exception as e:
 			pass
 	
-	correction = typo_correction(query, 0.75)
+	correction = typo_correction(init_query.lower().split(), 0.75)
 	if correction == '':
 		correction = init_query
 	#results = searchAlgorithm(query)
@@ -58,6 +58,7 @@ def trine_results(request):
 	init_query = request.GET.get('query')
 	query = init_query.lower().split()
 	query = parse_query(query)
+	print(query)
 	ranked_list = get_ranked_list(query, True)
 	#for key in ranked_list:
 	#	print(str(key) + ': ' + str(ranked_list[key]))
@@ -74,7 +75,7 @@ def trine_results(request):
 		except Exception as e:
 			pass
 	
-	correction = typo_correction(query, 0.75)
+	correction = typo_correction(init_query.lower().split(), 0.75)
 	if correction == '':
 		correction = init_query
 
@@ -87,36 +88,41 @@ def trine_results(request):
 	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
 
 def parse_query(query):
+	groomed_query = []
 	for item in query:
-		if item in exception_list:
-			query.remove(item)
-	return query
+		if item not in exception_list:
+			groomed_query.append(item)
+	return groomed_query
 
-def typo_correction(query, closeness):
+def typo_correction(query_tc, closeness):
 	suggestion = []
 	
-	for i in range(len(query)):
-		possibles = {}
-		length = len(query[i])
-		variability = int((length)/3)
-		best_value = 0
-		values_of = keywords.objects.filter(keyword__startswith=query[i][:1], word_len__gte=length-variability, word_len__lte=length+variability).distinct().values_list('keyword', flat=True)
-		for kw in values_of:
-			value = SequenceMatcher(None, query[i], kw).ratio()
-			if value > closeness:
-				if value == 1:
-					possibles[value] = kw
-					break
-				if value > best_value:
-					possibles[value] = kw
-					best_value = value
+	for i in range(len(query_tc)):
+		if query_tc[i] in exception_list:
+			suggestion.append(query_tc[i])
+		else:
+			possibles = {}
+			length = len(query_tc[i])
+			variability = int((length)/3)
+			best_value = 0
+			values_of = keywords.objects.filter(keyword__startswith=query_tc[i][:1], word_len__gte=length-variability, word_len__lte=length+variability).distinct().values_list('keyword', flat=True)
+			for kw in values_of:
+				value = SequenceMatcher(None, query_tc[i], kw).ratio()
+				if value > closeness:
+					if value == 1:
+						print(kw)
+						possibles[value] = kw
+						break
+					if value > best_value:
+						possibles[value] = kw
+						best_value = value
 
-		possibles_sorted = sorted(possibles.values())
-		
-		try:
-			suggestion.append(possibles_sorted[0])
-		except IndexError:
-			pass
+			possibles_sorted = sorted(possibles.values(), reverse=True)
+			
+			try:
+				suggestion.append(possibles_sorted[0])
+			except IndexError:
+				pass
 
 	## Reference: https://www.geeksforgeeks.org/python-program-to-convert-a-list-to-string/
 	correction = ' '.join([str(elem) for elem in suggestion]) 
@@ -139,7 +145,7 @@ def get_ranked_list(entity_list, isTrine):
 		kwobjects =[]
 		try:
 			if isTrine:
-				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=True).values()
+				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1).values()
 			else:
 				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values()
 			
@@ -184,7 +190,6 @@ def get_ranked_list(entity_list, isTrine):
 			print(str(e))
 	#sort the return values based on highest value
 	returned_values = dict(sorted(returned_values.items(), key=lambda item: (item[1][1], item[1][0]), reverse=True))
-	print(returned_values)
 	returned_values = list(returned_values.keys())
 
 	return returned_values

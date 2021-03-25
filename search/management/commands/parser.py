@@ -13,7 +13,7 @@ from search.keywords import *
 class Command(BaseCommand):
 	
 	def handle(self, *args, **options):
-
+		inclusion = {"trine", "Trine"}
 		def matching_page(parsed_page):
 			matching_page = page.objects.filter(title=parsed_page['title']).filter(description=parsed_page['description'])
 			if matching_page.count() == 1:
@@ -21,7 +21,7 @@ class Command(BaseCommand):
 				found = links.objects.get(destination=matching_page[0].url.destination)
 				current = links.objects.get(destination=parsed_page['url'])
 				if current.pagerank > found.pagerank:
-					matching_page.delete()
+					found.delete()
 					print("DELETING RECORD FOR " + found.destination)
 					return True
 				else:
@@ -40,11 +40,18 @@ class Command(BaseCommand):
 			try:
 				link_object = links.objects.get(destination=url)
 				page_object = page.objects.get(url=link_object)
+				ls = True
+				if link_object.isTrine == 1:
+					ls = False
 				### https://www.w3schools.com/python/gloss_python_loop_dictionary_items.asp
 				for keyword in entities:
 					key = keyword
 					value = entities[keyword]
 					important = False
+					if (key in inclusion) and ls:
+						link_object.update(isTrine=1)
+						print("ThIs SoUrCe IsTrInE!")
+						ls = False
 					if (key in page_object.title.lower()) or (key in link_object.destination.lower()):
 						important = True
 						print("FOUND VITAL WORD")
