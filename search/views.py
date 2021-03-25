@@ -11,6 +11,7 @@ from django.forms.models import model_to_dict
 from django.views import View
 from django.db.models import Q
 from difflib import SequenceMatcher
+from django.db.models import Sum
 
 import json
 import time
@@ -35,7 +36,7 @@ def results(request):
 	#get a ranked list based on keyword and important words
 	ranked_list = get_ranked_list(set(query), False)
 	#set allowable results per page
-	results_len = 20
+	results_len = 10
 	for source in ranked_list:
 		try:
 			#get page info from ranked list
@@ -48,7 +49,7 @@ def results(request):
 			if results_len == 0:
 				break
 		except Exception as e:
-			pass
+			print(str(e))
 	#call query correction. The decimal is for tollerance 
 	correction = typo_correction(init_query.lower().split(), 0.75)
 	if correction == '':
@@ -70,7 +71,7 @@ def trine_results(request):
 	#get a ranked list of Trine pages based on keyword and important words
 	ranked_list = get_ranked_list(set(query), True)
 	#set allowable results per page
-	results_len = 20
+	results_len = 10
 	for source in ranked_list:
 		try:
 			#get page info from ranked list
@@ -152,52 +153,34 @@ def get_ranked_list(entity_list, isTrine):
 	for entity in entity_list:
 		#a dictionary the has 'key' and values that are 2-dimensional- one for word freqency
 		# and the other for the number of important words that match the query
-		urls_to_keyword = {}
 		#remove the last 's' of a word
 		if entity[-1] == 's':
 		 	entity = entity[:(len(entity) -1)]
 		kwobjects =[]
 		try:
 			#get keyword objects
-			if isTrine:
-				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1).values()
-			else:
-				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's'))).values()
-			#total up important words
-			for urls in kwobjects:
-				vitals = 0
-				if urls['is_substr']:
-					vitals = 1
-				if urls['url_id'] in urls_to_keyword:
-					if urls_to_keyword[urls['url_id']][1] == 0:
-						urls_to_keyword[urls['url_id']][1] += vitals
+			if first_time:
+				if isTrine:
+					urls_to_keyword = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1)
 				else:
-					urls_to_keyword[urls['url_id']] = [urls['times_on_page'], vitals]
-			
-			#add to the values to return dictionary
-			for key, value in returned_values.items():
-				if key in urls_to_keyword:
-					# ratio to ensure that one term doesn't take over the search
-					cal = value[0] / urls_to_keyword[key][0]
-					if cal > 1:
-						cal = 1 / cal
-					returned_values[key][0] = (value[0] + urls_to_keyword[key][0] * cal)
-					returned_values[key][1] = (value[1] + urls_to_keyword[key][1])
-			
-			#add new values to the return dictionary
-			for key, value in urls_to_keyword.items():
-				#effectively intersects with first
-				if key not in returned_values and first_time:
-					returned_values[key] = [(value[0] / factor), urls_to_keyword[key][1]]
-			#aknowledge first time looped
-			first_time = False
+					urls_to_keyword = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
+				first_time = False
+			else:
+				if isTrine:
+					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1)
+				else:
+					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
+				urls_to_keyword = (urls_to_keyword | kwobjects)
 		except Exception as e:
 			print(str(e))
 	#sort the return values based on important words, then by freqency
-	returned_values = dict(sorted(returned_values.items(), key=lambda item: (item[1][1], item[1][0]), reverse=True))
-	returned_values = list(returned_values.keys())
+	returned_values = urls_to_keyword.values('url_id').annotate(important_score = Sum('is_substr'), freq_score = Sum('times_on_page')).order_by('-important_score', '-freq_score')
+	print(returned_values)
+	final_values = list()
+	for value in returned_values:
+		final_values.append(value['url_id'])
 	#return the list
-	return returned_values
+	return list(final_values)
 
 
 class UserList(generics.ListAPIView):

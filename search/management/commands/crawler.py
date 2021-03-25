@@ -7,7 +7,7 @@ from search.models import links, edges
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
 from search.pagerank import *
-
+from django.db.models import Q
 
 
 class Command(BaseCommand):
@@ -189,6 +189,6 @@ class Command(BaseCommand):
 				else:
 					print("link #" + str(i) + " was already visited. Skipping...")
 			else:
-				break_check = len(links.objects.filter(visited=False))
+				break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=False))
 			i = i + 1
 
