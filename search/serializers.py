@@ -7,6 +7,11 @@ class PageSerializer(serializers.ModelSerializer):
 		model = page
 		fields = ('id', 'url', 'title', 'description', 'hashId')
 
+class ImageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = image
+		fields = ('id', 'source_url', 'image_url',)
+
 class LinksSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = links
@@ -26,7 +31,6 @@ class KeywordsSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
 	class Meta:
 		model = User
 		fields = ('id', 'username')

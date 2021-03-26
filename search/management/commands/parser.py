@@ -6,9 +6,11 @@ import signal
 from search.models import links
 from search.models import page
 from search.models import keywords
+from search.models import image
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
 from search.keywords import *
+
 import hashlib
 
 class Command(BaseCommand):
@@ -92,12 +94,32 @@ class Command(BaseCommand):
 		class TimeOutException(Exception):
 			pass
 
+		def loc_third_slash(link):
+			occurrence = 3
+			inilist = [i for i in range(0, len(link)) 
+					if link[i:].startswith('/')] 
+			if len(inilist)>= 3:
+				return inilist[occurrence-1]
+			else: 
+				return False
+
 		def alarm_handler(signum, frame):
 			print("timeout has occured")
 			raise TimeOutException()
 
 		def get_page_info(soup):
+			link_object = links.objects.get(destination=url)
 			parsed_page = {}
+			imgs = soup.find_all('img', src=True)
+			for img in imgs:
+				processed = img['src'].split('src=')[-1]
+				if 'noscript=1' not in processed:
+					if(loc_third_slash(url)):
+						new_url =  url[0:loc_third_slash(url)]
+						processed = new_url + processed
+					elif processed[0] == '/':
+						processed = url + processed[1:]
+					image.objects.create(source_url=link_object, image_url=processed)
 			if soup.find('title'):
 				title = soup.find('title').get_text()
 				title_trim = title
@@ -170,5 +192,7 @@ class Command(BaseCommand):
 					except Exception as e:
 						print(str(e))
 						break_check = len(links.objects.filter(parsed=False))
+			else:
+				break_check = len(links.objects.filter(parsed=False))
 			i = i + x
 			print(i)

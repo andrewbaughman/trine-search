@@ -285,6 +285,16 @@ class PageDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PageSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+class ImageList(generics.ListCreateAPIView):
+	queryset = image.objects.all()
+	serializer_class = ImageSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = image.objects.all()
+	serializer_class = ImageSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 class LinksList(generics.ListCreateAPIView):
 	queryset = links.objects.all()
 	serializer_class = LinksSerializer

@@ -13,6 +13,8 @@ urlpatterns = [
 	path('api/<int:pk>/', views.PageDetail.as_view()),
 	path('api/links/', views.LinksList.as_view()),
 	path('api/links/<int:pk>/', views.LinksDetail.as_view()),
+	path('api/image/', views.ImageList.as_view()),
+	path('api/image/<int:pk>/', views.ImageDetail.as_view()),
 	path('api/keywords/', views.KeywordsList.as_view()),
 	path('api/keywords/<int:pk>/', views.KeywordsDetail.as_view()),
 	path('api/edges/', views.EdgesList.as_view()),
