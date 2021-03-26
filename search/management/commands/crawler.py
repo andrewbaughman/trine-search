@@ -96,7 +96,7 @@ class Command(BaseCommand):
 					continue
 				elif len(href) < 3:
 					continue
-				elif (href[0] == '#'):
+				elif ('#' in href) or ('@' in href):
 					continue
 				elif (href[-3:] in extension_list_tl):
 					print('FOUND FILE')

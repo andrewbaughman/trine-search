@@ -164,7 +164,7 @@ class Command(BaseCommand):
 					else:
 						if process[0] == '/':
 							processed = url + process[1:]
-						while attempt < 10:
+						while attempt < 8:
 							if(loc_slash_occurrence(url, attempt)):
 								new_url =  url[0:loc_slash_occurrence(url, attempt)]
 								processed = new_url + process
@@ -173,9 +173,10 @@ class Command(BaseCommand):
 									if str(response) == '<Response [200]>':
 										print('saved image')
 										image.objects.create(source_url=link_object, image_url=processed)
-										attempt = 10
+										attempt = 8
 								except Exception as e:
 									print(str(e))
+									signal.alarm(0)
 							attempt += 1
 
 		i = -1

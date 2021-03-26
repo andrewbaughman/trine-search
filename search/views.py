@@ -24,7 +24,7 @@ exception_list = ("", " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
 def index(request):
 	return render(request, 'home.html')
 
-#get general results page
+#get results
 def results(request):
 	#set start time for query
 	start = time.time()
@@ -33,9 +33,6 @@ def results(request):
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
 	trine_only = bool(request.GET.get('isTrine'))
-	if not page_searched:
-		page_searched = 1
-	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
@@ -49,32 +46,30 @@ def results(request):
 	
 	pages = divide_list(ranked_list, num_pages)
 	page_list = make_list(num_pages)
-	if page_searched < num_pages:
-		for source in pages[page_searched]:
-			try:
-				#get page info from ranked list
-				link = links.objects.get(id = source)
-				site = page.objects.get(url=link)
-				site = model_to_dict(site)
-				results.append(site)
-				results_len -= 1
-			except Exception as e:
-				pass
-		#call query correction. The decimal is for tollerance 
-		correction = typo_correction(init_query.lower().split(), 0.75)
-		if correction == '':
-			correction = init_query
-		#stop query timmer
-		end = time.time()
-		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
+	if not page_searched:
+		page_searched = 1
+	elif page_searched not in page_list:
+		page_searched = 1
+	page_searched = int(page_searched) - 1
+	for source in pages[page_searched]:
+		try:
+			#get page info from ranked list
+			link = links.objects.get(id = source)
+			site = page.objects.get(url=link)
+			site = model_to_dict(site)
+			results.append(site)
+			results_len -= 1
+		except Exception as e:
+			pass
 	#call query correction. The decimal is for tollerance 
 	correction = typo_correction(init_query.lower().split(), 0.75)
 	if correction == '':
 		correction = init_query
+	#stop query timmer
 	end = time.time()
+	#return html page
 	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
-
+	
 #divide list
 def divide_list(lst, n):
 	if n == 0:
@@ -86,6 +81,7 @@ def divide_list(lst, n):
 	else:
 		return [lst]
 
+#make list for pagination
 def make_list(size):
 	returned = list()
 	nume = 1
@@ -94,6 +90,7 @@ def make_list(size):
 		nume += 1
 		size -= 1
 	return returned
+
 #remove words that appear in the exception list
 def parse_query(query):
 	groomed_query = []
@@ -195,16 +192,6 @@ def image_results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
-	if not page_searched:
-		page_searched = 1
-	elif page_searched == 'lucky':
-		lucky = True
-		page_searched = 1
-	elif page_searched == 'random':
-		lucky = True
-		random = True
-		page_searched = 1
-	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
@@ -229,24 +216,20 @@ def image_results(request):
 	
 	pages = divide_list(total_results, num_pages)
 	page_list = make_list(num_pages)
-	if random:
-		results = get_some_random_page()
-	elif page_searched < num_pages:
-		for result in pages[page_searched]:
-			results.append(result)
-		#call query correction. The decimal is for tollerance 
-		correction = typo_correction(init_query.lower().split(), 0.75)
-		if correction == '':
-			correction = init_query
-		#stop query timmer
-		end = time.time()
-		#return html page
-		return render(request, 'images.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results, 'lucky': lucky})
+	if not page_searched:
+		page_searched = 1
+	elif page_searched not in page_list:
+		page_searched = 1
+	page_searched = int(page_searched) - 1
+	for result in pages[page_searched]:
+		results.append(result)
 	#call query correction. The decimal is for tollerance 
 	correction = typo_correction(init_query.lower().split(), 0.75)
 	if correction == '':
 		correction = init_query
+	#stop query timmer
 	end = time.time()
+	#return html page
 	return render(request, 'images.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results, 'lucky': lucky})
 
 def get_ranked_images(entity_list):

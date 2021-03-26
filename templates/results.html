@@ -44,15 +44,10 @@
 		<div class=''>
 			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎{{num_results}} Results in {{time}} seconds</info>
 		</div>
-		{% if results == 'None' %}
-		<div class='result'>
-			<info>No results found for <b>"{{query}}"</b> on this page. Please go back a few pages.</info>
-		</div>
-		{% elif results %}
+		{% if results %}
 		{% for result in results %}
 		<a href="{{ result.url }}">
 			<div class='result'>
-				<tr>
 					<url>
 						<td>{{ result.url }}</td>
 					</url>
