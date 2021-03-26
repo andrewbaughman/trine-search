@@ -179,9 +179,9 @@ class Command(BaseCommand):
 									signal.alarm(0)
 							attempt += 1
 
-		i = -1
+		i = int(input("What id do you want to start at? (make this the same for all parser instaces) "))
 		x = int(input("How many parsers are there/ do you want? "))
-		y = int(input("What number parser is this?"))
+		y = int(input("What number parser is this? "))
 		break_check = len(links.objects.filter(parsed=False))
 		while break_check > 0:
 			link = get_link(i + y)
