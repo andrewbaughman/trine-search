@@ -12,6 +12,7 @@ from django.views import View
 from django.db.models import Q
 from difflib import SequenceMatcher
 from django.db.models import Sum
+from numpy import broadcast
 
 import json
 import time
@@ -31,33 +32,42 @@ def results(request):
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
+	page_searched = int(request.GET.get('page')) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
-	#get a ranked list based on keyword and important words
+	#get a ranked list of Trine pages based on keyword and important words
 	ranked_list = get_ranked_list(set(query), False)
+	num_results_total = len(ranked_list)
+	ranked_list = ranked_list[:200]
 	#set allowable results per page
 	results_len = 10
-	for source in ranked_list:
-		try:
-			#get page info from ranked list
-			link = links.objects.get(id = source)
-			site = page.objects.get(url=link)
-			site = model_to_dict(site)
-			results.append(site)
-			results_len -= 1
-			#stop showing results
-			if results_len == 0:
-				break
-		except Exception as e:
-			print(str(e))
-	#call query correction. The decimal is for tollerance 
-	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
-		correction = init_query
-	#stop query timmer
+	num_results = len(ranked_list)
+	num_pages = int(num_results / results_len) + (num_results % results_len > 0)
+	
+	pages = divide_list(ranked_list, num_pages)
+	page_list = make_list(num_pages)
+	
+	if page_searched <= num_pages:
+		for source in pages[page_searched]:
+			try:
+				#get page info from ranked list
+				link = links.objects.get(id = source)
+				site = page.objects.get(url=link)
+				site = model_to_dict(site)
+				results.append(site)
+				results_len -= 1
+			except Exception as e:
+				pass
+		#call query correction. The decimal is for tollerance 
+		correction = typo_correction(init_query.lower().split(), 0.75)
+		if correction == '':
+			correction = init_query
+		#stop query timmer
+		end = time.time()
+		#return html page
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
 	end = time.time()
-	#return html page
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
+	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total})
 
 #get Trine results page
 def trine_results(request):
@@ -66,34 +76,62 @@ def trine_results(request):
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
+	page_searched = int(request.GET.get('page')) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
 	ranked_list = get_ranked_list(set(query), True)
+	num_results_total = len(ranked_list)
+	ranked_list = ranked_list[:200]
 	#set allowable results per page
 	results_len = 10
-	for source in ranked_list:
-		try:
-			#get page info from ranked list
-			link = links.objects.get(id = source)
-			site = page.objects.get(url=link)
-			site = model_to_dict(site)
-			results.append(site)
-			results_len -= 1
-			#stop showing results
-			if results_len == 0:
-				break
-		except Exception as e:
-			pass
-	#call query correction. The decimal is for tollerance 
-	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
-		correction = init_query
-	#stop query timmer
+	num_results = len(ranked_list)
+	num_pages = int(num_results / results_len) + (num_results % results_len > 0)
+	
+	pages = divide_list(ranked_list, num_pages)
+	page_list = make_list(num_pages)
+	
+	if page_searched <= num_pages:
+		for source in pages[page_searched]:
+			try:
+				#get page info from ranked list
+				link = links.objects.get(id = source)
+				site = page.objects.get(url=link)
+				site = model_to_dict(site)
+				results.append(site)
+				results_len -= 1
+			except Exception as e:
+				pass
+		#call query correction. The decimal is for tollerance 
+		correction = typo_correction(init_query.lower().split(), 0.75)
+		if correction == '':
+			correction = init_query
+		#stop query timmer
+		end = time.time()
+		#return html page
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
 	end = time.time()
-	#return html page
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction,})
+	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total})
 
+#divide list
+def divide_list(lst, n):
+	if n == 0:
+		return [lst]
+	p = len(lst) // n
+    
+	if len(lst)-p > 0:
+		return [lst[:p]] + divide_list(lst[p:], n-1)
+	else:
+		return [lst]
+
+def make_list(size):
+	returned = list()
+	nume = 1
+	while size > 0:
+		returned.append(nume)
+		nume += 1
+		size -= 1
+	return returned
 #remove words that appear in the exception list
 def parse_query(query):
 	groomed_query = []
@@ -150,6 +188,7 @@ def get_ranked_list(entity_list, isTrine):
 	#used to create limit the returned results
 	first_time = True
 	#cycle through search terms
+	urls_to_keyword = False
 	for entity in entity_list:
 		#a dictionary the has 'key' and values that are 2-dimensional- one for word freqency
 		# and the other for the number of important words that match the query
@@ -174,13 +213,15 @@ def get_ranked_list(entity_list, isTrine):
 		except Exception as e:
 			print(str(e))
 	#sort the return values based on important words, then by freqency
-	returned_values = urls_to_keyword.values('url_id').annotate(important_score = Sum('is_substr'), freq_score = Sum('times_on_page')).order_by('-important_score', '-freq_score')
-	print(returned_values)
-	final_values = list()
-	for value in returned_values:
-		final_values.append(value['url_id'])
-	#return the list
-	return list(final_values)
+	if urls_to_keyword:
+		returned_values = urls_to_keyword.values('url_id').annotate(important_score = Sum('is_substr'), freq_score = Sum('times_on_page')).order_by('-important_score', '-freq_score')
+		print(returned_values)
+		final_values = list()
+		for value in returned_values:
+			final_values.append(value['url_id'])
+		#return the list
+		return list(final_values)
+	return list()
 
 
 class UserList(generics.ListAPIView):

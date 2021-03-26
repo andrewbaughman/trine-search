@@ -39,9 +39,13 @@
 		</info>
 		{% endifnotequal %}
 		<div class=''>
-			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Results in {{time}} seconds</info>
+			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎{{num_results}} Results in {{time}} seconds</info>
 		</div>
-		{% if results %}
+		{% if results == 'None' %}
+		<div class='result'>
+			<info>No results found for <b>"{{query}}"</b> on this page. Please go back a few pages.</info>
+		</div>
+		{% elif results %}
 		{% for result in results %}
 		<a href="{{ result.url }}">
 			<div class='result'>
@@ -67,7 +71,18 @@
 		{% endif %}
 	</div>
 
-
+	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎
+	<info>
+		‎‏‏‎{% for page in pages %}
+			<title-result>
+				<a href='?query={{correction}}&page={{page}}''>
+					‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
+				</a>
+			</title-result>
+		{% endfor %}
+	</info>
+	<br>
+</br>
 
 </body>
 
