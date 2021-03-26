@@ -11,7 +11,8 @@ from django.forms.models import model_to_dict
 from django.views import View
 from django.db.models import Q
 from difflib import SequenceMatcher
-from django.db.models import Sum
+from django.db.models import Sum, Max
+from random import *
 
 import json
 import time
@@ -26,13 +27,23 @@ def index(request):
 
 #get general results page
 def results(request):
+	get_some_random_page()
 	#set start time for query
+	lucky = False
+	random = False
 	start = time.time()
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
 	if not page_searched:
+		page_searched = 1
+	elif page_searched == 'lucky':
+		lucky = True
+		page_searched = 1
+	elif page_searched == 'random':
+		lucky = True
+		random = True
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
@@ -48,8 +59,9 @@ def results(request):
 	
 	pages = divide_list(ranked_list, num_pages)
 	page_list = make_list(num_pages)
-	
-	if page_searched <= num_pages:
+	if random:
+		results = get_some_random_page()
+	elif page_searched < num_pages:
 		for source in pages[page_searched]:
 			try:
 				#get page info from ranked list
@@ -67,19 +79,29 @@ def results(request):
 		#stop query timmer
 		end = time.time()
 		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 
 #get Trine results page
 def trine_results(request):
+	get_some_random_page()
 	#set start time for query
+	lucky = False
+	random = False
 	start = time.time()
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
 	if not page_searched:
+		page_searched = 1
+	elif page_searched == 'lucky':
+		lucky = True
+		page_searched = 1
+	elif page_searched == 'random':
+		lucky = True
+		random = True
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
@@ -95,8 +117,9 @@ def trine_results(request):
 	
 	pages = divide_list(ranked_list, num_pages)
 	page_list = make_list(num_pages)
-	
-	if page_searched <= num_pages:
+	if random:
+		results = get_some_random_page()
+	elif page_searched < num_pages:
 		for source in pages[page_searched]:
 			try:
 				#get page info from ranked list
@@ -114,9 +137,9 @@ def trine_results(request):
 		#stop query timmer
 		end = time.time()
 		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 
 #divide list
 def divide_list(lst, n):
@@ -227,6 +250,21 @@ def get_ranked_list(entity_list, isTrine):
 		#return the list
 		return list(final_values)
 	return list()
+
+def get_some_random_page():
+	maximum = page.objects.aggregate(Max('id'))
+	maximum = maximum['id__max']
+	while True:
+		random_id = randint(1, maximum)
+		results =[]
+		try:
+			site = page.objects.get(id=random_id)
+			site = model_to_dict(site)
+			results.append(site)
+			return results
+		except Exception as e:
+			print(str(e))
+	return
 
 
 class UserList(generics.ListAPIView):

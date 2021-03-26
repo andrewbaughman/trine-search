@@ -9,8 +9,9 @@
 		<img id='search-logo' src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
 		<input type="text" id="homeInput" class="query" name="query" value='{{query}}'onkeyup="suggest()" placeholder="Search All resources..." checked>
 		<div class='search-button-container'>
-			<div class="search-button">
+			<div class="search-button" style='text-align: right;'>
 				<input type="submit" id="search_button" class="large-button" name="search" value="Search">
+				<input type="submit" id="lucky_button" class="large-button" name="lucky" value="Lucky" style='margin-right: 15px;'>
 			</div>
 			<div style='text-align: center;'>
 				<div>
