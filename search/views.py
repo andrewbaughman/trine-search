@@ -11,8 +11,7 @@ from django.forms.models import model_to_dict
 from django.views import View
 from django.db.models import Q
 from difflib import SequenceMatcher
-from django.db.models import Sum, Max
-from random import *
+from django.db.models import Sum
 
 import json
 import time
@@ -27,29 +26,20 @@ def index(request):
 
 #get general results page
 def results(request):
-	get_some_random_page()
 	#set start time for query
-	lucky = False
-	random = False
 	start = time.time()
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
+	trine_only = bool(request.GET.get('isTrine'))
 	if not page_searched:
-		page_searched = 1
-	elif page_searched == 'lucky':
-		lucky = True
-		page_searched = 1
-	elif page_searched == 'random':
-		lucky = True
-		random = True
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
-	ranked_list = get_ranked_list(set(query), False)
+	ranked_list = get_ranked_list(set(query), trine_only)
 	num_results_total = len(ranked_list)
 	ranked_list = ranked_list[:200]
 	#set allowable results per page
@@ -59,9 +49,7 @@ def results(request):
 	
 	pages = divide_list(ranked_list, num_pages)
 	page_list = make_list(num_pages)
-	if random:
-		results = get_some_random_page()
-	elif page_searched < num_pages:
+	if page_searched < num_pages:
 		for source in pages[page_searched]:
 			try:
 				#get page info from ranked list
@@ -79,75 +67,13 @@ def results(request):
 		#stop query timmer
 		end = time.time()
 		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
 	#call query correction. The decimal is for tollerance 
 	correction = typo_correction(init_query.lower().split(), 0.75)
 	if correction == '':
 		correction = init_query
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
-
-#get Trine results page
-def trine_results(request):
-	get_some_random_page()
-	#set start time for query
-	lucky = False
-	random = False
-	start = time.time()
-	results = []
-	#create initial query list
-	init_query = request.GET.get('query')
-	page_searched = request.GET.get('page')
-	if not page_searched:
-		page_searched = 1
-	elif page_searched == 'lucky':
-		lucky = True
-		page_searched = 1
-	elif page_searched == 'random':
-		lucky = True
-		random = True
-		page_searched = 1
-	page_searched = int(page_searched) - 1
-	query = init_query.lower().split()
-	query = parse_query(query)
-	#get a ranked list of Trine pages based on keyword and important words
-	ranked_list = get_ranked_list(set(query), True)
-	num_results_total = len(ranked_list)
-	ranked_list = ranked_list[:200]
-	#set allowable results per page
-	results_len = 10
-	num_results = len(ranked_list)
-	num_pages = int(num_results / results_len) + (num_results % results_len > 0)
-	
-	pages = divide_list(ranked_list, num_pages)
-	page_list = make_list(num_pages)
-	if random:
-		results = get_some_random_page()
-	elif page_searched < num_pages:
-		for source in pages[page_searched]:
-			try:
-				#get page info from ranked list
-				link = links.objects.get(id = source)
-				site = page.objects.get(url=link)
-				site = model_to_dict(site)
-				results.append(site)
-				results_len -= 1
-			except Exception as e:
-				pass
-		#call query correction. The decimal is for tollerance 
-		correction = typo_correction(init_query.lower().split(), 0.75)
-		if correction == '':
-			correction = init_query
-		#stop query timmer
-		end = time.time()
-		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
-	#call query correction. The decimal is for tollerance 
-	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
-		correction = init_query
-	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
 
 #divide list
 def divide_list(lst, n):
@@ -259,23 +185,7 @@ def get_ranked_list(entity_list, isTrine):
 		return list(final_values)
 	return list()
 
-def get_some_random_page():
-	maximum = page.objects.aggregate(Max('id'))
-	maximum = maximum['id__max']
-	while True:
-		random_id = randint(1, maximum)
-		results =[]
-		try:
-			site = page.objects.get(id=random_id)
-			site = model_to_dict(site)
-			results.append(site)
-			return results
-		except Exception as e:
-			print(str(e))
-	return
-
 def image_results(request):
-	get_some_random_page()
 	#set start time for query
 	lucky = False
 	random = False

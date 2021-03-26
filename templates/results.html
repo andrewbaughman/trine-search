@@ -20,10 +20,9 @@
 		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
-			<input type="submit" id="lucky_button" class="btn" name="lucky" value="Lucky" style='margin-right: 15px;'>
 			<div class='results-function-container'>
 				<div style='padding-top: 5px;'>
-					<info style="white-space: nowrap;">Trine Only</info>
+					<info>Trine Only</info>
 				</div>
 				<label class="switch trine-toggle" id='results-toggle'>
 					<input type="checkbox">
@@ -50,11 +49,6 @@
 			<info>No results found for <b>"{{query}}"</b> on this page. Please go back a few pages.</info>
 		</div>
 		{% elif results %}
-		{% if lucky %}
-			<script>
-				window.location = "{{ results.0.url }}";
-			</script>
-		{% endif %}
 		{% for result in results %}
 		<a href="{{ result.url }}">
 			<div class='result'>

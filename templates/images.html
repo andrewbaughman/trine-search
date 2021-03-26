@@ -44,28 +44,31 @@
 				window.location = "{{ results.0.url }}";
 			</script>
 		{% endif %}
+		<div style="width: 90vw;">
 		{% for result in results %}
-		<a href="{{ result.source_url }}">
-			<img alt="Missing" src="{{ result.image_url}}"
-			width="250" height="auto" style="vertical-align: middle;">
-		 </a>
+			<a href="{{ result.source_url }}">
+				<img alt="Blocked" src="{{ result.image_url}}"
+				width="200vh" height="auto" style="vertical-align: middle; max-width: 10vw;">
+			</a>
 		{% endfor %}
+		</div>
 		{% else %}
 		<div class='result'>
 			<info>No results found for <b>"{{query}}"</b>. Please try again with different keywords.</info>
 		</div>
 		{% endif %}
 	</div>
-	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎
+	<div style="width: 90vw; padding-left: 5vw; padding-right: 5vw; padding-top: 10px;">
 		‎‏‏‎{% for page in pages %}
 			<title-result>
-				<a href='?query={{correction}}&page={{page}}''>
-					‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
+				<a style="padding-left: 10px; padding-right: 10px;" href='?query={{correction}}&page={{page}}'>
+					‎{{page}}‎‏‏‎
 				</a>
 			</title-result>
 		{% endfor %}
-	<br>
-</br>
+		<br>
+		</br>
+	</div>
 
 </body>
 
