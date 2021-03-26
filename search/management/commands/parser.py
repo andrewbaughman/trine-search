@@ -112,6 +112,7 @@ class Command(BaseCommand):
 			parsed_page = {}
 			imgs = soup.find_all('img', src=True)
 			for img in imgs:
+				print(img['src'])
 				processed = img['src'].split('src=')[-1]
 				if 'noscript=1' not in processed:
 					if(loc_third_slash(url)):

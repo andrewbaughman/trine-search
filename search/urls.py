@@ -9,6 +9,7 @@ urlpatterns = [
 	path('search/admin/', admin.site.urls),
 	path('results/', views.results, name='results'),
 	path('trine-results/', views.trine_results, name='trine_results'),
+	path('images/', views.image_results, name='image_results'),
 	path('api/', views.PageList.as_view()),
 	path('api/<int:pk>/', views.PageDetail.as_view()),
 	path('api/links/', views.LinksList.as_view()),
