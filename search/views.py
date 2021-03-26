@@ -12,7 +12,6 @@ from django.views import View
 from django.db.models import Q
 from difflib import SequenceMatcher
 from django.db.models import Sum
-from numpy import broadcast
 
 import json
 import time
