@@ -7,6 +7,8 @@ class page(models.Model):
 	url = models.ForeignKey('links', on_delete=models.CASCADE, to_field="destination", db_column="url")
 	title = models.CharField(max_length=70)
 	description = models.TextField(max_length=400)
+	hashId = models.CharField(max_length=40, default='0000000000000000000000000000000000000000')
+
 
 
 class keywords(models.Model):
@@ -14,7 +16,7 @@ class keywords(models.Model):
 	url = models.ForeignKey('links', on_delete=models.CASCADE)
 	keyword = models.CharField(max_length=20)
 	times_on_page = models.IntegerField()
-	is_substr = models.BooleanField(default=False)
+	is_substr = models.PositiveIntegerField(default=0)
 	word_len = models.PositiveIntegerField(default=0)
 	
 	def save(self, *args, **kwargs):
@@ -27,8 +29,9 @@ class links(models.Model):
 	pagerank = models.DecimalField(max_digits=5, decimal_places=4, null=True)
 	destination = models.URLField(max_length=400, unique=True)
 	source = models.URLField(max_length=400)
-	isTrine = models.BooleanField(default=False)
+	isTrine = models.PositiveIntegerField(default=0)
 	visited = models.BooleanField(default=False)
+	parsed = models.BooleanField(default=False)
 
 
 class edges(models.Model):

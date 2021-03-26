@@ -29,24 +29,26 @@ $(document).ready(function () {
 	});
 	/*			search on click				*/
 	$('#search_button').click(function () {
-		search($('.query').val(), $('.query').attr('isTrine'));
+		page = "1"
+		search($('.query').val(), $('.query').attr('isTrine'), page);
 	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
 	if (keycode == '13') {
-		search($('.query').val(), $('.query').attr('isTrine'));
+		page = "1"
+		search($('.query').val(), $('.query').attr('isTrine'), page);
 	}
 });
 
-function search(query, isTrine) {
+function search(query, isTrine, page) {
 	if (query == '') {
 		window.location = "/";
 	} else if (isTrine == 'false') {
-		window.location = "/results/?query=" + encodeURIComponent(query);
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page;
 	} else if (isTrine == 'true') {
-		window.location = "/trine-results/?query=" + encodeURIComponent(query);
+		window.location = "/trine-results/?query=" + encodeURIComponent(query) + "&page=" + page;
 	}
 }
 
