@@ -78,7 +78,10 @@ def trine_results(request):
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
-	page_searched = int(request.GET.get('page')) - 1
+	page_searched = request.GET.get('page')
+	if not page_searched:
+		page_searched = 1
+	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
