@@ -32,6 +32,11 @@ $(document).ready(function () {
 		page = "1"
 		search($('.query').val(), $('.query').attr('isTrine'), page);
 	});
+
+	$('#lucky_button').click(function () {
+		page = "1"
+		lucky($('.query').val(), $('.query').attr('isTrine'), 'lucky');
+	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
@@ -45,6 +50,16 @@ $(document).keypress(function (event) {
 function search(query, isTrine, page) {
 	if (query == '') {
 		window.location = "/";
+	} else if (isTrine == 'false') {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page;
+	} else if (isTrine == 'true') {
+		window.location = "/trine-results/?query=" + encodeURIComponent(query) + "&page=" + page;
+	}
+}
+
+function lucky(query, isTrine, page) {
+	if (query == '') {
+		window.location = "/results/?query=random&page=random";
 	} else if (isTrine == 'false') {
 		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page;
 	} else if (isTrine == 'true') {
