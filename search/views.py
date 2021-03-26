@@ -80,8 +80,12 @@ def results(request):
 		end = time.time()
 		#return html page
 		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	#call query correction. The decimal is for tollerance 
+	correction = typo_correction(init_query.lower().split(), 0.75)
+	if correction == '':
+		correction = init_query
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 
 #get Trine results page
 def trine_results(request):
@@ -138,8 +142,12 @@ def trine_results(request):
 		end = time.time()
 		#return html page
 		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	#call query correction. The decimal is for tollerance 
+	correction = typo_correction(init_query.lower().split(), 0.75)
+	if correction == '':
+		correction = init_query
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 
 #divide list
 def divide_list(lst, n):
@@ -272,6 +280,7 @@ def image_results(request):
 	lucky = False
 	random = False
 	start = time.time()
+	total_results = []
 	results = []
 	#create initial query list
 	init_query = request.GET.get('query')
@@ -290,29 +299,31 @@ def image_results(request):
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
 	ranked_list = get_ranked_images(set(query))
-	num_results_total = len(ranked_list)
 	ranked_list = ranked_list[:200]
-	#set allowable results per page
-	results_len = 10
-	num_results = len(ranked_list)
-	num_pages = int(num_results / results_len) + (num_results % results_len > 0)
-	
-	pages = divide_list(ranked_list, num_pages)
-	page_list = make_list(num_pages)
-	success = 0
-	if random:
-		results = get_some_random_page()
-	elif page_searched < num_pages:
-		for source in pages[page_searched]:
+
+	for source in ranked_list:
 			try:
 				#get page info from ranked list
 				link = links.objects.get(id = source)
 				images = image.objects.filter(source_url=link)
 				for img in images:
 					site = model_to_dict(img)
-					results.append(img)
+					total_results.append(site)
 			except Exception as e:
 				print(str(e))
+
+	#set allowable results per page
+	results_len = 50
+	num_results = len(total_results)
+	num_pages = int(num_results / results_len) + (num_results % results_len > 0)
+	
+	pages = divide_list(total_results, num_pages)
+	page_list = make_list(num_pages)
+	if random:
+		results = get_some_random_page()
+	elif page_searched < num_pages:
+		for result in pages[page_searched]:
+			results.append(result)
 		#call query correction. The decimal is for tollerance 
 		correction = typo_correction(init_query.lower().split(), 0.75)
 		if correction == '':
@@ -320,9 +331,13 @@ def image_results(request):
 		#stop query timmer
 		end = time.time()
 		#return html page
-		return render(request, 'images.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+		return render(request, 'images.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results, 'lucky': lucky})
+	#call query correction. The decimal is for tollerance 
+	correction = typo_correction(init_query.lower().split(), 0.75)
+	if correction == '':
+		correction = init_query
 	end = time.time()
-	return render(request, 'images.html', {'query':init_query, 'results': results, 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	return render(request, 'images.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results, 'lucky': lucky})
 
 def get_ranked_images(entity_list):
 	# Make list of lists of urls. Each list of urls matches 1 keyword in query

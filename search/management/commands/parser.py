@@ -94,13 +94,15 @@ class Command(BaseCommand):
 		class TimeOutException(Exception):
 			pass
 
-		def loc_third_slash(link):
-			occurrence = 3
-			inilist = [i for i in range(0, len(link)) 
-					if link[i:].startswith('/')] 
-			if len(inilist)>= 3:
-				return inilist[occurrence-1]
-			else: 
+		def loc_slash_occurrence(link , occurrence):
+			try:
+				inilist = [i for i in range(0, len(link)) 
+						if link[i:].startswith('/')]
+				if len(inilist)>= occurrence:
+					return inilist[occurrence-1]
+				else: 
+					return False
+			except Exception as e:
 				return False
 
 		def alarm_handler(signum, frame):
@@ -109,18 +111,7 @@ class Command(BaseCommand):
 
 		def get_page_info(soup):
 			link_object = links.objects.get(destination=url)
-			parsed_page = {}
-			imgs = soup.find_all('img', src=True)
-			for img in imgs:
-				print(img['src'])
-				processed = img['src'].split('src=')[-1]
-				if 'noscript=1' not in processed:
-					if(loc_third_slash(url)):
-						new_url =  url[0:loc_third_slash(url)]
-						processed = new_url + processed
-					elif processed[0] == '/':
-						processed = url + processed[1:]
-					image.objects.create(source_url=link_object, image_url=processed)
+			parsed_page = {}						
 			if soup.find('title'):
 				title = soup.find('title').get_text()
 				title_trim = title
@@ -157,7 +148,36 @@ class Command(BaseCommand):
 			parsed_page['url'] = url
 			return parsed_page
 
-			
+		def save_images(soup, url):
+			link_object = links.objects.get(destination=url)
+			imgs = soup.find_all('img', src=True)
+			for img in imgs:
+				process = img['src'].split('src=')[-1]
+				if 'noscript=1' not in process:
+					attempt = 3
+					processed = process
+					if (processed[0:7] == 'http://' or processed[0:8] == 'https://' or processed[0:4] == 'www.'):
+						response = requests.get(processed)
+						if str(response) == '<Response [200]>':
+							print('saved image')
+							image.objects.create(source_url=link_object, image_url=processed)
+					else:
+						if process[0] == '/':
+							processed = url + process[1:]
+						while attempt < 10:
+							if(loc_slash_occurrence(url, attempt)):
+								new_url =  url[0:loc_slash_occurrence(url, attempt)]
+								processed = new_url + process
+								try:
+									response = requests.get(processed)
+									if str(response) == '<Response [200]>':
+										print('saved image')
+										image.objects.create(source_url=link_object, image_url=processed)
+										attempt = 10
+								except Exception as e:
+									print(str(e))
+							attempt += 1
+
 		i = -1
 		x = int(input("How many parsers are there/ do you want? "))
 		y = int(input("What number parser is this?"))
@@ -186,12 +206,14 @@ class Command(BaseCommand):
 						__keywords = get_keywords(soup)
 						if parsed_page and matching_page(parsed_page):
 							save_page_to_database(parsed_page)
+							save_images(soup, url)
 							if __keywords:
 								save_keywords_to_database(url, __keywords)
 					except TimeOutException as ex:
 						print(ex)
 					except Exception as e:
 						print(str(e))
+						signal.alarm(0)
 						break_check = len(links.objects.filter(parsed=False))
 			else:
 				break_check = len(links.objects.filter(parsed=False))
