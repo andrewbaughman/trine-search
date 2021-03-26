@@ -153,14 +153,15 @@ class Command(BaseCommand):
 			imgs = soup.find_all('img', src=True)
 			for img in imgs:
 				process = img['src'].split('src=')[-1]
-				if 'noscript=1' not in process:
+				if ('noscript=1' not in process) and ('safelinks.pro' not in process):
 					attempt = 3
 					processed = process
 					if (processed[0:7] == 'http://' or processed[0:8] == 'https://' or processed[0:4] == 'www.'):
 						response = requests.get(processed)
 						if str(response) == '<Response [200]>':
-							print('saved image')
-							image.objects.create(source_url=link_object, image_url=processed)
+							if len(processed) <= 400:
+								print('saved image')
+								image.objects.create(source_url=link_object, image_url=processed)
 					else:
 						if process[0] == '/':
 							processed = url + process[1:]
@@ -171,9 +172,10 @@ class Command(BaseCommand):
 								try:
 									response = requests.get(processed)
 									if str(response) == '<Response [200]>':
-										print('saved image')
-										image.objects.create(source_url=link_object, image_url=processed)
-										attempt = 8
+										if len(processed) <= 400:
+											print('saved image')
+											image.objects.create(source_url=link_object, image_url=processed)
+											attempt = 8
 								except Exception as e:
 									print(str(e))
 									signal.alarm(0)

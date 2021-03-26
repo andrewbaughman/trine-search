@@ -48,7 +48,7 @@ def results(request):
 	page_list = make_list(num_pages)
 	if not page_searched:
 		page_searched = 1
-	elif page_searched not in page_list:
+	elif int(page_searched) not in page_list:
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	for source in pages[page_searched]:
@@ -216,9 +216,10 @@ def image_results(request):
 	
 	pages = divide_list(total_results, num_pages)
 	page_list = make_list(num_pages)
+	print(page_list)
 	if not page_searched:
 		page_searched = 1
-	elif page_searched not in page_list:
+	elif int(page_searched) not in page_list:
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	for result in pages[page_searched]:
