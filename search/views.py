@@ -32,7 +32,7 @@ def results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
-	trine_only = bool(request.GET.get('isTrine'))
+	trine_only = (request.GET.get('isTrine') == 'True')
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
