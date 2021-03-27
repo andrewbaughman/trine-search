@@ -1,0 +1,112 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/theme_utils.js' %}"></script>
+
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Thunder Seeker Home</title>
+</head>
+
+<body class="second">
+	{% block content %}
+	{% endblock %}
+	<!--	Color Editor widget		-->
+</body>
+</html>
+
+<div id='color-picker-widget' class='widget-canvas' title='Color Modifier' style='display: none;'>
+	<div id='color-picker-container' style='display:grid; grid-template-columns: 3fr 1fr;'>
+		<div class='input-container'>
+			<label>Main Background Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="main-background-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Toggle Button Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="toggle-button-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Toggle Button Text Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="toggle-button-text-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Second Background Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="second-background-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Highlight Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="highlight-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Search Bar Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="search-bar-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Main Text Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="main-text-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Info Text Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="info-text-color-input">
+		</div>
+		<div class='input-container'>
+			<label>URL Text Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="url-text-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Title Text Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="title-text-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Title Text Hover Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="title-text-hover-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Title Text Visited Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="title-text-visited-color-input">
+		</div>
+		<div class='input-container'>
+			<label>Padding Color</label>
+		</div>
+		<div>
+			<input type="color" class='color-input' id="padding-color-input">
+		</div>
+	</div>
+	<div style='display: inline'>
+		<div class='btn center' id='save-button'>Save</div>
+		<div class='btn center' id='reset-button'>Reset</div>
+		<div class='btn center' id='light-button'>Light</div>
+		<div class='btn center' id='dark-button'>Dark</div>
+	</div>
+</div>
