@@ -68,7 +68,7 @@ def results(request):
 	#stop query timmer
 	end = time.time()
 	#return html page
-	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'trine_only': trine_only})
 	
 #divide list
 def divide_list(lst, n):
@@ -170,16 +170,15 @@ def get_ranked_list(entity_list, isTrine):
 					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
 				urls_to_keyword = (urls_to_keyword | kwobjects)
 		except Exception as e:
-			print(str(e))
+			pass
 	#sort the return values based on important words, then by freqency
 	if urls_to_keyword:
 		returned_values = urls_to_keyword.values('url_id').annotate(important_score = Sum('is_substr'), freq_score = Sum('times_on_page')).order_by('-important_score', '-freq_score')
-		print(returned_values)
 		final_values = list()
 		for value in returned_values:
 			final_values.append(value['url_id'])
 		#return the list
-		return list(final_values)
+		return final_values
 	return list()
 
 def image_results(request):
@@ -207,7 +206,7 @@ def image_results(request):
 					site = model_to_dict(img)
 					total_results.append(site)
 			except Exception as e:
-				print(str(e))
+				pass
 
 	#set allowable results per page
 	results_len = 50
@@ -216,7 +215,6 @@ def image_results(request):
 	
 	pages = divide_list(total_results, num_pages)
 	page_list = make_list(num_pages)
-	print(page_list)
 	if not page_searched:
 		page_searched = 1
 	elif int(page_searched) not in page_list:
@@ -258,7 +256,7 @@ def get_ranked_images(entity_list):
 				kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
 				urls_to_keyword = (urls_to_keyword | kwobjects)
 		except Exception as e:
-			print(str(e))
+			pass
 	#sort the return values based on important words, then by freqency
 	if urls_to_keyword:
 		returned_values = urls_to_keyword.values('url_id').annotate(important_score = Sum('is_substr'), freq_score = Sum('times_on_page')).order_by('-important_score', '-freq_score')
