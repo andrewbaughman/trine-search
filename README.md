@@ -25,15 +25,16 @@
     - 'python3 manage.py migrate' run to apply model chenges
 
 ## Troubleshooting 'Search_Links' Error
-  - Delete trine-search/db.sqlite3
-  - Delete trine-search/search/migrations/0001_initial.py
-  - Delete all files in trine-search/search/migrations/_pycache_
-  - in root directory run `python3 manage.py make migrations`
-  - in root directory run `python3 manage.py make migrate zero`
-  - in root directory run `python3 manage.py make migrate`
-  - in root directory run `python3 manage.py crawler`
-  - if prompts for the number of links you want to seed appear, it worked
-  - if you still get errors after taking all these steps, contact me, Josh Middleton, on discord
+  * Delete trine-search/db.sqlite3
+  * in root directory run `python3 manage.py make migrations`
+  * in root directory run `python3 manage.py make migrate zero`
+  * in root directory run `python3 manage.py make migrate`
+  * in root directory run `python3 manage.py crawler`
+  * if prompts for the number of links you want to seed appear, it worked
+  * if errors still appear, try the process again after deleting the following:
+    - Delete trine-search/search/migrations/0001_initial.py
+    - Delete all files in trine-search/search/migrations/_pycache_
+  * if you still get errors after taking all these steps, contact me, Josh Middleton, on discord
 
 
 
