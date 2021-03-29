@@ -11,7 +11,8 @@ from django.forms.models import model_to_dict
 from django.views import View
 from django.db.models import Q
 from difflib import SequenceMatcher
-from django.db.models import Sum
+from django.db.models import Sum, Max
+from random import *
 
 import json
 import time
@@ -32,13 +33,18 @@ def results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
+	lucky = (request.GET.get('lucky')=='True')
+	random = (request.GET.get('random')=='True')
 	if not page_searched:
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
-	ranked_list = get_ranked_list(set(query), False)
+	if not random: 
+		ranked_list = get_ranked_list(set(query), False)
+	else:
+		ranked_list = get_random_page()
 	num_results_total = len(ranked_list)
 	ranked_list = ranked_list[:200]
 	#set allowable results per page
@@ -67,9 +73,9 @@ def results(request):
 		#stop query timmer
 		end = time.time()
 		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total})
+	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 
 #get Trine results page
 def trine_results(request):
@@ -79,13 +85,18 @@ def trine_results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
+	lucky = (request.GET.get('lucky')=='True')
+	random = (request.GET.get('random')=='True')
 	if not page_searched:
 		page_searched = 1
 	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
-	ranked_list = get_ranked_list(set(query), True)
+	if not random: 
+		ranked_list = get_ranked_list(set(query), False)
+	else:
+		ranked_list = get_random_page()
 	num_results_total = len(ranked_list)
 	ranked_list = ranked_list[:200]
 	#set allowable results per page
@@ -114,9 +125,9 @@ def trine_results(request):
 		#stop query timmer
 		end = time.time()
 		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total})
+		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total})
+	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 
 #divide list
 def divide_list(lst, n):
@@ -128,6 +139,23 @@ def divide_list(lst, n):
 		return [lst[:p]] + divide_list(lst[p:], n-1)
 	else:
 		return [lst]
+
+def get_random_page():
+	maximum = links.objects.aggregate(Max('id'))['id__max']
+	if len(page.objects.all()) == 0:
+		return list()
+	while True:
+		random_id = randint(0, maximum)
+		print(random_id)
+		results = []
+		try:
+			site = links.objects.get(id=random_id)
+			random_result = page.objects.get(url=site)
+			results.append(site.id)
+			return results
+		except Exception as e:
+			print(str(e))
+	return list()
 
 def make_list(size):
 	returned = list()
@@ -220,7 +248,6 @@ def get_ranked_list(entity_list, isTrine):
 	#sort the return values based on important words, then by freqency
 	if urls_to_keyword:
 		returned_values = urls_to_keyword.values('url_id').annotate(important_score = Sum('is_substr'), freq_score = Sum('times_on_page')).order_by('-important_score', '-freq_score')
-		print(returned_values)
 		final_values = list()
 		for value in returned_values:
 			final_values.append(value['url_id'])

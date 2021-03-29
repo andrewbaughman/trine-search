@@ -32,6 +32,11 @@ $(document).ready(function () {
 		page = "1"
 		search($('.query').val(), $('.query').attr('isTrine'), page);
 	});
+
+	$('#lucky_button').click(function () {
+		page = "1"
+		lucky($('.query').val(), $('.query').attr('isTrine'), page);
+	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
@@ -49,6 +54,20 @@ function search(query, isTrine, page) {
 		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page;
 	} else if (isTrine == 'true') {
 		window.location = "/trine-results/?query=" + encodeURIComponent(query) + "&page=" + page;
+	}
+}
+
+function lucky(query, isTrine, page) {
+	if (query == '') {
+		if (isTrine == 'true'){
+			window.location = "/trine-results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True";
+		} else {
+			window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True";
+		}
+	} else if (isTrine == 'false') {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True";
+	} else if (isTrine == 'true') {
+		window.location = "/trine-results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True";
 	}
 }
 
