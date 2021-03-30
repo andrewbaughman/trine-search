@@ -121,7 +121,7 @@ info {
 
 .search-button {
 	margin: auto;
-	display: block;
+	display: inline-flex;
 	text-align: -webkit-center;
 	text-align: center;
 }
@@ -137,6 +137,7 @@ info {
 	text-align: center;
 	width: 250px;
 	height: 40px;
+	margin-top: 8px;;
 }
 
 .large-button:hover,
@@ -409,8 +410,17 @@ input:checked + .slider:before {
 .search-button-container {
 	display: grid;
 	grid-template-columns: 2fr 1fr;
-	width: 50%;
+	width: 40em;
 	margin: auto;
+}
+.voice-button {
+	width: 75px;
+	object-fit: scale-down;
+	border-radius: 10px;
+	margin: 5px;
+	border: 2px solid transparent;
+
+	
 }
 
 @media only screen and (max-width:800px) {
@@ -429,7 +439,6 @@ input:checked + .slider:before {
 
 	.search-button-container {
 		grid-template-columns: unset;
-		grid-auto-rows: auto;
 		margin: auto;
 		width: auto;
 	}
