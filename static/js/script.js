@@ -1,20 +1,6 @@
 $(document).ready(function () {
 	/*		load toggle from storage				*/
-	defaultToggle();
-	/*			toggle theme on click				*/
-	/*
-	$('.btn-toggle').on('click', function () {
-		var currentTheme = localStorage.getItem("theme");
-		if (currentTheme == 'light') {
-			setdark();
-			localStorage.setItem("theme", "dark");
-		} else {
-			setlight();
-			localStorage.setItem("theme", "light");
-		}
-	});
-	*/
-	//$('.query').attr('isTrine', 'false');
+	defaultToggle();	 
 	$('.trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
 		if ($(".trine-toggle").find('input').is(':checked')) {
@@ -65,5 +51,3 @@ function defaultToggle() {
 		localStorage.setItem("isTrine", "false");
 	}
 }
-
-
