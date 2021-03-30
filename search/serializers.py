@@ -19,6 +19,12 @@ class EdgesSerializer(serializers.ModelSerializer):
 		fields = ('id', 'pointA', 'pointB',)
 
 
+class EdgesSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = edges
+		fields = ('id', 'pointA', 'pointB',)
+
+
 class KeywordsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = keywords

@@ -6,9 +6,8 @@ import signal
 from search.models import links, edges
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
-from search.pagerank import *
 from django.db.models import Q
-
+from search.readrules import *
 
 class Command(BaseCommand):
 
@@ -25,10 +24,6 @@ class Command(BaseCommand):
 		def add_link(linkObject):
 			link_object = links.objects.create(destination=linkObject['destination'], source=linkObject['source'], isTrine=linkObject['isTrine'], visited = False)
 			return link_object
-
-		def add_edge(edgeObject):
-			edge_object = edges.objects.create(pointA=edgeObject['pointA'], pointB=edgeObject['pointB'])
-			return model_to_dict(edge_object)
 
 		def get_link(id):
 			try:	
@@ -121,36 +116,11 @@ class Command(BaseCommand):
 				else:
 					return
 			
-			# Make a list of all connections just made
-			try:
-				source = links.objects.get(destination=url)
-			except:
-				source = links.objects.get(destination=(url + '/'))
-			destinations = list(links.objects.filter(source=url))
-			
-			# Prep lists and generate pageranks
-			_links = [source] + destinations
-			_edges = edges.objects.filter(pointA=source)
-			
-			pageranks = PR_from_db(_edges, _links, len(_links))
-			#print(pageranks)
-
-			# Save to database
-			for key in pageranks:
-				link = links.objects.get(id=key)
-				link.pagerank = pageranks[key]
-				link.save()
 	
 		def save_link_to_database(link_object):
 			# check for duplicate before sending
 			if (is_duplicate_link(link_object['destination']) == False) and (len(link_object['destination'])<399) :
 				link = add_link(link_object)
-				try:
-					edge_object = {'pointA': links.objects.get(destination=link.source), 'pointB': link}
-				except:
-					print(link.source)
-					edge_object = {'pointA': links.objects.get(destination=link.source + '/'), 'pointB': link}
-				add_edge(edge_object)
 				print("Link post successful")
 				return link
 
@@ -182,17 +152,16 @@ class Command(BaseCommand):
 			if link:
 				try:
 					url = link.destination
-					if not link.visited and link.isTrine == 1:
+					if not link.visited:
+						c1 = Crawler(url)
+						c1.crawl_sitemap()
 						get_page_of_links(url, True)
-					elif not link.visited and link.isTrine == 2:
-						get_page_of_links(url, False)
-					elif not link.visited and link.isTrine == 3:
-						print("link #" + str(i) + " is too far away, will not crawl...")
 					else:
 						print("link #" + str(i) + " was already visited. Skipping...")
 				except Exception as e:
 					break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=False))
 			else:
+				print('no link')
 				break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=False))
 			i = i + 1
 			print(i)
