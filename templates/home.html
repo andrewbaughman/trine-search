@@ -10,6 +10,12 @@
 		<input type="text" id="homeInput" class="query" name="query" value='{{query}}'onkeyup="suggest()" placeholder="Search All resources..." checked>
 		<div class='search-button-container'>
 			<div class="search-button">
+				<div id='home-mic-up' style='display: inline-flex;'>
+					<img class='voice-button' src={% static "assets/microphone_up.png" %}>
+				</div>
+				<div id='home-mic-down' style='display: inline-flex;'>
+					<img class='voice-button' src={% static "assets/microphone_down.png" %}>
+				</div>
 				<input type="submit" id="search_button" class="large-button" name="search" value="Search">
 			</div>
 			<div style='text-align: center;'>
