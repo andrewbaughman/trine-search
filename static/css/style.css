@@ -439,7 +439,6 @@ input:checked + .slider:before {
 
 	.search-button-container {
 		grid-template-columns: unset;
-		grid-auto-rows: auto;
 		margin: auto;
 		width: auto;
 	}
