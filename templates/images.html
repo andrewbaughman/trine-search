@@ -19,23 +19,13 @@
 		</a>
 		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
 		<div id="left">
-			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
-			<div class='results-function-container'>
-				<div style='padding-top: 5px;'>
-					<info>Trine Only</info>
-				</div>
-				<label class="switch trine-toggle" id='results-toggle'>
-					<input type="checkbox">
-					<span class="slider round"></span>
-				</label>
-			</div>
+			<input type="submit" id="image_button" class="btn" name="images" value="search images" style='margin-right: 15px;'>
 		</div>
-		
 		<button class="btn-toggle">Theme</button>
-		<input type="submit" id="image_button" class="btn" name="images" value="images" style='float: right; margin: 16.875px;'>
+		<input type="submit" id="search_button" class="btn" name="search" value="all" style='float: right; margin: 16.875px;'>
 
 	</div>
-	<div class="results-container">
+	<div class="results-container" style="width: 100vw;">
 		{% ifnotequal correction|stringformat:"s" query %}
 		<info class=''>
 			‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Did you mean: <a href="?query={{correction}}">{{correction}}?</a>
@@ -44,40 +34,41 @@
 		<div class=''>
 			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎{{num_results}} Results in {{time}} seconds</info>
 		</div>
-		{% if results %}
+		{% if results == 'None' %}
+		<div class='result'>
+			<info>No results found for <b>"{{query}}"</b> on this page. Please go back a few pages.</info>
+		</div>
+		{% elif results %}
+		{% if lucky %}
+			<script>
+				window.location = "{{ results.0.url }}";
+			</script>
+		{% endif %}
+		<div style="width: 90vw;">
 		{% for result in results %}
-		<a href="{{ result.url }}">
-			<div class='result'>
-					<url>
-						<td>{{ result.url }}</td>
-					</url>
-					<td>
-						<title-result></br>{{ result.title }}
-					</td>
-					</title-result>
-					<td></br>
-						<info>
-					<td>{{ result.description }}</td>
-					</info>
-			</div>
-		</a>
+			<a href="{{ result.source_url }}">
+				<img alt="Blocked" src="{{ result.image_url}}"
+				width="200vh" height="auto" style="vertical-align: middle; max-width: 15vw; padding: 10px">
+			</a>
 		{% endfor %}
+		</div>
 		{% else %}
 		<div class='result'>
 			<info>No results found for <b>"{{query}}"</b>. Please try again with different keywords.</info>
 		</div>
 		{% endif %}
 	</div>
-	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎
+	<div style="width: 90vw; padding-left: 5vw; padding-right: 5vw; padding-top: 10px;">
 		‎‏‏‎{% for page in pages %}
 			<title-result>
-				<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
-					‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
+				<a style="padding-left: 10px; padding-right: 10px;" href='?query={{correction}}&page={{page}}'>
+					‎{{page}}‎‏‏‎
 				</a>
 			</title-result>
 		{% endfor %}
-	<br>
-</br>
+		<br>
+		</br>
+	</div>
 
 </body>
 

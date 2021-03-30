@@ -9,7 +9,10 @@ class page(models.Model):
 	description = models.TextField(max_length=400)
 	hashId = models.CharField(max_length=40, default='0000000000000000000000000000000000000000')
 
-
+class image(models.Model):
+	id = models.AutoField(primary_key=True)
+	source_url = models.ForeignKey('links', on_delete=models.CASCADE, to_field="destination", db_column="url")
+	image_url = models.URLField(max_length=400)
 
 class keywords(models.Model):
 	id = models.AutoField(primary_key=True)
