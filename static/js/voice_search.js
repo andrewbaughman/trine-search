@@ -1,16 +1,18 @@
 /*      https://tutorialzine.com/2017/08/converting-from-speech-to-text-with-javascript     */
+/*      https://stackoverflow.com/a/4565120	for isChrome check							    */
+/*      https://stackoverflow.com/a/31511072 for mq.matches check							*/
+
 var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
 if (isChrome.toString() !== 'true') {
 	$(document).ready(function () {
 		const mq = window.matchMedia( "(min-width: 800px)" );
-		console.log(mq.matches);
-		console.log("is chrome: " + isChrome.toString());
+		//console.log("is chrome: " + isChrome.toString());
 		$('.search-button-container').find('.voice-button-container').remove();
-		if(mq.matches){	//not chrome and responsive --no buttons
+		if(mq.matches){	//not chrome not responsive --no buttons
 			$('.search-button-container').css('grid-template-columns', '2fr 1fr');
 			$('.search-button-container').css('grid-template-rows', 'unset');
 		}
-		else {			//not chrome not responsive --no buttons
+		else {			//not chrome and responsive --no buttons
 			$('.search-button-container').css('grid-template-rows', '1fr 1fr');
 			$('.search-button-container').css('grid-template-columns', 'unset');
 
@@ -19,12 +21,11 @@ if (isChrome.toString() !== 'true') {
 } else {
 	$(document).ready(function () {
 		const mq = window.matchMedia("(min-width: 800px)");
-		console.log(mq.matches);
-		if(mq.matches){	//chrome and responsive --yes buttons
+		if(mq.matches){	//chrome not responsive --yes buttons
 			$('.search-button-container').css('grid-template-columns', '1fr 1fr 1fr');
 			$('.search-button-container').css('grid-template-rows', 'unset');
 		}
-		else {			//chrome not responsive --yes buttons
+		else {			//chrome and responsive --yes buttons
 			$('.search-button-container').css('grid-template-rows', '1fr 1fr 1fr');
 			$('.search-button-container').css('grid-template-columns', 'unset');
 
