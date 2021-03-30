@@ -36,7 +36,9 @@ $(document).ready(function () {
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
-	if (keycode == '13') {
+	var enter_bar_id = document.getElementById('resultsInput');
+	var home_enter_id = document.getElementById('homeInput');
+	if (keycode == '13' & (document.activeElement === enter_bar_id | document.activeElement === home_enter_id)) {
 		page = "1"
 		search($('.query').val(), $('.query').attr('isTrine'), page);
 	}
