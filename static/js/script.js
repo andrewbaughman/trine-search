@@ -60,15 +60,9 @@ function images(query, page) {
 
 function lucky(query, isTrine, page) {
 	if (query == '') {
-		if (isTrine == 'True'){
-			window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True" + "&isTrine=True";
-		} else {
-			window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True";
-		}
-	} else if (isTrine == 'False') {
-		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True";
-	} else if (isTrine == 'True') {
-		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&isTrine=True";
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True" + "&isTrine=" + isTrine;
+	}else {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&isTrine=" + isTrine;
 	}
 }
 

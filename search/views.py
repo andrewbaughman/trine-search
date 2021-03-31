@@ -16,7 +16,6 @@ from random import *
 
 import json
 import time
-import json
 
 #standard list of values to exclude weight from when making a search
 exception_list = ("", " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and", "another", "any", "anyhow", "anyone", "anything", "anyway", "anywhere", "are", "around", "as", "at", "back", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom", "but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven", "else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thick", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the")
@@ -33,16 +32,14 @@ def results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
+	trine_only = (request.GET.get('isTrine') == 'True')
 	lucky = (request.GET.get('lucky')=='True')
 	random = (request.GET.get('random')=='True')
-	if not page_searched:
-		page_searched = 1
-	page_searched = int(page_searched) - 1
 	query = init_query.lower().split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
 	if not random: 
-		ranked_list = get_ranked_list(set(query), False)
+		ranked_list = get_ranked_list(set(query), trine_only)
 	else:
 		ranked_list = get_random_page()
 	num_results_total = len(ranked_list)
@@ -54,28 +51,29 @@ def results(request):
 	
 	pages = divide_list(ranked_list, num_pages)
 	page_list = make_list(num_pages)
-	
-	if page_searched <= num_pages:
-		for source in pages[page_searched]:
-			try:
-				#get page info from ranked list
-				link = links.objects.get(id = source)
-				site = page.objects.get(url=link)
-				site = model_to_dict(site)
-				results.append(site)
-				results_len -= 1
-			except Exception as e:
-				pass
-		#call query correction. The decimal is for tollerance 
-		correction = typo_correction(init_query.lower().split(), 0.75)
-		if correction == '':
-			correction = init_query
-		#stop query timmer
-		end = time.time()
-		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	if not page_searched:
+		page_searched = 1
+	elif int(page_searched) not in page_list:
+		page_searched = 1
+	page_searched = int(page_searched) - 1
+	for source in pages[page_searched]:
+		try:
+			#get page info from ranked list
+			link = links.objects.get(id = source)
+			site = page.objects.get(url=link)
+			site = model_to_dict(site)
+			results.append(site)
+			results_len -= 1
+		except Exception as e:
+			pass
+	#call query correction. The decimal is for tollerance 
+	correction = typo_correction(init_query.lower().split(), 0.75)
+	if correction == '':
+		correction = init_query
+	#stop query timmer
 	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
+	#return html page
+	return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'trine_only': trine_only, 'lucky': lucky})
 	
 #divide list
 def divide_list(lst, n):
