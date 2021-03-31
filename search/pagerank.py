@@ -34,7 +34,7 @@ def make_A(_edges, _links, nodes):
 		pointA = _links.index(edge.pointA)
 		pointB = _links.index(edge.pointB)
 		A[pointA][pointB] = 1
-	print(A)
+	#print(A)
 	### Reference for transpose function: https://numpy.org/doc/stable/reference/generated/numpy.matrix.transpose.html
 	return A.transpose()
 
@@ -49,7 +49,7 @@ def make_T(A):
 				A[row][column] = A[row][column] / sums[column]
 			else:
 				A[row][column] = A[row][column]
-	print(A)
+	#print(A)
 
 	# Create Square Matrix with all 1's
 	I = numpy.zeros((len(A),len(A)), float)
@@ -59,7 +59,7 @@ def make_T(A):
 
 	### Reference for composing T matrix: https://www.youtube.com/watch?v=uDphHCgpDro
 	T = ((0.15 / len(A)) * I) + (0.85 * A)
-	print(T)
+	#print(T)
 	return T
 
 
@@ -80,5 +80,5 @@ def find_vector(T):
 		pageranks.append(rank[0].round(4))
 
 	# Here is your probability vector. Aka PageRank vector.
-	print(pageranks)
+	#print(pageranks)
 	return pageranks

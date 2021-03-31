@@ -5,12 +5,23 @@ from django.contrib.auth.models import User
 class PageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = page
-		fields = ('id', 'url', 'title', 'description',)
+		fields = ('id', 'url', 'title', 'description', 'hashId')
+
+class ImageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = image
+		fields = ('id', 'source_url', 'image_url',)
 
 class LinksSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = links
-		fields = ('id', 'pagerank', 'destination', 'source', 'isTrine', 'visited',)
+		fields = ('id', 'pagerank', 'destination', 'source', 'isTrine', 'visited', 'parsed')
+
+
+class EdgesSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = edges
+		fields = ('id', 'pointA', 'pointB',)
 
 
 class EdgesSerializer(serializers.ModelSerializer):
@@ -26,7 +37,6 @@ class KeywordsSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
 	class Meta:
 		model = User
 		fields = ('id', 'username')

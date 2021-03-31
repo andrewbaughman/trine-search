@@ -1,20 +1,6 @@
 $(document).ready(function () {
 	/*		load toggle from storage				*/
-	defaultToggle();
-	/*			toggle theme on click				*/
-	/*
-	$('.btn-toggle').on('click', function () {
-		var currentTheme = localStorage.getItem("theme");
-		if (currentTheme == 'light') {
-			setdark();
-			localStorage.setItem("theme", "dark");
-		} else {
-			setlight();
-			localStorage.setItem("theme", "light");
-		}
-	});
-	*/
-	//$('.query').attr('isTrine', 'false');
+	defaultToggle();	 
 	$('.trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
 		if ($(".trine-toggle").find('input').is(':checked')) {
@@ -29,24 +15,46 @@ $(document).ready(function () {
 	});
 	/*			search on click				*/
 	$('#search_button').click(function () {
-		search($('.query').val(), $('.query').attr('isTrine'));
+		page = "1"
+		search($('.query').val(), $('.query').attr('isTrine'), page);
+	});
+
+	$('#image_button').click(function () {
+		page = "1"
+		images($('.query').val(), page);
 	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
 	if (keycode == '13') {
-		search($('.query').val(), $('.query').attr('isTrine'));
+		page = "1"
+		if (window.location.toString().includes("/images/?query")) {
+			images($('.query').val(), page);
+		}
+		else {
+			search($('.query').val(), $('.query').attr('isTrine'), page);
+		}
+
 	}
 });
 
-function search(query, isTrine) {
+function search(query, isTrine, page) {
 	if (query == '') {
 		window.location = "/";
 	} else if (isTrine == 'false') {
-		window.location = "/results/?query=" + encodeURIComponent(query);
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&isTrine=False";
 	} else if (isTrine == 'true') {
-		window.location = "/trine-results/?query=" + encodeURIComponent(query);
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&isTrine=True";
+	}
+}
+
+function images(query, page) {
+	if (query == '') {
+		window.location = "/images/?query=trine&page=1"
+	}
+	else{
+		window.location = "/images/?query=" + encodeURIComponent(query) + "&page=" + page;
 	}
 }
 
@@ -63,5 +71,3 @@ function defaultToggle() {
 		localStorage.setItem("isTrine", "false");
 	}
 }
-
-
