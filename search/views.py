@@ -76,61 +76,7 @@ def results(request):
 		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
 	end = time.time()
 	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
-
-#get Trine results page
-def trine_results(request):
-	#set start time for query
-	start = time.time()
-	results = []
-	#create initial query list
-	init_query = request.GET.get('query')
-	page_searched = request.GET.get('page')
-	lucky = (request.GET.get('lucky')=='True')
-	random = (request.GET.get('random')=='True')
-	if not page_searched:
-		page_searched = 1
-	elif int(page_searched) not in page_list:
-		page_searched = 1
-	page_searched = int(page_searched) - 1
-	query = init_query.lower().split()
-	query = parse_query(query)
-	#get a ranked list of Trine pages based on keyword and important words
-	if not random: 
-		ranked_list = get_ranked_list(set(query), False)
-	else:
-		ranked_list = get_random_page()
-	num_results_total = len(ranked_list)
-	ranked_list = ranked_list[:200]
-	#set allowable results per page
-	results_len = 10
-	num_results = len(ranked_list)
-	num_pages = int(num_results / results_len) + (num_results % results_len > 0)
 	
-	pages = divide_list(ranked_list, num_pages)
-	page_list = make_list(num_pages)
-	
-	if page_searched <= num_pages:
-		for source in pages[page_searched]:
-			try:
-				#get page info from ranked list
-				link = links.objects.get(id = source)
-				site = page.objects.get(url=link)
-				site = model_to_dict(site)
-				results.append(site)
-				results_len -= 1
-			except Exception as e:
-				pass
-		#call query correction. The decimal is for tollerance 
-		correction = typo_correction(init_query.lower().split(), 0.75)
-		if correction == '':
-			correction = init_query
-		#stop query timmer
-		end = time.time()
-		#return html page
-		return render(request, 'results.html', {'query':init_query, 'results': results, 'time':end-start,'correction': correction, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
-	end = time.time()
-	return render(request, 'results.html', {'query':init_query, 'results': 'None', 'time':end-start,'correction': init_query, 'pages': page_list, 'num_results': num_results_total, 'lucky': lucky})
-
 #divide list
 def divide_list(lst, n):
 	if n == 0:
