@@ -414,13 +414,8 @@ input:checked + .slider:before {
 	margin: auto;
 }
 .voice-button {
-	width: 75px;
-	object-fit: scale-down;
-	border-radius: 10px;
+	width: 32px;
 	margin: 5px;
-	border: 2px solid transparent;
-
-	
 }
 
 @media only screen and (max-width:800px) {
