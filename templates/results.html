@@ -18,6 +18,11 @@
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
 		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
+		<div id="voiceresult" class='voice-button-container' style="display: inline;">
+			<div id='home-mic-up' style='display: inline-flex; top: 10px; position: relative;'>
+				<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %} >
+			</div>
+		</div>
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
 			<input type="submit" id="lucky_button" class="large-button" name="lucky" value="Feelin' Lucky">
@@ -31,7 +36,10 @@
 				</label>
 			</div>
 		</div>
+		
 		<button class="btn-toggle">Theme</button>
+		<input type="submit" id="image_button" class="btn" name="images" value="images" style='float: right; margin: 16.875px;'>
+
 	</div>
 	<div class="results-container">
 		{% ifnotequal correction|stringformat:"s" query %}
@@ -55,7 +63,6 @@
 		{% for result in results %}
 		<a href="{{ result.url }}">
 			<div class='result'>
-				<tr>
 					<url>
 						<td>{{ result.url }}</td>
 					</url>
@@ -79,7 +86,7 @@
 	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎
 		‎‏‏‎{% for page in pages %}
 			<title-result>
-				<a href='?query={{correction}}&page={{page}}''>
+				<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
 					‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
 				</a>
 			</title-result>

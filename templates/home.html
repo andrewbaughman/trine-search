@@ -2,13 +2,18 @@
 {% block content %}
 {% load static %}
 
-
 	<button class="btn-toggle">Theme</button>
+
 	</br>
 	<div>
 		<img id='search-logo' src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
 		<input type="text" id="homeInput" class="query" name="query" value='{{query}}'onkeyup="suggest()" placeholder="Search All resources..." checked>
 		<div class='search-button-container'>
+			<div class='voice-button-container'>
+				<div id='home-mic-up' style='display: inline-flex;'>
+					<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %}>
+				</div>
+			</div>
 			<div class="search-button">
 				<input type="submit" id="search_button" class="large-button" name="search" value="Search">
 				<input type="submit" id="lucky_button" class="large-button" name="lucky" value="Feelin' Lucky">

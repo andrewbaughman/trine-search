@@ -13,6 +13,7 @@ var default_title_text = '#ffffff';
 var default_title_text_hover = '#add8e6';
 var default_title_text_visit = '#ffb9fe';
 var default_padding_color = '#404f60';
+var default_results_background = '#333333';
 
 $(document).ready(function () {
 	/*			 Theme				*/
@@ -74,6 +75,8 @@ function setlight() {
 	$('#title-text-hover-color-input').val(trim_lowercase_text(title_text_hover));
 	$('#title-text-visited-color-input').val(trim_lowercase_text(title_text_visit));
 	$('#padding-color-input').val(trim_lowercase_text(padding_color));
+	$('#results-background').val(trim_lowercase_text(search_bar));
+
 }
 
 function setdark() {
@@ -91,6 +94,7 @@ function setdark() {
 	var title_text_hover = default_title_text_hover;
 	var title_text_visit = default_title_text_visit;
 	var padding_color = default_padding_color;
+	var results_background = default_results_background;
 	$('#main-background-color-input').val(trim_lowercase_text(main_bg_color));
 	$('#toggle-button-color-input').val(trim_lowercase_text(toggle_button_color));
 	$('#toggle-button-text-color-input').val(trim_lowercase_text(toggle_button_text_color));
@@ -104,6 +108,8 @@ function setdark() {
 	$('#title-text-hover-color-input').val(trim_lowercase_text(title_text_hover));
 	$('#title-text-visited-color-input').val(trim_lowercase_text(title_text_visit));
 	$('#padding-color-input').val(trim_lowercase_text(padding_color));
+	$('#results-background').val(trim_lowercase_text(results_background));
+
 }
 
 function get_theme_or_defaults() {
@@ -177,6 +183,7 @@ function get_theme_or_defaults() {
 	root.style.setProperty("--title-text-hover", title_text_hover);
 	root.style.setProperty("--title-text-visit", title_text_visit);
 	root.style.setProperty("--padding-color", padding_color);
+	root.style.setProperty("--results-background", padding_color);
 
 	//set defaults to switcher
 	$('#main-background-color-input').val(trim_lowercase_text(main_bg_color));
