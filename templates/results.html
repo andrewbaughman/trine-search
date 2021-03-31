@@ -25,6 +25,7 @@
 		</div>
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
+			<input type="submit" id="lucky_button" class="large-button" name="lucky" value="Feelin' Lucky">
 			<div class='results-function-container'>
 				<div style='padding-top: 5px;'>
 					<info>Trine Only</info>
@@ -49,7 +50,16 @@
 		<div class=''>
 			<info>‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎{{num_results}} Results in {{time}} seconds</info>
 		</div>
-		{% if results %}
+		{% if results == 'None' %}
+		<div class='result'>
+			<info>No results found for <b>"{{query}}"</b> on this page. Please go back a few pages.</info>
+		</div>
+		{% elif results %}
+		{% if lucky %}
+		<script>
+			window.location = '{{results.0.url}}';
+		</script>
+		{% endif %}
 		{% for result in results %}
 		<a href="{{ result.url }}">
 			<div class='result'>

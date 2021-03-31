@@ -9,8 +9,8 @@ $(document).ready(function () {
 			localStorage.setItem("isTrine", "True");
 		} else {
 			$('.query').attr('placeholder', 'Search All resources...');
-			$('.query').attr('isTrine', 'false');
-			localStorage.setItem("isTrine", "false");
+			$('.query').attr('isTrine', 'False');
+			localStorage.setItem("isTrine", "False");
 		}
 	});
 	/*			search on click				*/
@@ -20,6 +20,11 @@ $(document).ready(function () {
 
 	$('#image_button').click(function () {
 		images($('.query').val(), '1');
+	});
+
+	$('#lucky_button').click(function () {
+		page = "1"
+		lucky($('.query').val(), $('.query').attr('isTrine'), page);
 	});
 });
 /*			search on enter key			*/
@@ -50,6 +55,14 @@ function images(query, page) {
 	}
 	else{
 		window.location = "/images/?query=" + encodeURIComponent(query) + "&page=" + page;
+	}
+}
+
+function lucky(query, isTrine, page) {
+	if (query == '') {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True" + "&isTrine=" + isTrine;
+	}else {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&isTrine=" + isTrine;
 	}
 }
 
