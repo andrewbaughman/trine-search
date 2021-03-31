@@ -5,8 +5,8 @@ $(document).ready(function () {
 		//var current = $('#homeInpput').attr('placeholder');
 		if ($(".trine-toggle").find('input').is(':checked')) {
 			$('.query').attr('placeholder', 'Search Trine resources...');
-			$('.query').attr('isTrine', 'true');
-			localStorage.setItem("isTrine", "true");
+			$('.query').attr('isTrine', 'True');
+			localStorage.setItem("isTrine", "True");
 		} else {
 			$('.query').attr('placeholder', 'Search All resources...');
 			$('.query').attr('isTrine', 'false');
@@ -15,25 +15,22 @@ $(document).ready(function () {
 	});
 	/*			search on click				*/
 	$('#search_button').click(function () {
-		page = "1"
-		search($('.query').val(), $('.query').attr('isTrine'), page);
+		search($('.query').val(), $('.query').attr('isTrine'), '1');
 	});
 
 	$('#image_button').click(function () {
-		page = "1"
-		images($('.query').val(), page);
+		images($('.query').val(), '1');
 	});
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
 	if (keycode == '13') {
-		page = "1"
 		if (window.location.toString().includes("/images/?query")) {
-			images($('.query').val(), page);
+			images($('.query').val(), '1');
 		}
 		else {
-			search($('.query').val(), $('.query').attr('isTrine'), page);
+			search($('.query').val(), $('.query').attr('isTrine'), '1');
 		}
 
 	}
@@ -42,10 +39,8 @@ $(document).keypress(function (event) {
 function search(query, isTrine, page) {
 	if (query == '') {
 		window.location = "/";
-	} else if (isTrine == 'false') {
-		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&isTrine=False";
-	} else if (isTrine == 'true') {
-		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&isTrine=True";
+	} else {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&isTrine=" + isTrine;
 	}
 }
 
@@ -60,14 +55,14 @@ function images(query, page) {
 
 function defaultToggle() {
 	var currentToggle = localStorage.getItem("isTrine");
-	if (currentToggle == "true") {
+	if (currentToggle == "True") {
 		$(".trine-toggle").find('input').attr('checked', 'checked');
 		$('.query').attr('placeholder', 'Search Trine resources...');
-		$('.query').attr('isTrine', 'true');
+		$('.query').attr('isTrine', 'True');
 	} else {
 		$(".trine-toggle").find('input').removeAttr('checked', 'checked');
 		$('.query').attr('placeholder', 'Search All resources...');
-		$('.query').attr('isTrine', 'false');
-		localStorage.setItem("isTrine", "false");
+		$('.query').attr('isTrine', 'False');
+		localStorage.setItem("isTrine", "False");
 	}
 }
