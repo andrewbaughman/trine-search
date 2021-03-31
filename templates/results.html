@@ -18,6 +18,11 @@
 			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
 		</a>
 		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
+		<div id="voiceresult" class='voice-button-container' style="display: inline;">
+			<div id='home-mic-up' style='display: inline-flex; top: 10px; position: relative;'>
+				<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %} >
+			</div>
+		</div>
 		<div id="left">
 			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
 			<div class='results-function-container'>

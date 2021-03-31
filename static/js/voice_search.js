@@ -31,14 +31,16 @@ if (isChrome.toString() !== 'true') {
 
 		}
 		$('#home-mic-up').on('click', function (e) {
-			$('#home-mic-up').find('img').css('border', '2px solid lime');
-			recognition.start();
+			image = document.getElementById('voiceimage');
+			if (image.src.includes('mic.svg')){
+				image.src = image.src.replace('mic.svg', 'mic-up.svg');
+				recognition.start();
+			} else if (image.src.includes('mic-up.svg')){
+				image.src = image.src.replace('mic-up.svg', 'mic.svg');
+				recognition.stop();
+			}
+     		
 		});
-		$('#home-mic-down').on('click', function (e) {
-			$('#home-mic-up').find('img').css('border', '2px solid transparent');
-			recognition.stop();
-		});
-
 	});
 
 
@@ -61,6 +63,23 @@ if (isChrome.toString() !== 'true') {
 	recognition.onresult = function (event) {
 		var current = event.resultIndex;
 		var transcript = event.results[current][0].transcript;
-		$('#homeInput').val(transcript);
+		if ($('#homeInput')) {
+			$('#homeInput').val(transcript);
+		voiceSearch();
+		}
+		if ($('#resultsInput')) {
+			$('#resultsInput').val(transcript);
+		voiceSearch();
+		}
+	}
+	
+	function voiceSearch() {
+		query = $('.query').val()
+		isTrine = $('.query').attr('isTrine')
+		if (query == '') {
+			window.location = "/";
+		} else {
+			window.location = "/results/?query=" + encodeURIComponent(query) + "&isTrine=" + isTrine + "&page=1";
+		}
 	}
 }
