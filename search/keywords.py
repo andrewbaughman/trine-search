@@ -29,30 +29,18 @@ def get_word_frequency(soup):
     unique_word_list = list(set(word_list))
     
     final_list = {}
-    exception_flag = 0
     #for loop to load/discard words
     for i in unique_word_list:
-        for z in exception_list:
-            if (i==z) or len(i) > 20:
-                exception_flag = 1
-                break
-        if (exception_flag == 0):
+        if i not in exception_list and len(i) <= 20:
             final_list[i] = word_list.count(i)
-        exception_flag = 0
     
     #Sort by count found at https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-    final_list = dict(sorted(final_list.items(), key=lambda item: item[1], reverse=True))
+    final_list = dict(sorted(final_list.items(), key=lambda item: item[1], reverse=True)[:num_results])
     
-    #for loop to print first "num_results" results in dict .items() fix found at https://careerkarma.com/blog/python-valueerror-too-many-values-to-unpack-expected-2/#:~:text=Conclusion,to%20iterate%20over%20a%20dictionary.
-    break_condition = 0
-    return_list = {}
-    for key, value in final_list.items():
-        return_list[key] = value
-        break_condition = break_condition + 1
-        if(break_condition == num_results):
-            break
-    
-    return return_list
+    #.items() fix found at https://careerkarma.com/blog/python-valueerror-too-many-values-to-unpack-expected-2/#:~:text=Conclusion,to%20iterate%20over%20a%20dictionary.
+    #Don't know if ^ link is referenced elsewhere
+
+    return final_list
 
 
 def get_metadata_info(soup):
@@ -71,22 +59,21 @@ def get_metadata_info(soup):
     metatag_tags = soup.find_all('meta')
     for i in range(len(metatag_tags)):
         #.get fix found at https://realpython.com/python-keyerror/#:~:text=The%20Python%20KeyError%20is%20a,for%20could%20not%20be%20found.
-        if(metatag_tags[i].attrs.get('name') == 'Keywords'):
+        if(metatag_tags[i].attrs.get('name') == ('Keywords' or 'keywords')):
             element_found = ((re.sub(r'[^\w\s]', '', metatag_tags[i].attrs['content'])).lower()).split()
             metatag_list.extend(element_found)
         element_found = ((re.sub(r'[^\w\s]', '', soup.find_all('meta')[i].text)).lower()).split()
         metatag_list.extend(element_found)
     
     title_tags = soup.find_all('title')
-    for i in range(len(title_tags)):
-        element_found = ((re.sub(r'[^\w\s]', '', title_tags[i].text)).lower()).split()
-        element_list = list()
-        for element in element_found:
-            element_ms = element
-            if element[-1] == 's':
-                element_ms = element_ms[:(len(element_ms) -1)]
-            if ((element + 's') not in element_list) & (element_ms not in element_list):
-                element_list.append(element)    
+    element_found = ((re.sub(r'[^\w\s]', '', title_tags[0].text)).lower()).split()
+    element_list = list()
+    for element in element_found:
+        element_ms = element
+        if element[-1] == 's':
+            element_ms = element_ms[:(len(element_ms) -1)]
+        if ((element + 's') not in element_list) & (element_ms not in element_list):
+            element_list.append(element)    
     title_list.extend(element_list) 
     
     final_list.extend(metataginfo_list)
@@ -95,16 +82,10 @@ def get_metadata_info(soup):
 
     final_list = set(final_list)
     return_list = []
-    exception_flag = 0
     #for loop to load/discard words
     for i in final_list:
-        for z in exception_list:
-            if (i==z):
-                exception_flag = 1
-                break
-        if (exception_flag == 0):
+        if i not in exception_list and len(i) <= 20:
             return_list.append(i)
-        exception_flag = 0
 
     return return_list
 
@@ -143,15 +124,6 @@ def get_keywords(soup):
             keywords_intermed[key] = int(round(tempsum))
     
     #Sort by value
-    keywords_intermed = dict(sorted(keywords_intermed.items(), key=lambda item: item[1], reverse=True))
-    
-    #for loop to print first "num_results" results in dict .items() fix found at https://careerkarma.com/blog/python-valueerror-too-many-values-to-unpack-expected-2/#:~:text=Conclusion,to%20iterate%20over%20a%20dictionary.
-    break_condition = 0
-    return_list = {}
-    for key, value in keywords_intermed.items():
-        return_list[key] = value
-        break_condition = break_condition + 1
-        if(break_condition == num_results):
-            break
+    keywords_intermed = dict(sorted(keywords_intermed.items(), key=lambda item: item[1], reverse=True)[:num_results])
         
-    return return_list
+    return keywords_intermed

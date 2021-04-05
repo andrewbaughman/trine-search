@@ -30,14 +30,15 @@ $(document).ready(function () {
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
-	if (keycode == '13') {
+	var enter_bar_id = document.getElementById('resultsInput');
+	var home_enter_id = document.getElementById('homeInput');
+	if (keycode == '13' & (document.activeElement === enter_bar_id | document.activeElement === home_enter_id)) {
 		if (window.location.toString().includes("/images/?query")) {
 			images($('.query').val(), '1');
 		}
 		else {
 			search($('.query').val(), $('.query').attr('isTrine'), '1');
 		}
-
 	}
 });
 
