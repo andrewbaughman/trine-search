@@ -29,7 +29,6 @@ def get_word_frequency(soup):
     unique_word_list = list(set(word_list))
     
     final_list = {}
-    exception_flag = 0
     #for loop to load/discard words
     for i in unique_word_list:
         if i not in exception_list and len(i) <= 20:
@@ -45,7 +44,7 @@ def get_word_frequency(soup):
 
 
 def get_metadata_info(soup):
-    #Lis
+    #List declarations
     final_list = []
     metataginfo_list = []
     metatag_list = []
