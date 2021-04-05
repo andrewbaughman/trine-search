@@ -45,7 +45,7 @@ def get_word_frequency(soup):
 
 
 def get_metadata_info(soup):
-    #List declarations
+    #Lis
     final_list = []
     metataginfo_list = []
     metatag_list = []
