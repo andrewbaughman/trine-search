@@ -6,6 +6,7 @@ from search.crawl_utils import *
 import tldextract
 import time
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 
 class Crawler:
@@ -30,8 +31,12 @@ class Crawler:
 			if visit==True:
 				if (not site in self.rules['disallowed']) or (site in self.rules['allowed']):					
 					print("CRAWL_DELAY: " + str(self.rules['crawl_delay']))
+					domains = []
+					domains.append(self.domain)
 					while((time.time() - previous) < float(self.rules['crawl_delay'])):
-						pass
+						link = links.objects.filter(~Q(destination__in=domains))[:1]
+						domains.append(self.determine_domain(link.destination))
+						get_page_of_links(link.destination, True)
 					get_page_of_links(site, True)
 					previous = time.time()
 					print("Sitemap location crawled")

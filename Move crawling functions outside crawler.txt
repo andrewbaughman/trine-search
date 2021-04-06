@@ -1,0 +1,5 @@
+Move crawling functions outside crawler
+Make pagerank work again
+Make crawler crawl sitemap for seed, then normal
+Make crawler and parser:
+	Make the crawl loop consider crawl delay with crawling other domains during delay
