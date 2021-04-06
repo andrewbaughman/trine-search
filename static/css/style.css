@@ -13,7 +13,7 @@
 	--title-text-hover: #0;
 	--title-text-visit: #0;
 	--padding-color: #333333;
-	--results-background: #333333;
+	--results-background: #0;
 	--accent-blue: #023d61;
 	--transparent: #00000000;
 	--highlight-text: #426292;
@@ -414,13 +414,8 @@ input:checked + .slider:before {
 	margin: auto;
 }
 .voice-button {
-	width: 75px;
-	object-fit: scale-down;
-	border-radius: 10px;
+	width: 32px;
 	margin: 5px;
-	border: 2px solid transparent;
-
-	
 }
 
 @media only screen and (max-width:800px) {

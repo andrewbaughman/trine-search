@@ -3,6 +3,7 @@
 {% load static %}
 
 	<button class="btn-toggle">Theme</button>
+
 	</br>
 	<div>
 		<img id='search-logo' src="{% static 'assets/logo.svg' %}" alt="Thunder" class="center">
@@ -10,14 +11,12 @@
 		<div class='search-button-container'>
 			<div class='voice-button-container'>
 				<div id='home-mic-up' style='display: inline-flex;'>
-					<img class='voice-button' src={% static "assets/microphone_up.png" %}>
-				</div>
-				<div id='home-mic-down' style='display: inline-flex;'>
-					<img class='voice-button' src={% static "assets/microphone_down.png" %}>
+					<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %}>
 				</div>
 			</div>
 			<div class="search-button">
 				<input type="submit" id="search_button" class="large-button" name="search" value="Search">
+				<input type="submit" id="lucky_button" class="large-button" name="lucky" value="Feelin' Lucky">
 			</div>
 			<div style='text-align: center;'>
 				<div>
