@@ -10,13 +10,14 @@ from search.models import image
 from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
 from search.keywords import *
+from search.crawl_utils import *
 
 import hashlib
 
 class Command(BaseCommand):
 	
 	def handle(self, *args, **options):
-		inclusion = {"trine", "Trine"}
+		
 		def matching_page(parsed_page):
 			matching_page = page.objects.filter(hashId=parsed_page['hashId'])
 			if matching_page.count() == 1:
@@ -34,9 +35,9 @@ class Command(BaseCommand):
 			elif matching_page.count() > 1:
 				print("ERROR FOUND!")
 			return True
-
 				
 		def save_keywords_to_database(url, __keywords):
+			inclusion = {"trine", "Trine"}
 			parsed_page_keywords = json.dumps(__keywords)
 
 			### https://www.guru99.com/python-json.html
@@ -79,21 +80,7 @@ class Command(BaseCommand):
 					if link.url == link_object: 
 						return True
 				return False
-		
-		def get_link(id):
-			try:
-				if str(id) == str(0):
-					link_object = links.objects.first()
-				else:
-					link_object = links.objects.get(id=id)
-				return link_object
-			except Exception as e:
-				return False
-		
-		#https://code-maven.com/python-timeout
-		class TimeOutException(Exception):
-			pass
-
+				
 		def loc_slash_occurrence(link , occurrence):
 			try:
 				inilist = [i for i in range(0, len(link)) 
@@ -104,10 +91,6 @@ class Command(BaseCommand):
 					return False
 			except Exception as e:
 				return False
-
-		def alarm_handler(signum, frame):
-			print("timeout has occured")
-			raise TimeOutException()
 
 		def get_page_info(soup):
 			link_object = links.objects.get(destination=url)
@@ -157,30 +140,23 @@ class Command(BaseCommand):
 					attempt = 3
 					processed = process
 					if (processed[0:7] == 'http://' or processed[0:8] == 'https://' or processed[0:4] == 'www.'):
+						if len(processed) <= 400:
+							print('saved image')
+							image.objects.create(source_url=link_object, image_url=processed)
+						
+					else:
+						#url = determine_domain(url)
+						#if process[0] == '/':
+						#	processed = url + process[1:]
+						#else:
+						#	processed = url + process
+						processed = restructure_url(url, process)
 						response = requests.get(processed)
 						if str(response) == '<Response [200]>':
 							if len(processed) <= 400:
 								print('saved image')
 								image.objects.create(source_url=link_object, image_url=processed)
-					else:
-						if process[0] == '/':
-							processed = url + process[1:]
-						while attempt < 8:
-							if(loc_slash_occurrence(url, attempt)):
-								new_url =  url[0:loc_slash_occurrence(url, attempt)]
-								processed = new_url + process
-								try:
-									response = requests.get(processed)
-									if str(response) == '<Response [200]>':
-										if len(processed) <= 400:
-											print('saved image')
-											image.objects.create(source_url=link_object, image_url=processed)
-											attempt = 8
-								except Exception as e:
-									print(str(e))
-									signal.alarm(0)
-							attempt += 1
-
+											
 		i = int(input("What id do you want to start at? (make this the same for all parser instaces) "))
 		x = int(input("How many parsers are there/ do you want? "))
 		y = int(input("What number parser is this? "))

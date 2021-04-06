@@ -7,49 +7,56 @@ import tldextract
 import time
 from django.forms.models import model_to_dict
 from django.db.models import Q
-
+from search.crawl_utils import *
+import lxml
 
 class Crawler:
 	def __init__(self, url):
-		self.domain = self.determine_domain(url)
+		self.url = url
+		self.domain = determine_domain(url)
 		self.rules_file = self.fetch_rules_file()
 		self.rules = self.parse_rules()
 		self.sitemap = self.parse_sitemap()
 		
 
 	def crawl_sitemap(self):
-		previous = time.time()
 		for site in self.sitemap:
-			try:
-				link = links.objects.get(destination=site)
-				if not link.visited:
-					visit = True
-				else:
-					visit = False
-			except:
-				visit = True
-			if visit==True:
-				if (not site in self.rules['disallowed']) or (site in self.rules['allowed']):					
-					print("CRAWL_DELAY: " + str(self.rules['crawl_delay']))
-					domains = []
-					domains.append(self.domain)
-					while((time.time() - previous) < float(self.rules['crawl_delay'])):
-						link = links.objects.filter(~Q(destination__in=domains))[:1]
-						domains.append(self.determine_domain(link.destination))
-						get_page_of_links(link.destination, True)
-					get_page_of_links(site, True)
-					previous = time.time()
-					print("Sitemap location crawled")
+			if site[-3:] in extension_list_tl:
+				pass
+			else:
+				link_dict = {'destination': site, 'source': self.url, 'isTrine': True, 'visited': False}
+				add_link(link_dict)
+
+		# previous = time.time()
+		# for site in self.sitemap:
+			
+		# 	try:
+		# 		link = links.objects.get(destination=site)
+		# 		if not link.visited:
+		# 			visit = True
+		# 		else:
+		# 			visit = False
+		# 	except:
+		# 		visit = True
+		# 	if visit==True:
+		# 		if (not site in self.rules['disallowed']) or (site in self.rules['allowed']):					
+		# 			domains = []
+		# 			domains.append(self.domain)
+		# 			while((time.time() - previous) < float(self.rules['crawl_delay'])):
+		# 				try:
+		# 					link = links.objects.filter(~Q(destination__in=domains))[:1]
+		# 					domains.append(determine_domain(link.destination))
+		# 					get_page_of_links(link.destination, True)
+		# 				except:
+		# 					pass
+		# 			get_page_of_links(site, True)
+		# 			previous = time.time()
+		# 			print("Sitemap location crawled")
 			
 	def fetch_rules_file(self):
 		robots = self.domain + "/robots.txt"
 		robotrules = requests.get('http://' + robots).text
 		return robotrules
-
-	def determine_domain(self, link):
-		extracted = tldextract.extract(link)
-		domain = "{}.{}".format(extracted.domain, extracted.suffix)
-		return domain
 
 	def parse_rules(self):
 		user_agents = []
@@ -87,7 +94,7 @@ class Crawler:
 		sites = []
 
 		xmlpage = requests.get(self.rules['sitemap']).text
-		bs = BeautifulSoup(xmlpage, 'xml')
+		bs = BeautifulSoup(xmlpage, features='xml')
 		locs = bs.find_all('loc')
 		for loc in locs:
 			sites.append(loc.text)

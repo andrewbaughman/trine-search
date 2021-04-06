@@ -63,22 +63,7 @@ class IsTrineTestCase(TestCase):
 		self.assertFalse(trine_url(self.u3))
 		self.assertFalse(trine_url(self.u4))
 		print("Passed isTrine")
-
-class LocThirdSlashTestCase(TestCase):
-	def setUp(self):
-		self.u1 = "https://trine.edu"
-		self.u2 = "http://myportal.trine.edu/ics/"
-		self.u3 = "https://en.wikipedia.org/wiki/Great_Depression"
-		self.u4 = "https://en.wikipedia.org/wiki/TRIN_(finance)"		
-
-	def test_finds_third_slash(self):
-		"""u1 should return false. u2, u3, and u4 should return a location in the url before the third slash"""
-		self.assertFalse(loc_third_slash(self.u1))
-		self.assertEqual(self.u2[:loc_third_slash(self.u2)], "http://myportal.trine.edu")
-		self.assertEqual(self.u3[:loc_third_slash(self.u3)], "https://en.wikipedia.org")
-		self.assertEqual(self.u4[:loc_third_slash(self.u4)], "https://en.wikipedia.org")
-		print("Passed loc third slash")
-
+	
 class IsDuplicatePageTestCase(TestCase):
 	def setUp(self):
 		#Create link objects for each tested url
