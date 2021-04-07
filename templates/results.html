@@ -112,7 +112,19 @@
 </br>
 
 </body>
-
+<script>
+	if (window.matchMedia("(max-width: 800px)").matches) {
+		var top_bar = $('.top-bar');
+		var height = top_bar.outerHeight() - top_bar.find('.grid-item3').outerHeight();
+		$(window).scroll(function () {
+				if ($(this).scrollTop() > height) { //use `this`, not `document`
+					$('.grid-item3').hide();
+				} else {
+					$('.grid-item3').show();
+				}
+		});
+	}
+</script>
 </html>
 
 
