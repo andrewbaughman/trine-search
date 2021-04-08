@@ -13,19 +13,28 @@
 
 <body class="second">
 	<div class="top-bar">
-		<form method="GET" action="/search/"></form>
-		<a href="/">
-			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
-		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
-		<div id="voiceresult" class='voice-button-container' style="display: inline;">
-			<div id='home-mic-up' style='display: inline-flex; top: 10px; position: relative;'>
-				<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %} >
+		<div class='grid-item1'>
+			<form method="GET" action="/search/"></form>
+			<div>
+				<a href="/">
+					<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
+				</a>
+			</div>
+			<div>
+				<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..."
+					value="{{query}}">
 			</div>
 		</div>
-		<div id="left">
-			<input type="submit" id="search_button" class="btn" name="search" value="search" style='margin-right: 15px;'>
-			<input type="submit" id="lucky_button" class="large-button" name="lucky" value="Feelin' Lucky">
+		<div class='grid-item2'>
+			<div>
+				<input type="submit" id="search_button" class="btn" name="search" value="search"
+					style='margin-right: 15px;'>
+			</div>
+			<div>
+				<input type="submit" id="lucky_button" class="btn" name="lucky" value="Feelin' Lucky">
+			</div>
+		</div>
+		<div class='grid-item3'>
 			<div class='results-function-container'>
 				<div style='padding-top: 5px;'>
 					<info>Trine Only</info>
@@ -35,10 +44,17 @@
 					<span class="slider round"></span>
 				</label>
 			</div>
+			<div id="voiceresult" class='voice-button-container'>
+				<div id='home-mic-up'>
+					<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %}>
+				</div>
+			</div>
 		</div>
-		
-		<button class="btn-toggle">Theme</button>
-		<input type="submit" id="image_button" class="btn" name="images" value="images" style='float: right; margin: 16.875px;'>
+		<div class='top-bar-last'>
+			<input type="submit" id="image_button" class="btn" name="images" value="images">
+			<button class="btn-toggle">Theme</button>
+		</div>
+	</div>
 
 	</div>
 	<div class="results-container">
@@ -63,17 +79,17 @@
 		{% for result in results %}
 		<a href="{{ result.url }}">
 			<div class='result'>
-					<url>
-						<td>{{ result.url }}</td>
-					</url>
-					<td>
-						<title-result></br>{{ result.title }}
-					</td>
-					</title-result>
-					<td></br>
-						<info>
-					<td>{{ result.description }}</td>
-					</info>
+				<url>
+					<td>{{ result.url }}</td>
+				</url>
+				<td>
+					<title-result></br>{{ result.title }}
+				</td>
+				</title-result>
+				<td></br>
+					<info>
+				<td>{{ result.description }}</td>
+				</info>
 			</div>
 		</a>
 		{% endfor %}
@@ -83,19 +99,32 @@
 		</div>
 		{% endif %}
 	</div>
-	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎
-		‎‏‏‎{% for page in pages %}
-			<title-result>
-				<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
-					‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
-				</a>
-			</title-result>
-		{% endfor %}
+	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎{% if pages|length > 1 %} ‎‎‏‏‎ ‎‎‏‏‎ ‎
+	‎‏‏‎{% for page in pages %}
+	<title-result>
+		<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
+						‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
+					</a>
+				</title-result>
+			{% endfor %}
+		{% endif %}
 	<br>
 </br>
 
 </body>
-
+<script>
+	if (window.matchMedia("(max-width: 800px)").matches) {
+		var top_bar = $('.top-bar');
+		var height = top_bar.outerHeight() - top_bar.find('.grid-item3').outerHeight();
+		$(window).scroll(function () {
+				if ($(this).scrollTop() > height) { //use `this`, not `document`
+					$('.grid-item3').hide();
+				} else {
+					$('.grid-item3').show();
+				}
+		});
+	}
+</script>
 </html>
 
 
