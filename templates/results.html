@@ -99,7 +99,7 @@
 		</div>
 		{% endif %}
 	</div>
-	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎{% if pages > 1 %} ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎
+	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎{% if pages|length > 1 %} ‎‎‏‏‎ ‎‎‏‏‎ ‎
 	‎‏‏‎{% for page in pages %}
 	<title-result>
 		<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
