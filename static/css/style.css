@@ -117,9 +117,49 @@ info {
 	top: 0;
 	width: 100%;
 	z-index: 3;
+	display: inline-flex;
 }
 
-.search-button {
+.top-bar>div {
+	align-self: center;
+}
+
+.grid-item1 {
+	display: grid;
+	grid-template-columns: 1fr 4fr;
+	align-items: center;
+}
+
+.grid-item1>form {
+	display: none;
+}
+
+.left {
+	width: 4em;
+	margin: 1em;
+}
+
+.grid-item2 {
+	display: inline-flex;
+}
+
+.grid-item3 {
+	padding: 0px 1em;
+	display: inline-flex;
+}
+
+.results-function-container {
+	margin: auto;
+	margin-bottom: 10%;
+}
+
+.top-bar-last {
+	margin-left: auto;
+	margin-right: 1em;
+}
+
+.search-button,
+.lucky-button {
 	margin: auto;
 	display: inline-flex;
 	text-align: -webkit-center;
@@ -135,15 +175,26 @@ info {
 	font-family: arial, sans-serif;
 	font-size: 16px;
 	text-align: center;
-	width: 250px;
+	width: 230px;
 	height: 40px;
-	margin-top: 8px;;
+	margin: 8px 5px 0px 5px;
 }
 
 .large-button:hover,
 .btn:hover,
 .btn-toggle:hover {
 	background-color: var(--highlight-color);
+	cursor: pointer;
+	text-shadow: 1px 1px black;
+}
+
+.voice-button:hover {
+	cursor: pointer;
+	text-shadow: 1px 1px black;
+	border: 1px solid var(--highlight-color);
+}
+
+#search-logo:hover {
 	cursor: pointer;
 	text-shadow: 1px 1px black;
 }
@@ -158,18 +209,8 @@ info {
 
 #left {
 	margin: auto;
-	width: 14em;
 	padding: 10px;
 	display: inline-flex;
-}
-
-.left {
-	display: inline-block;
-	margin-left: 5%;
-	width: 3em;
-	float: left;
-	padding-top: 0.9em;
-	padding-right: 0.9em;
 }
 
 #toggle-trine {
@@ -256,8 +297,7 @@ body.dark-theme {}
 
 .btn-toggle {
 	float: right;
-	margin-top: 1%;
-	margin-right: 1em;
+	margin: 1%;
 	background: none;
 	border: 1px solid var(--highlight-color);
 	color: var(--toggle-button-text-color);
@@ -270,6 +310,7 @@ body.dark-theme {}
 	min-width: 54px;
 	text-align: center;
 	cursor: pointer;
+	padding: 0px 16px;
 }
 
 
@@ -296,20 +337,18 @@ body.dark-theme {}
 #resultsInput {
 	background-image: url(/static/assets/searchicon.png);
 	background-size: 20px;
-	background-position: 12px 10px;
+	background-position: 5% 50%;
 	background-repeat: no-repeat;
 	background-color: var(--search-bar);
-	width: 20em;
+	width: 95%;
 	font-size: 16px;
-	padding: 12px 20px 12px 40px;
+	padding: 3% 3% 3% 12%;
 	border: 1px solid lightgrey;
-	margin-top: 1em;
 	border-radius: 24px;
-	margin-bottom: 12px;
 	color: var(--main-text);
 	font-family: sans-serif;
-	display: inline;
 }
+
 
 /*	= https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_switch	= */
 .switch {
@@ -351,15 +390,15 @@ body.dark-theme {}
 	transition: .4s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
 	background-color: var(--accent-blue);
 }
 
-input:focus + .slider {
+input:focus+.slider {
 	box-shadow: 0 0 1px var(--accent-blue);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
 	-webkit-transform: translateX(26px);
 	-ms-transform: translateX(26px);
 	transform: translateX(26px);
@@ -409,13 +448,25 @@ input:checked + .slider:before {
 
 .search-button-container {
 	display: grid;
-	grid-template-columns: 2fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
 	width: 40em;
 	margin: auto;
 }
+
 .voice-button {
 	width: 32px;
 	margin: 5px;
+	border: 1px solid transparent;
+}
+
+.voice-button-container {
+	margin: auto;
+	padding-top: 5px;
+}
+
+#image_button {
+	margin: 1%;
+	float: right;
 }
 
 @media only screen and (max-width:800px) {
@@ -438,36 +489,61 @@ input:checked + .slider:before {
 		width: auto;
 	}
 
-	.top-bar {
-		position: unset;
-		overflow: unset;
-		padding-left: 2vw;
-		padding-right: 2vw;
+	.toggle-button {
+		margin-top: 1%;
 	}
 
+	.top-bar {
+		display: grid;
+		grid-template-rows: auto;
+		grid-template-columns: 1fr 1fr;
+		grid-auto-flow: dense;
+		padding-bottom: 1%;
+	}
+
+	.grid-item1 {
+		grid-column: span 2;
+		display: grid;
+		grid-template-columns: 1fr 4fr;
+		align-items: center;
+	}
+	.grid-item2 {
+		display: inline-flex;
+		grid-row-end: 3;
+		margin: auto;
+	}
+	.grid-item3 {
+		padding: 0px 1em;
+		display: inline-flex;
+		grid-column-end: 1;
+		grid-column: span 2;
+	}
+	.top-bar-last {
+		margin: auto;
+		grid-row-end: 3;
+		display: inline-flex;
+	}
+	.results-function-container {
+		margin: auto;
+		padding-bottom: 5px;
+	}
 	.results-container {
-		margin-top: unset;
+		margin-top: 13em;
 		width: inherit;
 		margin-left: unset;
 		padding-left: 2vw;
 		padding-right: 2vw;
 	}
-	#resultsInput {
-		width: auto;
-	}
-	.results-function-container {
-		display: inline-flex;
-	}
-	#results-toggle {
-		margin-left: 1.5vw;
-	}
+
 	url {
 		display: unset;
 	}
+
 	title-result {
 		white-space: unset;
 		color: var(--title-text);
 	}
+
 	a:link {
 		color: unset;
 	}

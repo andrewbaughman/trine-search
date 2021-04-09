@@ -9,8 +9,8 @@ $(document).ready(function () {
 			localStorage.setItem("isTrine", "True");
 		} else {
 			$('.query').attr('placeholder', 'Search All resources...');
-			$('.query').attr('isTrine', 'false');
-			localStorage.setItem("isTrine", "false");
+			$('.query').attr('isTrine', 'False');
+			localStorage.setItem("isTrine", "False");
 		}
 	});
 	/*			search on click				*/
@@ -21,18 +21,25 @@ $(document).ready(function () {
 	$('#image_button').click(function () {
 		images($('.query').val(), '1');
 	});
+
+	$('#lucky_button').click(function () {
+		page = "1"
+		lucky($('.query').val(), $('.query').attr('isTrine'), page);
+	});
+
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {
 	var keycode = (event.keyCode ? event.keyCode : event.which);
-	if (keycode == '13') {
+	var enter_bar_id = document.getElementById('resultsInput');
+	var home_enter_id = document.getElementById('homeInput');
+	if (keycode == '13' & (document.activeElement === enter_bar_id | document.activeElement === home_enter_id)) {
 		if (window.location.toString().includes("/images/?query")) {
 			images($('.query').val(), '1');
 		}
 		else {
 			search($('.query').val(), $('.query').attr('isTrine'), '1');
 		}
-
 	}
 });
 
@@ -50,6 +57,14 @@ function images(query, page) {
 	}
 	else{
 		window.location = "/images/?query=" + encodeURIComponent(query) + "&page=" + page;
+	}
+}
+
+function lucky(query, isTrine, page) {
+	if (query == '') {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&random=True" + "&isTrine=" + isTrine;
+	}else {
+		window.location = "/results/?query=" + encodeURIComponent(query) + "&page=" + page + "&lucky=True" + "&isTrine=" + isTrine;
 	}
 }
 
