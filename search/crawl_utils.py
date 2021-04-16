@@ -11,7 +11,7 @@ from django.db.models import Q
 import tldextract
 
 inclusion = {"trine", "Trine"}
-extension_list_tl = {"pdf", "jpg", "png", "docx", "doc", "gif"}
+extension_list_tl = {"pdf", "jpg", "png", "docx", "doc", "gif", "mp3", "mp4", "wav"}
 
 def is_duplicate_link(destination):
 	destination_links = links.objects.filter(destination=destination)
@@ -121,8 +121,8 @@ def get_page_of_links(url, trine):
 	# Make a list of all connections just made
 	source = False
 	try:
-		source = links.objects.filter(Q(destination=url) | Q(description=(url + '/')))[0]
-	except:
+		source = links.objects.filter(Q(destination=url) | Q(destination=(url + '/')))[0]
+	except Exception as e:
 		pass
 	destinations = list(links.objects.filter(source=url))
 	
