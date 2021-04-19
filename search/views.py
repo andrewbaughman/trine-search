@@ -39,7 +39,10 @@ def results(request):
 	start_quoting = False
 	index = 0
 	for word in query:
-		if word[0] == '"' and word[-1] != '"':
+		print(word.split('"'))
+		if word.replace('"','') == '':
+			query[index] = 'a'
+		elif word[0] == '"' and word[-1] != '"':
 			query[index] = word + '"'
 			start_quoting = True
 		elif word[0] != '"' and word[-1] == '"':
@@ -81,8 +84,8 @@ def results(request):
 		except Exception as e:
 			pass
 	#call query correction. The decimal is for tollerance 
-	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
+	correction = typo_correction(init_query.lower().replace('"','').split(), 0.75)
+	if (correction == '') or (correction.split() == init_query.lower().replace('"','').split()):
 		correction = init_query
 	#stop query timmer
 	end = time.time()
