@@ -39,7 +39,6 @@ def results(request):
 	start_quoting = False
 	index = 0
 	for word in query:
-		print(word.split('"'))
 		if word.replace('"','') == '':
 			query[index] = 'a'
 		elif word[0] == '"' and word[-1] != '"':
@@ -116,7 +115,7 @@ def get_random_page():
 			results.append(site.id)
 			return results
 		except Exception as e:
-			print(str(e))
+			pass
 	return list()
 
 #make list for pagination
@@ -187,6 +186,8 @@ def get_ranked_list(entity_list, isTrine):
 	#cycle through search terms
 	urls_to_keyword = False
 	for entity in entity_list:
+		if entity[-1] == 's':
+		 	entity = entity[:(len(entity) -1)]
 		exact = False
 		if entity[0] == '"':
 			entity = entity[1:-1]
@@ -194,8 +195,6 @@ def get_ranked_list(entity_list, isTrine):
 		#a dictionary the has 'key' and values that are 2-dimensional- one for word freqency
 		# and the other for the number of important words that match the query
 		#remove the last 's' of a word
-		if entity[-1] == 's':
-		 	entity = entity[:(len(entity) -1)]
 		kwobjects =[]
 		try:
 			#get keyword objects
@@ -203,21 +202,26 @@ def get_ranked_list(entity_list, isTrine):
 				if isTrine and exact:
 					urls_to_keyword = keywords.objects.filter(keyword=entity ,url__isTrine=1)
 				elif isTrine:
-					urls_to_keyword = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1)
+					urls_to_keyword = keywords.objects.filter(keyword=entity ,url__isTrine=1)
+					urls_to_keyword = urls_to_keyword | keywords.objects.filter(keyword=(entity + 's') ,url__isTrine=1).exclude(url_id__in= urls_to_keyword.values_list('url_id'))
 				elif exact:
 					urls_to_keyword = keywords.objects.filter(keyword=entity)
 				else:
-					urls_to_keyword = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
+					urls_to_keyword = keywords.objects.filter(keyword=entity)
+					urls_to_keyword = urls_to_keyword | keywords.objects.filter(keyword=(entity + 's')).exclude(url_id__in= urls_to_keyword.values_list('url_id', flat=True))
 				first_time = False
 			else:
 				if isTrine and exact:
 					kwobjects = keywords.objects.filter(keyword=entity ,url__isTrine=1)
 				elif isTrine:
-					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1)
+					kwobjects = keywords.objects.filter(keyword=entity ,url__isTrine=1)
+					kwobjects = kwobjects | keywords.objects.filter(keyword=(entity + 's') ,url__isTrine=1).exclude(url_id__in= kwobjects.values_list('url_id', flat=True))
 				elif exact:
 					kwobjects = keywords.objects.filter(eyword=entity)
 				else:
-					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
+					kwobjects = keywords.objects.filter(keyword=entity)
+					kwobjects = kwobjects | keywords.objects.filter(keyword=(entity + 's')).exclude(url_id__in= kwobjects.values_list('url_id', flat=True))
+
 				urls_to_keyword = (urls_to_keyword | kwobjects)
 		except Exception as e:
 			pass
