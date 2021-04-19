@@ -49,11 +49,11 @@ $(document).ready(function () {
 
 /*			These are theme presets			*/
 function setlight() {
-	var main_bg_color = '#add8e6';
-	var toggle_button_color = '#99ccff';
+	var main_bg_color = '#eeeeee';
+	var toggle_button_color = '#ffffff';
 	var toggle_button_text_color = '#000000';
 	var second_bg_color = '#ffffff';
-	var highlight_color = '#99ccff';
+	var highlight_color = '#dedede';
 	var search_bar = '#ffffff';
 	var main_text = '#000000';
 	var info_text = '#4d5156';

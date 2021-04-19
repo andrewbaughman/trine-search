@@ -21,13 +21,13 @@
 				</a>
 			</div>
 			<div>
-				<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..."
+				<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All Resources..."
 					value="{{query}}">
 			</div>
 		</div>
 		<div class='grid-item2'>
 			<div>
-				<input type="submit" id="search_button" class="btn" name="search" value="search"
+				<input type="submit" id="search_button" class="btn" name="search" value="Search"
 					style='margin-right: 15px;'>
 			</div>
 			<div>
@@ -51,7 +51,7 @@
 			</div>
 		</div>
 		<div class='top-bar-last'>
-			<input type="submit" id="image_button" class="btn" name="images" value="images">
+			<input type="submit" id="image_button" class="btn" name="images" value="Images">
 			<button class="btn-toggle">Theme</button>
 		</div>
 	</div>
@@ -98,16 +98,19 @@
 			<info>No results found for <b>"{{query}}"</b>. Please try again with different keywords.</info>
 		</div>
 		{% endif %}
-	</div>
-	‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎ ‎‎‏‏‎{% if pages|length > 1 %} ‎‎‏‏‎ ‎‎‏‏‎ ‎
+	‎‏‏‎{% if pages|length > 1 %}
+	<div class='pages-container'>
+	<script>
 	‎‏‏‎{% for page in pages %}
-	<title-result>
+	</script>
+	<div class='pages'>
 		<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
-						‎{{page}}‎‏‏‎ ‎‎‏‏‎ ‎ ‎
-					</a>
-				</title-result>
-			{% endfor %}
-		{% endif %}
+			‎{{page}}‎‏‏‎
+		</a>
+	</div>
+	{% endfor %}
+	{% endif %}
+	</div>
 	<br>
 </br>
 
