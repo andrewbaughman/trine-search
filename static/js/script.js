@@ -4,11 +4,11 @@ $(document).ready(function () {
 	$('.trine-toggle').on('change', function () {
 		//var current = $('#homeInpput').attr('placeholder');
 		if ($(".trine-toggle").find('input').is(':checked')) {
-			$('.query').attr('placeholder', 'Search Trine resources...');
+			$('.query').attr('placeholder', 'Search Trine Resources...');
 			$('.query').attr('isTrine', 'True');
 			localStorage.setItem("isTrine", "True");
 		} else {
-			$('.query').attr('placeholder', 'Search All resources...');
+			$('.query').attr('placeholder', 'Search All Resources...');
 			$('.query').attr('isTrine', 'False');
 			localStorage.setItem("isTrine", "False");
 		}
@@ -72,11 +72,11 @@ function defaultToggle() {
 	var currentToggle = localStorage.getItem("isTrine");
 	if (currentToggle == "True") {
 		$(".trine-toggle").find('input').attr('checked', 'checked');
-		$('.query').attr('placeholder', 'Search Trine resources...');
+		$('.query').attr('placeholder', 'Search Trine Resources...');
 		$('.query').attr('isTrine', 'True');
 	} else {
 		$(".trine-toggle").find('input').removeAttr('checked', 'checked');
-		$('.query').attr('placeholder', 'Search All resources...');
+		$('.query').attr('placeholder', 'Search All Resources...');
 		$('.query').attr('isTrine', 'False');
 		localStorage.setItem("isTrine", "False");
 	}
