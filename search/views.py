@@ -35,7 +35,7 @@ def results(request):
 	trine_only = (request.GET.get('isTrine') == 'True')
 	lucky = (request.GET.get('lucky')=='True')
 	random = (request.GET.get('random')=='True')
-	query = init_query.lower().split()
+	query = init_query.lower().replace('”', '"').replace('“', '"').split()
 	start_quoting = False
 	index = 0
 	for word in query:
@@ -241,7 +241,7 @@ def image_results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
-	query = init_query.lower().split()
+	query = init_query.lower().replace('”', '').replace('“', '').replace('"', '').split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
 	ranked_list = get_ranked_images(set(query))
@@ -274,7 +274,7 @@ def image_results(request):
 		results.append(result)
 	#call query correction. The decimal is for tollerance 
 	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
+	if correction == '' or (correction.split() == init_query.lower().replace('”', '').replace('“', '').replace('"', '').split()):
 		correction = init_query
 	#stop query timmer
 	end = time.time()
