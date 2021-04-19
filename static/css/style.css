@@ -164,6 +164,8 @@ info {
 	display: inline-flex;
 	text-align: -webkit-center;
 	text-align: center;
+	-moz-appearance: none;
+	-webkit-appearance: none;
 }
 
 .large-button {
@@ -178,6 +180,8 @@ info {
 	width: 230px;
 	height: 40px;
 	margin: 8px 5px 0px 5px;
+	-moz-appearance: none;
+	-webkit-appearance: none;
 }
 
 .large-button:hover,
@@ -470,6 +474,7 @@ input:checked+.slider:before {
 	padding: 20px;
 	text-align: center;
 	text-decoration: none;
+	color: var(--title-text);
 }
 
 .voice-button {
@@ -486,6 +491,8 @@ input:checked+.slider:before {
 #image_button {
 	margin: 1%;
 	float: right;
+	-moz-appearance: none;
+	-webkit-appearance: none;
 }
 
 @media only screen and (max-width:800px) {
@@ -510,6 +517,8 @@ input:checked+.slider:before {
 
 	.toggle-button {
 		margin-top: 1%;
+		-moz-appearance: none;
+		-webkit-appearance: none;
 	}
 
 	.top-bar {
