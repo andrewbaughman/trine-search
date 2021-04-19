@@ -27,7 +27,7 @@
 		</div>
 		<div class='grid-item2'>
 			<div>
-				<input type="submit" id="image_button" class="btn" name="images" value="search images"
+				<input type="submit" id="image_button" class="btn" name="images" value="Search Images"
 					style='margin-right: 15px;'>
 			</div>
 		</div>
@@ -87,19 +87,21 @@
 		</div>
 		{% endif %}
 	</div>
-	{% if pages|length > 1 %} ‎‎‏‏‎ ‎‎
-	<div>
-		‎‏‏‎{% for page in pages %}
-		<title-result>
-			<a style="padding-left: 10px; padding-right: 10px;" href='?query={{correction}}&page={{page}}'>
-				‎{{page}}‎‏‏‎
-			</a>
-		</title-result>
-		{% endfor %}
-		<br>
-		</br>
+	‎‏‏‎{% if pages|length > 1 %}
+	<div class='pages-container' style="width: 90vw;">
+	<script>
+	‎‏‏‎{% for page in pages %}
+	</script>
+	<div class='pages'>
+		<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
+			‎{{page}}‎‏‏‎
+		</a>
 	</div>
+	{% endfor %}
 	{% endif %}
+	</div>
+	<br>
+</br>
 
 </body>
 <script>

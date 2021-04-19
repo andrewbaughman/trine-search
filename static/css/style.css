@@ -453,6 +453,25 @@ input:checked+.slider:before {
 	margin: auto;
 }
 
+.pages-container {
+	display: flex;
+	width: 60em;
+	max-width: 90vw;
+	flex-wrap: wrap;
+}
+
+.pages {
+	font-size: 22px;
+	line-height: 1.373;
+	font-family: Google Sans, arial, sans-serif;
+	font-weight: normal;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, .10);
+	cursor: pointer;
+	padding: 20px;
+	text-align: center;
+	text-decoration: none;
+}
+
 .voice-button {
 	width: 32px;
 	margin: 5px;
