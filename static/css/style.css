@@ -474,6 +474,7 @@ input:checked+.slider:before {
 	padding: 20px;
 	text-align: center;
 	text-decoration: none;
+	color: var(--title-text);
 }
 
 .voice-button {
