@@ -35,7 +35,24 @@ def results(request):
 	trine_only = (request.GET.get('isTrine') == 'True')
 	lucky = (request.GET.get('lucky')=='True')
 	random = (request.GET.get('random')=='True')
-	query = init_query.lower().split()
+	query = init_query.lower().replace('”', '"').replace('“', '"').split()
+	start_quoting = False
+	index = 0
+	for word in query:
+		print(word.split('"'))
+		if word.replace('"','') == '':
+			query[index] = 'a'
+		elif word[0] == '"' and word[-1] != '"':
+			query[index] = word + '"'
+			start_quoting = True
+		elif word[0] != '"' and word[-1] == '"':
+			query[index] = '"' + word
+			start_quoting = False
+		elif word[0] == '"' and word[-1] == '"':
+			pass
+		elif start_quoting:
+			query[index] = '"' + word + '"'
+		index += 1
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
 	if not random: 
@@ -67,8 +84,8 @@ def results(request):
 		except Exception as e:
 			pass
 	#call query correction. The decimal is for tollerance 
-	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
+	correction = typo_correction(init_query.lower().replace('"','').split(), 0.75)
+	if (correction == '') or (correction.split() == init_query.lower().replace('"','').split()):
 		correction = init_query
 	#stop query timmer
 	end = time.time()
@@ -92,7 +109,6 @@ def get_random_page():
 		return list()
 	while True:
 		random_id = randint(0, maximum)
-		print(random_id)
 		results = []
 		try:
 			site = links.objects.get(id=random_id)
@@ -171,6 +187,10 @@ def get_ranked_list(entity_list, isTrine):
 	#cycle through search terms
 	urls_to_keyword = False
 	for entity in entity_list:
+		exact = False
+		if entity[0] == '"':
+			entity = entity[1:-1]
+			exact = True
 		#a dictionary the has 'key' and values that are 2-dimensional- one for word freqency
 		# and the other for the number of important words that match the query
 		#remove the last 's' of a word
@@ -180,14 +200,22 @@ def get_ranked_list(entity_list, isTrine):
 		try:
 			#get keyword objects
 			if first_time:
-				if isTrine:
+				if isTrine and exact:
+					urls_to_keyword = keywords.objects.filter(keyword=entity ,url__isTrine=1)
+				elif isTrine:
 					urls_to_keyword = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1)
+				elif exact:
+					urls_to_keyword = keywords.objects.filter(keyword=entity)
 				else:
 					urls_to_keyword = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
 				first_time = False
 			else:
-				if isTrine:
+				if isTrine and exact:
+					kwobjects = keywords.objects.filter(keyword=entity ,url__isTrine=1)
+				elif isTrine:
 					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')) ,url__isTrine=1)
+				elif exact:
+					kwobjects = keywords.objects.filter(eyword=entity)
 				else:
 					kwobjects = keywords.objects.filter(Q(keyword=entity) | Q(keyword=(entity + 's')))
 				urls_to_keyword = (urls_to_keyword | kwobjects)
@@ -213,7 +241,7 @@ def image_results(request):
 	#create initial query list
 	init_query = request.GET.get('query')
 	page_searched = request.GET.get('page')
-	query = init_query.lower().split()
+	query = init_query.lower().replace('”', '').replace('“', '').replace('"', '').split()
 	query = parse_query(query)
 	#get a ranked list of Trine pages based on keyword and important words
 	ranked_list = get_ranked_images(set(query))
@@ -246,7 +274,7 @@ def image_results(request):
 		results.append(result)
 	#call query correction. The decimal is for tollerance 
 	correction = typo_correction(init_query.lower().split(), 0.75)
-	if correction == '':
+	if correction == '' or (correction.split() == init_query.lower().replace('”', '').replace('“', '').replace('"', '').split()):
 		correction = init_query
 	#stop query timmer
 	end = time.time()

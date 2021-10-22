@@ -6,30 +6,11 @@ var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator
 if (isChrome.toString() !== 'true') {
 	$(document).ready(function () {
 		const mq = window.matchMedia( "(min-width: 800px)" );
-		//console.log("is chrome: " + isChrome.toString());
-		$('.search-button-container').find('.voice-button-container').remove();
-		if(mq.matches){	//not chrome not responsive --no buttons
-			$('.search-button-container').css('grid-template-columns', '2fr 1fr');
-			$('.search-button-container').css('grid-template-rows', 'unset');
-		}
-		else {			//not chrome and responsive --no buttons
-			$('.search-button-container').css('grid-template-rows', '1fr 1fr');
-			$('.search-button-container').css('grid-template-columns', 'unset');
-
-		}
+		$('.voice-button-container').remove();
 	});
 } else {
 	$(document).ready(function () {
 		const mq = window.matchMedia("(min-width: 800px)");
-		if(mq.matches){	//chrome not responsive --yes buttons
-			$('.search-button-container').css('grid-template-columns', '1fr 1fr 1fr');
-			$('.search-button-container').css('grid-template-rows', 'unset');
-		}
-		else {			//chrome and responsive --yes buttons
-			$('.search-button-container').css('grid-template-rows', '1fr 1fr 1fr');
-			$('.search-button-container').css('grid-template-columns', 'unset');
-
-		}
 		$('#home-mic-up').on('click', function (e) {
 			image = document.getElementById('voiceimage');
 			if (image.src.includes('mic.svg')){

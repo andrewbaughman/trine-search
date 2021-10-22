@@ -26,6 +26,7 @@ $(document).ready(function () {
 		page = "1"
 		lucky($('.query').val(), $('.query').attr('isTrine'), page);
 	});
+
 });
 /*			search on enter key			*/
 $(document).keypress(function (event) {

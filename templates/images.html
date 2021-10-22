@@ -13,19 +13,48 @@
 
 <body class="second">
 	<div class="top-bar">
-		<form method="GET" action="/search/"></form>
-		<a href="/">
-			<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
-		</a>
-		<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..." value = "{{query}}">
-		<div id="left">
-			<input type="submit" id="image_button" class="btn" name="images" value="search images" style='margin-right: 15px;'>
+		<div class='grid-item1'>
+			<form method="GET" action="/search/"></form>
+			<div>
+				<a href="/">
+					<img src="{% static 'assets/logo.svg'%}" alt="Thunder" class="left" href="">
+				</a>
+			</div>
+			<div>
+				<input type="text" id="resultsInput" class="query" name="query" placeholder="Search All resources..."
+					value="{{query}}">
+			</div>
 		</div>
-		<button class="btn-toggle">Theme</button>
-		<input type="submit" id="search_button" class="btn" name="search" value="all" style='float: right; margin: 16.875px;'>
-
+		<div class='grid-item2'>
+			<div>
+				<input type="submit" id="image_button" class="btn" name="images" value="Search Images"
+					style='margin-right: 15px;'>
+			</div>
+		</div>
+		<div class='grid-item3'>
+			<div class='results-function-container'>
+				<div style='padding-top: 5px;'>
+					<info>Trine Only</info>
+				</div>
+				<label class="switch trine-toggle" id='results-toggle'>
+					<input type="checkbox">
+					<span class="slider round"></span>
+				</label>
+			</div>
+			<div id="voiceresult" class='voice-button-container'>
+				<div id='home-mic-up'>
+					<img class='voice-button' id='voiceimage' src={% static "assets/mic.svg" %}>
+				</div>
+			</div>
+		</div>
+		<div class='top-bar-last'>
+			<button id="search_button" class="btn" name="search" style='float:right;margin:1%;'>All</button>
+			<button class="btn-toggle">Theme</button>
+		</div>
 	</div>
-	<div class="results-container" style="width: 100vw;">
+
+
+	<div class="results-container">
 		{% ifnotequal correction|stringformat:"s" query %}
 		<info class=''>
 			‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎Did you mean: <a href="?query={{correction}}">{{correction}}?</a>
@@ -40,17 +69,17 @@
 		</div>
 		{% elif results %}
 		{% if lucky %}
-			<script>
-				window.location = "{{ results.0.url }}";
-			</script>
+		<script>
+			window.location = "{{ results.0.url }}";
+		</script>
 		{% endif %}
 		<div style="width: 90vw;">
-		{% for result in results %}
+			{% for result in results %}
 			<a href="{{ result.source_url }}">
-				<img alt="Blocked" src="{{ result.image_url}}"
-				width="200vh" height="auto" style="vertical-align: middle; max-width: 15vw; padding: 10px">
+				<img alt="Blocked" src="{{ result.image_url}}" width="200vh" height="auto"
+					style="vertical-align: middle; max-width: 15vw; padding: 10px">
 			</a>
-		{% endfor %}
+			{% endfor %}
 		</div>
 		{% else %}
 		<div class='result'>
@@ -58,19 +87,36 @@
 		</div>
 		{% endif %}
 	</div>
-	<div style="width: 90vw; padding-left: 5vw; padding-right: 5vw; padding-top: 10px;">
-		‎‏‏‎{% for page in pages %}
-			<title-result>
-				<a style="padding-left: 10px; padding-right: 10px;" href='?query={{correction}}&page={{page}}'>
-					‎{{page}}‎‏‏‎
-				</a>
-			</title-result>
-		{% endfor %}
-		<br>
-		</br>
+	‎‏‏‎{% if pages|length > 1 %}
+	<div class='pages-container' style="width: 90vw;">
+	<script>
+	‎‏‏‎{% for page in pages %}
+	</script>
+	<div class='pages'>
+		<a href='?query={{correction}}&page={{page}}&isTrine={{trine_only}}''>
+			‎{{page}}‎‏‏‎
+		</a>
 	</div>
+	{% endfor %}
+	{% endif %}
+	</div>
+	<br>
+</br>
 
 </body>
+<script>
+	if (window.matchMedia("(max-width: 800px)").matches) {
+		var top_bar = $('.top-bar');
+		var height = top_bar.outerHeight() - top_bar.find('.grid-item3').outerHeight();
+		$(window).scroll(function () {
+				if ($(this).scrollTop() > height) { //use `this`, not `document`
+					$('.grid-item3').hide();
+				} else {
+					$('.grid-item3').show();
+				}
+		});
+	}
+</script>
 
 </html>
 
