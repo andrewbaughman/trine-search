@@ -175,25 +175,21 @@ class Command(BaseCommand):
 		else:
 			print("resuming crawl.")
 
-		break_check = len(links.objects.filter(visited=False))
+		break_check = len(links.objects.filter(visited=0))
 		i = 0
 		while break_check > 0:
 			link =get_link(i)
 			if link:
 				try:
 					url = link.destination
-					if not link.visited and link.isTrine == 1:
+					if not link.visited == 1:
 						get_page_of_links(url, True)
-					elif not link.visited and link.isTrine == 2:
-						get_page_of_links(url, False)
-					elif not link.visited and link.isTrine == 3:
-						print("link #" + str(i) + " is too far away, will not crawl...")
 					else:
 						print("link #" + str(i) + " was already visited. Skipping...")
 				except Exception as e:
-					break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=False))
+					break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=0))
 			else:
-				break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=False))
+				break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=0))
 			i = i + 1
 			print(i)
 
