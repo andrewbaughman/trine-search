@@ -176,7 +176,7 @@ class Command(BaseCommand):
 			print("resuming crawl.")
 
 		break_check = len(links.objects.filter(visited=0))
-		i = 0
+		i = links.objects.filter(visited=0).first().id
 		while break_check > 0:
 			link =get_link(i)
 			if link:
@@ -187,9 +187,9 @@ class Command(BaseCommand):
 					else:
 						print("link #" + str(i) + " was already visited. Skipping...")
 				except Exception as e:
-					break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=0))
+					break_check = len(links.objects.filter(visited=0))
 			else:
-				break_check = len(links.objects.filter(Q(isTrine=2) | Q(isTrine=1), visited=0))
-			i = i + 1
+				break_check = len(links.objects.filter(visited=0))
+			i = links.objects.filter(visited=0, id__gte=(i+1)).first().id
 			print(i)
 
