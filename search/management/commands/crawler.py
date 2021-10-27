@@ -8,27 +8,18 @@ from django.core.management.base import BaseCommand
 from django.forms.models import model_to_dict
 from search.pagerank import *
 from django.db.models import Q
-
+from django.apps import apps
 
 class Command(BaseCommand):
+	Link = apps.get_model("search", "links")
 
 	def handle(self, *args, **options):
-		inclusion = {"trine", "Trine"}
 		extension_list_tl = {"pdf", "jpg", "png"}
-		def is_duplicate_link(destination):
-			destination_links = links.objects.filter(destination=destination)
-			for link in destination_links:
-				if link.destination == destination: 
-					return True
+		
+		def is_duplicate_link(destination, source):
+			if links.objects.filter(destination=destination, source=source).count() > 0:
+				return True
 			return False
-
-		def add_link(linkObject):
-			link_object = links.objects.create(destination=linkObject['destination'], source=linkObject['source'], isTrine=linkObject['isTrine'], visited = False)
-			return link_object
-
-		def add_edge(edgeObject):
-			edge_object = edges.objects.create(pointA=edgeObject['pointA'], pointB=edgeObject['pointB'])
-			return model_to_dict(edge_object)
 
 		def get_link(id):
 			try:	
@@ -59,38 +50,35 @@ class Command(BaseCommand):
 			else: 
 				return False
 
-		def trine_url(url):
-			for i in inclusion:
-				if i in url:
-					return 1
-			return 2
-		
-		def trine_url_from_not(url):
-			for i in inclusion:
-				if i in url:
-					return 1
-			return 3
-
-		def get_page_of_links(url, trine):
-			signal.signal(signal.SIGALRM, alarm_handler)
-			signal.alarm(10)
-			print("Now entering " + url)
+		def get_page_of_links(url, source):
+			# signal.signal(signal.SIGALRM, alarm_handler)
+			# signal.alarm(10)
+			print("Now entering " + str(url))
 			try:
+				start_1 = time.time()
 				page = requests.get(url)
-				signal.alarm(0)
+				# print('====== Time For Request: ' + str(time.time() - start_1) + " =======")
+				# signal.alarm(0)
+				start_2 = time.time()
 				soup = BeautifulSoup(page.content, 'html.parser')
+				# print('====== Time For BS: ' + str(time.time() - start_2) + " =======")
 				links_a = soup.findAll('a')
+				# print(len(links_a))
 			except TimeOutException as ex:
 				print(ex)
-				links.objects.filter(destination=url).update(visited=True)
+				links.objects.filter(destination=url, source=source).update(visited=1)
 				return
 			except Exception as e:
 				signal.alarm(0)
 				print(str(e))
 				return
-			links.objects.filter(destination=url).update(visited=True)
-			print("Visited " + url)
+			links.objects.filter(destination=url, source=source).update(visited=1)
+			# print("Visited " + url)
+			start_4 = time.time()
+			last_id = links.objects.last().id
+			links_to_be_saved = []
 			for link in links_a:
+				link_object = None
 				href = link.get('href')
 				if href == None:
 					continue
@@ -102,56 +90,33 @@ class Command(BaseCommand):
 					print('FOUND FILE')
 					continue
 				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
-					if trine:
-						link_object = {'destination': href, 'source': url, 'isTrine': trine_url(href), 'visited': False}
-					else:
-						link_object = {'destination': href, 'source': url, 'isTrine': trine_url_from_not(href), 'visited': False}
-					save_link_to_database(link_object)
+					print('1')
+					new_link = Link(destination=href, source=url)
+					# links_to_be_saved.append(
+					print('2')
 				elif (href):
 					if(loc_third_slash(url)):
 						new_url =  url[0:loc_third_slash(url)]
 						appended_link = new_url + href
 					else:
 						appended_link = url + href
-					if trine:
-						link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url(appended_link), 'visited': False}
-					else:
-						link_object = {'destination': appended_link, 'source': url, 'isTrine': trine_url_from_not(appended_link), 'visited': False}
-					save_link_to_database(link_object)
+					print('3')
+					new_link = Link(destination=appended_link, source=url)
+					print('4')
 				else:
 					return
+				
+			print(len(links_to_be_saved))
+			# print(str(links.objects.bulk_create(links_to_be_saved)))			
+			print(time.time() - start_4)
 			
-			# Make a list of all connections just made
-			try:
-				source = links.objects.get(destination=url)
-			except:
-				source = links.objects.get(destination=(url + '/'))
-			destinations = list(links.objects.filter(source=url))
-			
-			# Prep lists and generate pageranks
-			_links = [source] + destinations
-			_edges = edges.objects.filter(pointA=source)
-			
-			pageranks = PR_from_db(_edges, _links, len(_links))
-			#print(pageranks)
-
-			# Save to database
-			for key in pageranks:
-				link = links.objects.get(id=key)
-				link.pagerank = pageranks[key]
-				link.save()
 	
 		def save_link_to_database(link_object):
-			# check for duplicate before sending
-			if (is_duplicate_link(link_object['destination']) == False) and (len(link_object['destination'])<399) :
-				link = add_link(link_object)
-				try:
-					edge_object = {'pointA': links.objects.get(destination=link.source), 'pointB': link}
-				except:
-					print(link.source)
-					edge_object = {'pointA': links.objects.get(destination=link.source + '/'), 'pointB': link}
-				add_edge(edge_object)
-				print("Link post successful")
+			if (is_duplicate_link(link_object['destination'], link_object['source']) == False) and (len(link_object['destination'])<399) :
+				start_t1 = time.time()
+				link = links.objects.create(destination=link_object['destination'], source=link_object['source'], visited = link_object['visited'])
+				# print("Link post successful")
+				print("t1: " + str(time.time() - start_t1))
 				return link
 
 		#global_A = numpy.zeros((2,2), float)
@@ -166,8 +131,8 @@ class Command(BaseCommand):
 					link = input("provide seed link #" + str(z) + ":")
 					if not (link[0:7] == 'http://' or link[0:8] == 'https://'):
 						print("NOTE: provide in http:// or https:// form")
-				if (not (is_duplicate_link(link))):
-					link_object = {'destination': link, 'source': link, 'isTrine': trine_url(link), 'visited': False}
+				if (not (is_duplicate_link(link, link))):
+					link_object = {'destination': link, 'source': link, 'visited': False}
 					save_link_to_database(link_object)
 					z = z + 1
 				else:
@@ -178,12 +143,14 @@ class Command(BaseCommand):
 		break_check = len(links.objects.filter(visited=0))
 		i = links.objects.filter(visited=0).first().id
 		while break_check > 0:
-			link =get_link(i)
+			start = time.time()
+			link = get_link(i)
 			if link:
 				try:
-					url = link.destination
 					if not link.visited == 1:
-						get_page_of_links(url, True)
+						link.visited = True
+						link.save()
+						get_page_of_links(link.destination, link.source)
 					else:
 						print("link #" + str(i) + " was already visited. Skipping...")
 				except Exception as e:
@@ -191,5 +158,5 @@ class Command(BaseCommand):
 			else:
 				break_check = len(links.objects.filter(visited=0))
 			i = links.objects.filter(visited=0, id__gte=(i+1)).first().id
-			print(i)
+			print(str(i) + " crawled in " + str(time.time() - start) + " seconds") 
 
