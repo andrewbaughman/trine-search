@@ -75,7 +75,6 @@ class Command(BaseCommand):
 			links.objects.filter(destination=url, source=source).update(visited=1)
 			# print("Visited " + url)
 			start_4 = time.time()
-			last_id = links.objects.last().id
 			links_to_be_saved = []
 			for link in links_a:
 				link_object = None
@@ -90,24 +89,27 @@ class Command(BaseCommand):
 					print('FOUND FILE')
 					continue
 				elif (href[0:7] == 'http://' or href[0:8] == 'https://' or href[0:4] == 'www.'):
+					link_object = {'destination': href, 'source': url}
 					print('1')
-					new_link = Link(destination=href, source=url)
-					# links_to_be_saved.append(
-					print('2')
+					new_link = Link(**link_object)
+					print(new_link)
+					links_to_be_saved.append(new_link)
 				elif (href):
 					if(loc_third_slash(url)):
 						new_url =  url[0:loc_third_slash(url)]
 						appended_link = new_url + href
 					else:
 						appended_link = url + href
-					print('3')
-					new_link = Link(destination=appended_link, source=url)
-					print('4')
+					link_object = {'destination': appended_link, 'source': url}
+					print('2')
+					new_link = Link(**link_object)
+					print(new_link)
+					links_to_be_saved.append(new_link)
 				else:
 					return
 				
-			print(len(links_to_be_saved))
-			# print(str(links.objects.bulk_create(links_to_be_saved)))			
+			# print(links_to_be_saved)
+			print(str(links.objects.bulk_create(links_to_be_saved)))			
 			print(time.time() - start_4)
 			
 	
